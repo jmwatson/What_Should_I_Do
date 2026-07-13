@@ -2,12 +2,9 @@
 -- Settings window and all tabs
 -- Author: I_AM_T3X | v1.0.0
 
-settingsFrame = nil
+SettingsFrame = nil
 WSID_refreshActivities = nil
 WSID_refreshRoster = nil
-
-
-settingsFrame = nil
 WSID_WSID_refreshActivities = nil
 WSID_WSID_refreshRoster = nil
 
@@ -135,8 +132,8 @@ function BuildSettingsWindow()
     resetSizeBtn:SetScript("OnClick", function()
         WhatShouldIDoDB.uiScale = 1.0
         WhatShouldIDoDB.uiScale = 1.0
-        if mainFrame     then mainFrame:SetScale(1.0) end
-        if settingsFrame then settingsFrame:SetScale(1.0) end
+        if MainFrame     then MainFrame:SetScale(1.0) end
+        if SettingsFrame then SettingsFrame:SetScale(1.0) end
         UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r UI scale reset to 100%%.", 1, 0.85, 0.2)
     end)
 
@@ -226,8 +223,8 @@ function BuildSettingsWindow()
         local subs=WhatShouldIDoDB.subActivities[selectedCat]
         if not subs then
             subs={}
-            if WSID_SMART_OPTIONS[selectedCat] then
-                for _,v in ipairs(WSID_SMART_OPTIONS[selectedCat]) do table.insert(subs,v) end
+            if WSID_ACTIVITIES[selectedCat] then
+                for _,v in ipairs(WSID_ACTIVITIES[selectedCat]) do table.insert(subs,v) end
             end
             WhatShouldIDoDB.subActivities[selectedCat]=subs
         end
@@ -348,7 +345,7 @@ function BuildSettingsWindow()
             row:SetSize(WSID_SET_CW-2,24) ; row:SetPoint("TOPLEFT",rostContent,"TOPLEFT",0,-(i-1)*24)
             local rb=row:CreateTexture(nil,"BACKGROUND") ; rb:SetAllPoints()
             rb:SetColorTexture(even and C.row_even[1] or C.row_odd[1],even and C.row_even[2] or C.row_odd[2],even and C.row_even[3] or C.row_odd[3],1)
-            local cc=WSID_CLASS_COLORS[ch.class] or {r=0.8,g=0.8,b=0.8}
+            local cc=WSID_CLASS_INFO[ch.class] or {r=0.8,g=0.8,b=0.8}
             local isExcluded = WhatShouldIDoDB.excludedChars[ch.name] == true
             local fs=row:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
             fs:SetPoint("LEFT",row,"LEFT",10,0) ; fs:SetJustifyH("LEFT")
@@ -419,25 +416,11 @@ function BuildSettingsWindow()
     ioNoteBg:SetText("|cffd5a742For multi-account players:|r Export your roster on one account, then import it on another. This lets the Leveling wheel see characters from all your accounts in one place.")
 
     -- Encode tables (no collisions between CLASS/RACE/FACT within same field)
-    local CLASS_ENC = {
-        ["Warrior"]="Wa",["Paladin"]="Pa",["Hunter"]="Hu",["Rogue"]="Ro",
-        ["Priest"]="Pr",["Shaman"]="Sh",["Mage"]="Ma",["Warlock"]="Wk",
-        ["Monk"]="Mo",["Druid"]="Dr",["Demon Hunter"]="DH",["Death Knight"]="DK",
-        ["Evoker"]="Ev",
-    }
+    local CLASS_ENC = {}
     local CLASS_DEC = {}
+    for enc in WSID_CLASS_INFO do table.insert(CLASS_ENC,enc) end
     for k,v in pairs(CLASS_ENC) do CLASS_DEC[v]=k end
 
-    local RACE_ENC = {
-        ["Human"]="Hm",["Dwarf"]="Dw",["Night Elf"]="NE",["Gnome"]="Gn",
-        ["Draenei"]="Dn",["Worgen"]="Wg",["Orc"]="Or",["Undead"]="Un",
-        ["Tauren"]="Tn",["Troll"]="Tl",["Blood Elf"]="BE",["Goblin"]="Gb",
-        ["Pandaren"]="Pd",["Dracthyr"]="Dc",["Void Elf"]="VE",
-        ["Lightforged Draenei"]="LD",["Dark Iron Dwarf"]="DI",["Kul Tiran"]="KT",
-        ["Mechagnome"]="Mc",["Nightborne"]="Nb",["Highmountain Tauren"]="HT",
-        ["Mag'har Orc"]="MO",["Zandalari Troll"]="ZT",["Vulpera"]="Vp",
-        ["Earthen"]="Ea",["Haranir"]="Hr",
-    }
     local RACE_DEC = {}
     for k,v in pairs(RACE_ENC) do RACE_DEC[v]=k end
 
@@ -884,7 +867,20 @@ function BuildSettingsWindow()
     local expExclScrollBG, expExclContent, _ = MakeScrollBox(expExclPanel, WSID_SET_CW, WSID_SET_H - 160)
     expExclScrollBG:SetPoint("TOPLEFT", expExclDesc, "BOTTOMLEFT", -4, -8)
 
-    local ORDER = {"Classic","The Burning Crusade","Wrath of the Lich King","Cataclysm","Mists of Pandaria","Warlords of Draenor","Legion","Battle for Azeroth","Shadowlands","Dragonflight","The War Within","Midnight"}
+    local ORDER = {
+        "Classic",
+        "The Burning Crusade",
+        "Wrath of the Lich King",
+        "Cataclysm",
+        "Mists of Pandaria",
+        "Warlords of Draenor",
+        "Legion",
+        "Battle for Azeroth",
+        "Shadowlands",
+        "Dragonflight",
+        "The War Within",
+        "Midnight"
+    }
 
     local ROW_H = 28
 
@@ -1039,8 +1035,8 @@ function BuildSettingsWindow()
         WhatShouldIDoDB.uiScale = val
         scaleBoxLbl:SetText(label)
         scaleDropdown:Hide()
-        if mainFrame     then mainFrame:SetScale(val) end
-        if settingsFrame then settingsFrame:SetScale(val) end
+        if MainFrame     then MainFrame:SetScale(val) end
+        if SettingsFrame then SettingsFrame:SetScale(val) end
     end
 
     for i, opt in ipairs(scaleOptions) do

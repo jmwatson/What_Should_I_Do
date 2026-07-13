@@ -77,7 +77,7 @@ function BuildCreatorPanel(contentArea)
 
     local function GetRaceNames()
         local names={}
-        for _,r in ipairs(WSID_ALL_RACES) do
+        for _,r in ipairs(WSID_RACE_INFO) do
             if factionFilter=="Any" or r.faction==factionFilter or r.faction=="Neutral" then
                 table.insert(names, r.race)
             end
@@ -86,7 +86,7 @@ function BuildCreatorPanel(contentArea)
     end
 
     local function FindRace(name)
-        for _,r in ipairs(WSID_ALL_RACES) do if r.race==name then return r end end
+        for _,r in ipairs(WSID_RACE_INFO) do if r.race==name then return r end end
     end
 
     local function AfterRace(winner)
@@ -115,7 +115,7 @@ function BuildCreatorPanel(contentArea)
         StopSlot() ; spinClassBtn:SetEnabled(false)
         classLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
         StartSlot(classLabel, classes, function(w)
-            local cc=WSID_CLASS_COLORS[w]
+            local cc=WSID_CLASS_INFO[w]
             if cc then classLabel:SetTextColor(cc.r,cc.g,cc.b)
             else classLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3]) end
             spinClassBtn:SetEnabled(true)
@@ -135,7 +135,7 @@ function BuildCreatorPanel(contentArea)
             if #classes==0 then spinRaceBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; return end
             classLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
             StartSlot(classLabel, classes, function(cls)
-                local cc=WSID_CLASS_COLORS[cls]
+                local cc=WSID_CLASS_INFO[cls]
                 if cc then classLabel:SetTextColor(cc.r,cc.g,cc.b)
                 else classLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3]) end
                 spinRaceBtn:SetEnabled(true) ; spinClassBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true)

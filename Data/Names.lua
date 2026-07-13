@@ -2,6 +2,10 @@
 -- Race-based name generation data and functions
 -- Author: I_AM_T3X | v1.0.0
 
+------------------------------------------------------------------------
+-- NAME GENERATOR DATA
+------------------------------------------------------------------------
+
 local NAME_DATA = {
     ["Human"] = {
         male   = {{"Al","Ard","Bren","Cal","Dar","Ed","Gar","Hal","Jan","Kel","Lor","Mar","Ned","Or","Per","Ran","Sar","Tal","Ulf","Val"},
@@ -107,6 +111,7 @@ local NAME_DATA = {
     },
 }
 
+-- Races that share name tables with another
 local NAME_ALIASES = {
     ["Dark Iron Dwarf"]     = "Dwarf",
     ["Lightforged Draenei"] = "Draenei",

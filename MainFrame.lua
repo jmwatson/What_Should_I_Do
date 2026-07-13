@@ -2,11 +2,8 @@
 -- Main window, left nav, minimap button, init, slash commands
 -- Author: I_AM_T3X | v1.0.0
 
-mainFrame = nil
-mainPanels = {}
-
-mainFrame = nil
-mainPanels = {}
+MainFrame = nil
+MainPanels = {}
 
 function BuildMainFrame()
     local f=CreateFrame("Frame","WhatShouldIDoFrame",UIParent,"BackdropTemplate")
@@ -34,7 +31,7 @@ function BuildMainFrame()
     closeBtn:SetFrameStrata(f:GetFrameStrata())
     closeBtn:SetFrameLevel(f:GetFrameLevel() + 1)
     closeBtn:SetScript("OnClick",function()
-        f:Hide() ; if settingsFrame then settingsFrame:Hide() end
+        f:Hide() ; if SettingsFrame then SettingsFrame:Hide() end
     end)
 
     -- Content area
@@ -50,21 +47,21 @@ function BuildMainFrame()
     local profPanel = BuildProfessionPanel(contentArea)
     local rdPanel   = BuildRaidDungeonPanel(contentArea)
     local abtPanel  = BuildAboutPanel(contentArea)
-    mainPanels={activity=actPanel,creator=crePanel,leveling=levPanel,names=namPanel,professions=profPanel,raidsdungeons=rdPanel,about=abtPanel}
+    MainPanels={activity=actPanel,creator=crePanel,leveling=levPanel,names=namPanel,professions=profPanel,raidsdungeons=rdPanel,about=abtPanel}
 
     BuildLeftNav(f,
         {{name="activity",label="Activity"},{name="creator",label="Creator"},{name="leveling",label="Leveling"},{name="names",label="Name Generator"},{name="professions",label="Professions"},{name="raidsdungeons",label="Raids & Dungeons"}},
         {{name="settings_nav",label="Settings"},{name="about",label="About"}},
         function(name)
             if name=="settings_nav" then
-                if settingsFrame then
-                    if settingsFrame:IsShown() then settingsFrame:Hide() else settingsFrame:Show() end
+                if SettingsFrame then
+                    if SettingsFrame:IsShown() then SettingsFrame:Hide() else SettingsFrame:Show() end
                 end
                 return
             end
             -- Always refresh WSID_Roster when switching to leveling so imports show immediately
             if name=="leveling" then BuildRoster() end
-            for k,p in pairs(mainPanels) do if k==name then p:Show() else p:Hide() end end
+            for k,p in pairs(MainPanels) do if k==name then p:Show() else p:Hide() end end
         end
     )
 
@@ -81,10 +78,10 @@ function RegisterMinimapButton()
         type="launcher", icon="Interface\\Icons\\INV_Misc_QuestionMark", label="What Should I Do?",
         OnClick=function(_,btn)
             if btn=="LeftButton" then
-                if mainFrame:IsShown() then mainFrame:Hide() ; if settingsFrame then settingsFrame:Hide() end
-                else BuildRoster() ; mainFrame:Show() end
+                if MainFrame:IsShown() then MainFrame:Hide() ; if SettingsFrame then SettingsFrame:Hide() end
+                else BuildRoster() ; MainFrame:Show() end
             elseif btn=="RightButton" then
-                if settingsFrame:IsShown() then settingsFrame:Hide() else settingsFrame:Show() end
+                if SettingsFrame:IsShown() then SettingsFrame:Hide() else SettingsFrame:Show() end
             end
         end,
         OnTooltipShow=function(tt)
@@ -115,16 +112,16 @@ initFrame:SetScript("OnEvent",function(self,event,arg1)
         -- Define StaticPopup dialogs at init time so they're registered before use
         StaticPopupDialogs["WSID_CONFIRM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_THEME"] or {}
         StaticPopupDialogs["WSID_CONFIRM_CUSTOM"] = StaticPopupDialogs["WSID_CONFIRM_CUSTOM"] or {}
-        mainFrame     = BuildMainFrame()
-        settingsFrame = BuildSettingsWindow()
+        MainFrame     = BuildMainFrame()
+        SettingsFrame = BuildSettingsWindow()
         RegisterMinimapButton()
         -- ESC closes the windows
         tinsert(UISpecialFrames, "WhatShouldIDoFrame")
         tinsert(UISpecialFrames, "WhatShouldIDoSettings")
         -- Apply saved UI scale
         local scale = WhatShouldIDoDB.uiScale or 1.0
-        mainFrame:SetScale(scale)
-        settingsFrame:SetScale(scale)
+        MainFrame:SetScale(scale)
+        SettingsFrame:SetScale(scale)
     elseif event=="PLAYER_LOGIN" then
         if WhatShouldIDoDB then BuildRoster() end
     end
@@ -140,14 +137,14 @@ SlashCmdList["WSID"]=function(msg)
         return
     end
     if msgL=="settings" then
-        if settingsFrame then
-            if settingsFrame:IsShown() then settingsFrame:Hide() else settingsFrame:Show() end
+        if SettingsFrame then
+            if SettingsFrame:IsShown() then SettingsFrame:Hide() else SettingsFrame:Show() end
         end
         return
     end
-    if mainFrame then
-        if mainFrame:IsShown() then mainFrame:Hide() ; if settingsFrame then settingsFrame:Hide() end
-        else BuildRoster() ; mainFrame:Show() end
+    if MainFrame then
+        if MainFrame:IsShown() then MainFrame:Hide() ; if SettingsFrame then SettingsFrame:Hide() end
+        else BuildRoster() ; MainFrame:Show() end
     end
 end
 

@@ -63,7 +63,7 @@ function BuildNamePanel(contentArea)
     raceList:Hide()
 
     local allRaces = {}
-    for _, r in ipairs(WSID_ALL_RACES) do table.insert(allRaces, r.race) end
+    for _, r in ipairs(WSID_RACE_INFO) do table.insert(allRaces, r.race) end
     table.sort(allRaces)
 
     local selectedRace = nil
@@ -182,15 +182,5 @@ function BuildNamePanel(contentArea)
 
     return panel
 end
-
-------------------------------------------------------------------------
--- PROFESSION PICKER PANEL
-------------------------------------------------------------------------
-
-local WSID_PROFESSIONS = {
-    "Alchemy","Blacksmithing","Enchanting","Engineering","Herbalism",
-    "Inscription","Jewelcrafting","Leatherworking","Mining","Skinning","Tailoring",
-    "Fishing","Cooking",
-}
 
 

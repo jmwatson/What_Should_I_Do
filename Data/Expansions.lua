@@ -3,9 +3,17 @@
 -- Author: I_AM_T3X | v1.0.0
 
 WSID_EXPANSIONS = {
-    "The Burning Crusade","Wrath of the Lich King","Cataclysm","Mists of Pandaria",
-    "Warlords of Draenor","Legion","Battle for Azeroth","Shadowlands",
-    "Dragonflight","The War Within","Midnight",
+    "The Burning Crusade",
+    "Wrath of the Lich King",
+    "Cataclysm",
+    "Mists of Pandaria",
+    "Warlords of Draenor",
+    "Legion",
+    "Battle for Azeroth",
+    "Shadowlands",
+    "Dragonflight",
+    "The War Within",
+    "Midnight",
 }
 
 function GetExpansionPool(level)

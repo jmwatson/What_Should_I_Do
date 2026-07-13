@@ -1,6 +1,5 @@
 -- Core/DB.lua
--- SavedVariables initialisation
--- Author: I_AM_T3X | v1.0.0
+-- SavedVariables initialization
 
 function InitDB()
     if not WhatShouldIDoDB then WhatShouldIDoDB = {} end
@@ -8,8 +7,9 @@ function InitDB()
         WhatShouldIDoDB.activities = {}
         for _, v in ipairs(WSID_DEFAULT_ACTIVITIES) do table.insert(WhatShouldIDoDB.activities, v) end
     end
-    if not WhatShouldIDoDB.minimap       then WhatShouldIDoDB.minimap       = {hide=false, minimapPos=45} end
+    if not WhatShouldIDoDB.minimap then WhatShouldIDoDB.minimap = {hide=false, minimapPos=45} end
     if not WhatShouldIDoDB.subActivities then WhatShouldIDoDB.subActivities = {} end
+
     -- Clean up orphaned sub-activity keys
     if WhatShouldIDoDB.subActivities then
         local validKeys = {}
@@ -18,11 +18,12 @@ function InitDB()
             if not validKeys[key] then WhatShouldIDoDB.subActivities[key] = nil end
         end
     end
-    if not WhatShouldIDoDB.seenChars    then WhatShouldIDoDB.seenChars    = {} end
-    if not WhatShouldIDoDB.colorTheme   then WhatShouldIDoDB.colorTheme   = "Default" end
-    if not WhatShouldIDoDB.uiScale       then WhatShouldIDoDB.uiScale       = 1.0 end
+    
+    if not WhatShouldIDoDB.seenChars then WhatShouldIDoDB.seenChars = {} end
+    if not WhatShouldIDoDB.colorTheme then WhatShouldIDoDB.colorTheme = "Default" end
+    if not WhatShouldIDoDB.uiScale then WhatShouldIDoDB.uiScale = 1.0 end
     if not WhatShouldIDoDB.customColors then WhatShouldIDoDB.customColors = {} end
-    if not WhatShouldIDoDB.excludedChars       then WhatShouldIDoDB.excludedChars       = {} end
-    if not WhatShouldIDoDB.excludedExpansions   then WhatShouldIDoDB.excludedExpansions   = {} end
-    if WhatShouldIDoDB.excludeFarming == nil    then WhatShouldIDoDB.excludeFarming       = false end
+    if not WhatShouldIDoDB.excludedChars then WhatShouldIDoDB.excludedChars = {} end
+    if not WhatShouldIDoDB.excludedExpansions then WhatShouldIDoDB.excludedExpansions = {} end
+    if WhatShouldIDoDB.excludeFarming == nil then WhatShouldIDoDB.excludeFarming = false end
 end

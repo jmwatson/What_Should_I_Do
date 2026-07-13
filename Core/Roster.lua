@@ -11,7 +11,7 @@ local CLASS_TOKEN_MAP = {
 
 function NormaliseClass(cls)
     if not cls then return cls end
-    if WSID_CLASS_COLORS[cls] then return cls end
+    if WSID_CLASS_INFO[cls] then return cls end
     local upper = cls:upper():gsub("%s","")
     return CLASS_TOKEN_MAP[upper] or cls
 end

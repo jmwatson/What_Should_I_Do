@@ -75,7 +75,20 @@ function BuildRaidDungeonPanel(contentArea)
             if #instances > 0 and not excluded[exp] then table.insert(pool, exp) end
         end
         -- Sort chronologically
-        local ORDER = {"Classic","The Burning Crusade","Wrath of the Lich King","Cataclysm","Mists of Pandaria","Warlords of Draenor","Legion","Battle for Azeroth","Shadowlands","Dragonflight","The War Within","Midnight"}
+        local ORDER = {
+            "Classic",
+            "The Burning Crusade",
+            "Wrath of the Lich King",
+            "Cataclysm",
+            "Mists of Pandaria",
+            "Warlords of Draenor",
+            "Legion",
+            "Battle for Azeroth",
+            "Shadowlands",
+            "Dragonflight",
+            "The War Within",
+            "Midnight"
+        }
         table.sort(pool, function(a,b)
             local ai, bi = 99, 99
             for i,v in ipairs(ORDER) do if v==a then ai=i end if v==b then bi=i end end

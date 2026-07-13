@@ -10,20 +10,20 @@ function BuildProfessionPanel(contentArea)
 
     local prof1Box, prof1Label = MakeResult(panel, nil, 52, "PROFESSION 1")
     prof1Box:SetPoint("TOP", desc, "BOTTOM", 0, -12)
-    prof1Box:SetPoint("LEFT",    panel, "LEFT",  WSID_PAD, 0)
-    prof1Box:SetPoint("RIGHT",   panel, "CENTER", -3, 0)
+    prof1Box:SetPoint("LEFT", panel, "LEFT",  WSID_PAD, 0)
+    prof1Box:SetPoint("RIGHT", panel, "CENTER", -3, 0)
     prof1Label:SetText("--")
 
     local prof2Box, prof2Label = MakeResult(panel, nil, 52, "PROFESSION 2")
-    prof2Box:SetPoint("TOP",  desc, "BOTTOM", 0, -12)
-    prof2Box:SetPoint("LEFT",     panel, "CENTER", 3, 0)
-    prof2Box:SetPoint("RIGHT",    panel, "RIGHT", -WSID_PAD, 0)
+    prof2Box:SetPoint("TOP", desc, "BOTTOM", 0, -12)
+    prof2Box:SetPoint("LEFT", panel, "CENTER", 3, 0)
+    prof2Box:SetPoint("RIGHT", panel, "RIGHT", -WSID_PAD, 0)
     prof2Label:SetText("--")
 
     local spinBtn = MakeBtn(panel, "Spin Professions", nil, 30)
     spinBtn:SetPoint("TOP", prof1Box, "BOTTOM", 0, -10)
-    spinBtn:SetPoint("LEFT",    panel, "LEFT",  WSID_PAD, 0)
-    spinBtn:SetPoint("RIGHT",   panel, "RIGHT", -WSID_PAD, 0)
+    spinBtn:SetPoint("LEFT", panel, "LEFT",  WSID_PAD, 0)
+    spinBtn:SetPoint("RIGHT", panel, "RIGHT", -WSID_PAD, 0)
 
     -- Exclude farming professions checkbox
     local FARMING = {Herbalism=true, Mining=true, Skinning=true}
