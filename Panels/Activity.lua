@@ -35,53 +35,69 @@ function BuildActivityPanel(contentArea)
     local lastCat = nil
 
     local function ResetSub()
-        subLabel:SetText("Sub-Activity") ; subLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        spinSubBtn:SetEnabled(false) ; lastCat = nil
+        subLabel:SetText("Sub-Activity")
+        subLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
+        spinSubBtn:SetEnabled(false)
+        lastCat = nil
     end
 
     spinCatBtn:SetScript("OnClick", function()
-        local pool = WhatShouldIDoDB.activities ; if #pool==0 then return end
-        StopSlot() ; spinCatBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false) ; ResetSub()
+        local pool = WhatShouldIDoDB.activities
+        if #pool==0 then return end
+        StopSlot()
+        spinCatBtn:SetEnabled(false)
+        spinBothBtn:SetEnabled(false)
+        ResetSub()
         catLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
         StartSlot(catLabel, pool, function(w)
-            lastCat=w ; catLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-            spinCatBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinSubBtn:SetEnabled(true)
+            lastCat=w
+            catLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
+            spinCatBtn:SetEnabled(true)
+            spinBothBtn:SetEnabled(true)
+            spinSubBtn:SetEnabled(true)
         end)
     end)
 
     spinSubBtn:SetScript("OnClick", function()
         if not lastCat then return end
-        local pool = GetSubPool(lastCat) ; if not pool or #pool==0 then subLabel:SetText("(none)") return end
-        StopSlot() ; spinSubBtn:SetEnabled(false)
+        local pool = GetSubPool(lastCat)
+        if not pool or #pool==0 then subLabel:SetText("(none)") return end
+        StopSlot()
+        spinSubBtn:SetEnabled(false)
         subLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
         StartSlot(subLabel, pool, function(_)
-            subLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3]) ; spinSubBtn:SetEnabled(true)
+            subLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
+            spinSubBtn:SetEnabled(true)
         end)
     end)
 
     spinBothBtn:SetScript("OnClick", function()
-        local pool = WhatShouldIDoDB.activities ; if #pool==0 then return end
-        StopSlot() ; spinCatBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false) ; ResetSub()
+        local pool = WhatShouldIDoDB.activities
+        if #pool==0 then return end
+        StopSlot()
+        spinCatBtn:SetEnabled(false)
+        spinBothBtn:SetEnabled(false)
+        ResetSub()
         catLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
         StartSlot(catLabel, pool, function(w)
-            lastCat=w ; catLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
+            lastCat=w
+            catLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
             local sub = GetSubPool(w)
             if sub and #sub>0 then
                 subLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
                 StartSlot(subLabel, sub, function(_)
                     subLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-                    spinCatBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinSubBtn:SetEnabled(true)
+                    spinCatBtn:SetEnabled(true)
+                    spinBothBtn:SetEnabled(true)
+                    spinSubBtn:SetEnabled(true)
                 end)
             else
-                subLabel:SetText("(none)") ; spinCatBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true)
+                subLabel:SetText("(none)")
+                spinCatBtn:SetEnabled(true)
+                spinBothBtn:SetEnabled(true)
             end
         end)
     end)
 
     return panel
 end
-
-------------------------------------------------------------------------
--- TAB 2: CREATOR
-------------------------------------------------------------------------
-

@@ -18,12 +18,14 @@ function BuildCreatorPanel(contentArea)
 
     local infoLbl = panel:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     infoLbl:SetPoint("TOPLEFT", classBox, "BOTTOMLEFT", 4, -8)
-    infoLbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3]) ; infoLbl:SetText(" ")
+    infoLbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
+    infoLbl:SetText(" ")
 
     -- Faction filter
     local filterLbl = panel:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
     filterLbl:SetPoint("TOPLEFT", infoLbl, "BOTTOMLEFT", 0, -8)
-    filterLbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3]) ; filterLbl:SetText("Faction:")
+    filterLbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
+    filterLbl:SetText("Faction:")
 
     local factionFilter = "Any"
     local filterBtns = {}
@@ -86,7 +88,11 @@ function BuildCreatorPanel(contentArea)
     end
 
     local function FindRace(name)
-        for _,r in ipairs(WSID_RACE_INFO) do if r.race==name then return r end end
+        for _,r in ipairs(WSID_RACE_INFO) do
+            if r.race==name then
+                return r
+            end
+        end
     end
 
     local function AfterRace(winner)
@@ -97,60 +103,86 @@ function BuildCreatorPanel(contentArea)
                     or pickedRace.faction=="Horde"    and "|cffff4444" or "|cffaaaaaa"
             infoLbl:SetText(pickedRace.rtype.."  --  "..fc..pickedRace.faction.."|r")
         end
-        spinRaceBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinClassBtn:SetEnabled(true)
+        spinRaceBtn:SetEnabled(true)
+        spinBothBtn:SetEnabled(true)
+        spinClassBtn:SetEnabled(true)
     end
 
-    spinRaceBtn:SetScript("OnClick", function()
-        local names=GetRaceNames() ; if #names==0 then return end
-        StopSlot() ; spinRaceBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false)
-        spinClassBtn:SetEnabled(false) ; pickedRace=nil
-        classLabel:SetText("Class") ; classLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        infoLbl:SetText(" ") ; raceLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        StartSlot(raceLabel, names, AfterRace)
-    end)
+    local function SpinRaceBtnClick()
+        local names=GetRaceNames()
+        if #names>0 then
+            StopSlot()
+            spinRaceBtn:SetEnabled(false)
+            spinBothBtn:SetEnabled(false)
+            spinClassBtn:SetEnabled(false)
+            pickedRace=nil
+            classLabel:SetText("Class")
+            classLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
+            infoLbl:SetText(" ")
+            raceLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
+            StartSlot(raceLabel, names, AfterRace)
+        end
+    end
 
-    spinClassBtn:SetScript("OnClick", function()
-        if not pickedRace then return end
-        local classes=WSID_CLASS_BY_RACE[pickedRace.race] ; if not classes then return end
-        StopSlot() ; spinClassBtn:SetEnabled(false)
-        classLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        StartSlot(classLabel, classes, function(w)
-            local cc=WSID_CLASS_INFO[w]
-            if cc then classLabel:SetTextColor(cc.r,cc.g,cc.b)
-            else classLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3]) end
-            spinClassBtn:SetEnabled(true)
-        end)
-    end)
+    local function SpinClassBtnClick()
+        if pickedRace then
+            local classes=WSID_RACE_INFO[pickedRace.race].classes
+            if classes then
+                StopSlot()
+                spinClassBtn:SetEnabled(false)
+                classLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
+                StartSlot(classLabel, classes, function(w)
+                    local cc=WSID_CLASS_INFO[w]
+                    if cc then
+                        classLabel:SetTextColor(cc.r,cc.g,cc.b)
+                    else
+                        classLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
+                    end
+                    spinClassBtn:SetEnabled(true)
+                end)
+            end
+        end
+    end
 
-    spinBothBtn:SetScript("OnClick", function()
-        local names=GetRaceNames() ; if #names==0 then return end
-        StopSlot() ; spinRaceBtn:SetEnabled(false) ; spinClassBtn:SetEnabled(false)
-        spinBothBtn:SetEnabled(false) ; pickedRace=nil
-        classLabel:SetText("Class") ; classLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        infoLbl:SetText(" ") ; raceLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
+    local function SpinBothBtnClick()
+        local names=GetRaceNames()
+        if #names==0 then return end
+        StopSlot()
+        spinRaceBtn:SetEnabled(false)
+        spinClassBtn:SetEnabled(false)
+        spinBothBtn:SetEnabled(false)
+        pickedRace=nil
+        classLabel:SetText("Class")
+        classLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
+        infoLbl:SetText(" ")
+        raceLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
         StartSlot(raceLabel, names, function(winner)
             AfterRace(winner)
-            spinRaceBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false) ; spinClassBtn:SetEnabled(false)
-            local classes = pickedRace and WSID_CLASS_BY_RACE[pickedRace.race] or {}
-            if #classes==0 then spinRaceBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; return end
+            spinRaceBtn:SetEnabled(false)
+            spinBothBtn:SetEnabled(false)
+            spinClassBtn:SetEnabled(false)
+            local classes = pickedRace and WSID_RACE_INFO[pickedRace.race].classes or {}
+            if #classes==0 then spinRaceBtn:SetEnabled(true)
+                spinBothBtn:SetEnabled(true)
+                return end
             classLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
             StartSlot(classLabel, classes, function(cls)
                 local cc=WSID_CLASS_INFO[cls]
-                if cc then classLabel:SetTextColor(cc.r,cc.g,cc.b)
-                else classLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3]) end
-                spinRaceBtn:SetEnabled(true) ; spinClassBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true)
+                if cc then
+                    classLabel:SetTextColor(cc.r,cc.g,cc.b)
+                else
+                    classLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
+                end
+                spinRaceBtn:SetEnabled(true)
+                spinClassBtn:SetEnabled(true)
+                spinBothBtn:SetEnabled(true)
             end)
         end)
-    end)
+    end
+
+    spinRaceBtn:SetScript("OnClick", SpinRaceBtnClick)
+    spinClassBtn:SetScript("OnClick", SpinClassBtnClick)
+    spinBothBtn:SetScript("OnClick", SpinBothBtnClick)
 
     return panel
 end
-
-------------------------------------------------------------------------
--- TAB 3: LEVELING
-------------------------------------------------------------------------
--- Layout budget (490px content height):
---   WSID_PAD(16)+hdr(28)+gap(10)+desc(14)+gap(12)+classBox(52)+gap(10)+spinBtn(30)
---   +gap(10)+charHdr(28)+charList(110)+gap(10)+expBox(52)+gap(10)
---   +btnRow(30)+gap(8)+note(14)+WSID_PAD(16) = 460px  fits cleanly
-

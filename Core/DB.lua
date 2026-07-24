@@ -5,7 +5,7 @@ function InitDB()
     if not WhatShouldIDoDB then WhatShouldIDoDB = {} end
     if not WhatShouldIDoDB.activities then
         WhatShouldIDoDB.activities = {}
-        for _, v in ipairs(WSID_DEFAULT_ACTIVITIES) do table.insert(WhatShouldIDoDB.activities, v) end
+        GetActivities() -- Populate default activities if empty
     end
     if not WhatShouldIDoDB.minimap then WhatShouldIDoDB.minimap = {hide=false, minimapPos=45} end
     if not WhatShouldIDoDB.subActivities then WhatShouldIDoDB.subActivities = {} end
