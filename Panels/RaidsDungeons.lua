@@ -72,26 +72,13 @@ function BuildRaidDungeonPanel(contentArea)
         local src = mode == "Raids" and WSID_RAIDS_BY_EXPANSION or WSID_DUNGEONS_BY_EXPANSION
         local excluded = WhatShouldIDoDB and WhatShouldIDoDB.excludedExpansions or {}
         for exp, instances in pairs(src) do
-            if #instances > 0 and not excluded[exp] then table.insert(pool, exp) end
+            local expName = WSID_EXPANSION_NAMES[exp]
+            if expName and #instances > 0 and not excluded[expName] then table.insert(pool, expName) end
         end
-        -- Sort chronologically
-        local ORDER = {
-            "Classic",
-            "The Burning Crusade",
-            "Wrath of the Lich King",
-            "Cataclysm",
-            "Mists of Pandaria",
-            "Warlords of Draenor",
-            "Legion",
-            "Battle for Azeroth",
-            "Shadowlands",
-            "Dragonflight",
-            "The War Within",
-            "Midnight"
-        }
+        -- Sort chronologically using the central index map
         table.sort(pool, function(a,b)
-            local ai, bi = 99, 99
-            for i,v in ipairs(ORDER) do if v==a then ai=i end if v==b then bi=i end end
+            local ai = WSID_EXPANSION_INDEX[a] or 99
+            local bi = WSID_EXPANSION_INDEX[b] or 99
             return ai < bi
         end)
         return pool
@@ -99,7 +86,10 @@ function BuildRaidDungeonPanel(contentArea)
 
     local function GetInstanceList(exp)
         local src = mode == "Raids" and WSID_RAIDS_BY_EXPANSION or WSID_DUNGEONS_BY_EXPANSION
-        return src[exp] or {}
+        -- `exp` here is the expansion name string; map back to numeric id used by the data tables
+        local idx = WSID_EXPANSION_INDEX[exp]
+        if idx then idx = idx - 1 end
+        return src[idx] or {}
     end
 
     spinExpBtn:SetScript("OnClick", function()

@@ -3,6 +3,7 @@
 -- Author: I_AM_T3X | v1.0.0
 
 WSID_EXPANSIONS = {
+    "Classic",
     "The Burning Crusade",
     "Wrath of the Lich King",
     "Cataclysm",
@@ -33,3 +34,7 @@ function GetExpansionPool(level)
         return {"Finish your starting zone and reroll!"}
     end
 end
+
+-- Helper: map expansion name -> chronological index
+WSID_EXPANSION_INDEX = {}
+for i, name in ipairs(WSID_EXPANSIONS) do WSID_EXPANSION_INDEX[name] = i end

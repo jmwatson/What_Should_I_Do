@@ -15,19 +15,14 @@ TWW = 10
 MIDNIGHT = 11
 
 WSID_EXPANSION_NAMES = {
-    [CLASSIC] = "Classic",
-    [TBC] = "The Burning Crusade",
-    [WRATH] = "Wrath of the Lich King",
-    [CATA] = "Cataclysm",
-    [MISTS] = "Mists of Pandaria",
-    [WOD] = "Warlords of Draenor",
-    [LEGION] = "Legion",
-    [BFA] = "Battle for Azeroth",
-    [SL] = "Shadowlands",
-    [DF] = "Dragonflight",
-    [TWW] = "The War Within",
-    [MIDNIGHT] = "Midnight"
 }
+
+-- Map numeric expansion constants (which start at 0) to names from the central list
+WSID_EXPANSION_NAMES = {}
+for i, name in ipairs(WSID_EXPANSIONS) do
+    -- constants in this file use 0-based indices, so subtract 1
+    WSID_EXPANSION_NAMES[i-1] = name
+end
 
 WSID_RAIDS_BY_EXPANSION = {
     [CLASSIC] = {

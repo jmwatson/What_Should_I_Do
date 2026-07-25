@@ -1040,20 +1040,7 @@ function BuildSettingsWindow()
     local expExclScrollBG, expExclContent, _ = MakeScrollBox(expExclPanel, WSID_SET_CW, WSID_SET_H - 160)
     expExclScrollBG:SetPoint("TOPLEFT", expExclDesc, "BOTTOMLEFT", -4, -8)
 
-    local ORDER = {
-        "Classic",
-        "The Burning Crusade",
-        "Wrath of the Lich King",
-        "Cataclysm",
-        "Mists of Pandaria",
-        "Warlords of Draenor",
-        "Legion",
-        "Battle for Azeroth",
-        "Shadowlands",
-        "Dragonflight",
-        "The War Within",
-        "Midnight"
-    }
+    local ORDER = WSID_EXPANSIONS
 
     local ROW_H = 28
 
