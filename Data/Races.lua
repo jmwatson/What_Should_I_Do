@@ -88,7 +88,7 @@ function EncodeRace(race)
 end
 
 function GetFaction(race)
-    if not race or not WSID_RACE_INFO[race] then return "Neutral" end
+    if not race or not WSID_RACE_INFO[race] then return NEUTRAL end
     return WSID_RACE_INFO[race].faction
 end
 

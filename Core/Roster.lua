@@ -2,30 +2,21 @@
 -- Character roster management
 -- Author: I_AM_T3X | v1.0.0
 
-local CLASS_TOKEN_MAP = {
-    WARRIOR="Warrior", PALADIN="Paladin", HUNTER="Hunter", ROGUE="Rogue",
-    PRIEST="Priest", SHAMAN="Shaman", MAGE="Mage", WARLOCK="Warlock",
-    MONK="Monk", DRUID="Druid", DEMONHUNTER="Demon Hunter",
-    DEATHKNIGHT="Death Knight", EVOKER="Evoker",
-}
-
 function NormaliseClass(cls)
-    if not cls then return cls end
-    if WSID_CLASS_INFO[cls] then return cls end
-    local upper = cls:upper():gsub("%s","")
-    return CLASS_TOKEN_MAP[upper] or cls
+    if not cls and WSID_CLASS_INFO[cls] then return cls end
+    return WSID_CLASS_INFO[cls]
 end
 
 WSID_Roster = {}
 
 function BuildRoster()
     WSID_Roster = {}
-    local name    = UnitName("player")
-    local cls, _  = UnitClass("player")
+    local name    = UnitName(IDENTITY)
+    local cls, _  = UnitClass(IDENTITY)
     cls = NormaliseClass(cls)
-    local level   = UnitLevel("player")
-    local race    = UnitRace("player")
-    local faction = UnitFactionGroup("player")
+    local level   = UnitLevel(IDENTITY)
+    local race    = UnitRace(IDENTITY)
+    local faction = UnitFactionGroup(IDENTITY)
     local found   = false
     for _, s in ipairs(WhatShouldIDoDB.seenChars) do
         if s.name == name then

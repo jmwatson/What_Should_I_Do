@@ -6,6 +6,13 @@
 -- THEME DEFINITIONS
 ------------------------------------------------------------------------
 
+DEFAULT = "Default"
+DEUTERANOPIA = "Deuteranopia"
+PROTANOPIA = "Protanopia"
+TRITANOPIA = "Tritanopia"
+HIGHCONTRAST = "HighContrast"
+CUSTOM = "Custom"
+
 WSID_THEMES = {
     Default = {
         bg          = {0.058, 0.048, 0.075},
@@ -32,6 +39,7 @@ WSID_THEMES = {
         win_border  = {0.28,  0.16,  0.44},
         divider     = {0.18,  0.12,  0.28},
     },
+    -- Deuteranopia: red-green blind -- replace purples with blues/cyans
     Deuteranopia = {
         bg          = {0.04,  0.06,  0.12},
         sidebar     = {0.03,  0.04,  0.09},
@@ -57,6 +65,7 @@ WSID_THEMES = {
         win_border  = {0.14,  0.30,  0.55},
         divider     = {0.10,  0.18,  0.34},
     },
+    -- Protanopia: red blind -- similar to deuteranopia, heavier blue shift
     Protanopia = {
         bg          = {0.04,  0.05,  0.10},
         sidebar     = {0.03,  0.04,  0.08},
@@ -82,6 +91,7 @@ WSID_THEMES = {
         win_border  = {0.12,  0.28,  0.52},
         divider     = {0.09,  0.16,  0.32},
     },
+    -- Tritanopia: blue-yellow blind -- use orange/red accents instead of blue/purple
     Tritanopia = {
         bg          = {0.10,  0.06,  0.04},
         sidebar     = {0.08,  0.04,  0.03},
@@ -107,6 +117,7 @@ WSID_THEMES = {
         win_border  = {0.48,  0.24,  0.08},
         divider     = {0.28,  0.14,  0.06},
     },
+    -- High Contrast: white/black/yellow for maximum readability
     HighContrast = {
         bg          = {0.02,  0.02,  0.02},
         sidebar     = {0.05,  0.05,  0.05},
@@ -140,7 +151,7 @@ for k, v in pairs(WSID_THEMES.Default) do C[k] = {v[1], v[2], v[3]} end
 
 function ApplyTheme(themeName, customColors)
     local src = WSID_THEMES[themeName]
-    if not src and themeName == "Custom" then
+    if not src and themeName == CUSTOM then
         src = customColors or WSID_THEMES.Default
     end
     if not src then src = WSID_THEMES.Default end
@@ -153,10 +164,10 @@ end
 -- RENDERING HELPERS
 ------------------------------------------------------------------------
 
-local FLAT = {bgFile="Interface\\Buttons\\WHITE8x8", edgeFile="Interface\\Buttons\\WHITE8x8", edgeSize=1}
+local FLAT = {bgFile=BG_FILE, edgeFile=BG_FILE, edgeSize=1}
 
 function Tx(f, r, g, b, a)
-    local t = f:CreateTexture(nil, "BACKGROUND")
+    local t = f:CreateTexture(nil, BACKGROUND)
     t:SetAllPoints() ; t:SetColorTexture(r, g, b, a or 1) ; return t
 end
 
@@ -171,38 +182,38 @@ end
 ------------------------------------------------------------------------
 
 function MakeScrollBox(parent, w, h)
-    local bg = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+    local bg = CreateFrame(FRAME, nil, parent, BACKDROP_TEMPLATE)
     bg:SetHeight(h)
     if w then bg:SetWidth(w) else
-        bg:SetPoint("LEFT",  parent, "LEFT",  WSID_PAD, 0)
-        bg:SetPoint("RIGHT", parent, "RIGHT", -WSID_PAD, 0)
+        bg:SetPoint(LEFT,  parent, LEFT,  WSID_PAD, 0)
+        bg:SetPoint(RIGHT, parent, RIGHT, -WSID_PAD, 0)
     end
     BgBorder(bg, C.row_even[1],C.row_even[2],C.row_even[3],
                  C.divider[1], C.divider[2], C.divider[3])
-    local clip = CreateFrame("Frame", nil, bg)
-    clip:SetPoint("TOPLEFT",     bg, "TOPLEFT",     1, -1)
-    clip:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -1, 1)
+    local clip = CreateFrame(FRAME, nil, bg)
+    clip:SetPoint(TOPLEFT,     bg, TOPLEFT,     1, -1)
+    clip:SetPoint(BOTTOMRIGHT, bg, BOTTOMRIGHT, -1, 1)
     clip:SetClipsChildren(true)
-    local content = CreateFrame("Frame", nil, clip)
+    local content = CreateFrame(FRAME, nil, clip)
     if w then
         content:SetWidth(w-2)
     else
         -- Stretch content to clip width dynamically
-        content:SetPoint("LEFT",  clip, "LEFT",  0, 0)
-        content:SetPoint("RIGHT", clip, "RIGHT", 0, 0)
+        content:SetPoint(LEFT,  clip, LEFT,  0, 0)
+        content:SetPoint(RIGHT, clip, RIGHT, 0, 0)
     end
     content:SetHeight(h)
-    content:SetPoint("TOPLEFT", clip, "TOPLEFT", 0, 0)
+    content:SetPoint(TOPLEFT, clip, TOPLEFT, 0, 0)
     local scrollOff = 0
     local function Clamp(v,lo,hi) return math.max(lo,math.min(hi,v)) end
     local function Scroll(d)
         scrollOff = Clamp(scrollOff - d*22*2, 0, math.max(0, content:GetHeight()-clip:GetHeight()))
-        content:SetPoint("TOPLEFT", clip, "TOPLEFT", 0, scrollOff)
+        content:SetPoint(TOPLEFT, clip, TOPLEFT, 0, scrollOff)
     end
     bg:EnableMouseWheel(true)
-    bg:SetScript("OnMouseWheel", function(_,d) Scroll(d) end)
+    bg:SetScript(ONMOUSEWHEEL, function(_,d) Scroll(d) end)
     local function ResetScroll()
-        scrollOff=0 ; content:SetPoint("TOPLEFT", clip, "TOPLEFT", 0, 0)
+        scrollOff=0 ; content:SetPoint(TOPLEFT, clip, TOPLEFT, 0, 0)
     end
     return bg, content, ResetScroll
 end
@@ -212,48 +223,48 @@ end
 ------------------------------------------------------------------------
 
 function MakeResult(parent, w, h, tagText)
-    local f = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+    local f = CreateFrame(FRAME, nil, parent, BACKDROP_TEMPLATE)
     f:SetHeight(h or 52)
     -- If w is a number use fixed size; if nil stretch to parent
     if w then f:SetWidth(w) else
         -- caller sets TOPLEFT; we add LEFT+RIGHT for stretch
-        f:SetPoint("LEFT",  parent, "LEFT",  WSID_PAD, 0)
-        f:SetPoint("RIGHT", parent, "RIGHT", -WSID_PAD, 0)
+        f:SetPoint(LEFT,  parent, LEFT,  WSID_PAD, 0)
+        f:SetPoint(RIGHT, parent, RIGHT, -WSID_PAD, 0)
     end
     BgBorder(f, C.result_bg[1],C.result_bg[2],C.result_bg[3],
                 C.result_bdr[1],C.result_bdr[2],C.result_bdr[3])
     if tagText then
-        local tag = f:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-        tag:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -6)
+        local tag = f:CreateFontString(nil,OVERLAY,NORMAL_SMALL)
+        tag:SetPoint(TOPLEFT, f, TOPLEFT, 10, -6)
         tag:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
         tag:SetText(tagText)
     end
-    local lbl = f:CreateFontString(nil,"OVERLAY")
-    lbl:SetFont("Fonts\\FRIZQT__.TTF", 17, "")
-    lbl:SetPoint("CENTER", f, "CENTER", 0, tagText and -4 or 0)
-    lbl:SetPoint("LEFT",  f, "LEFT",  10, 0)
-    lbl:SetPoint("RIGHT", f, "RIGHT", -10, 0)
-    lbl:SetJustifyH("CENTER") ; lbl:SetWordWrap(false)
-    lbl:SetText("--") ; lbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
+    local lbl = f:CreateFontString(nil,OVERLAY)
+    lbl:SetFont(GAME_FONT, 17, EMPTY_STRING)
+    lbl:SetPoint(CENTER, f, CENTER, 0, tagText and -4 or 0)
+    lbl:SetPoint(LEFT,  f, LEFT,  10, 0)
+    lbl:SetPoint(RIGHT, f, RIGHT, -10, 0)
+    lbl:SetJustifyH(CENTER) ; lbl:SetWordWrap(false)
+    lbl:SetText(DASH_DASH) ; lbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
     return f, lbl
 end
 
 function MakeBtn(parent, text, w, h)
-    local b = CreateFrame("Button", nil, parent, "BackdropTemplate")
+    local b = CreateFrame(BUTTON, nil, parent, BACKDROP_TEMPLATE)
     b:SetHeight(h or 30)
     if w then b:SetWidth(w) end
     -- RIGHT anchor set by caller when w is nil
     BgBorder(b, C.btn_bg[1],C.btn_bg[2],C.btn_bg[3], C.btn_bdr[1],C.btn_bdr[2],C.btn_bdr[3])
-    local lbl = b:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    lbl:SetAllPoints() ; lbl:SetJustifyH("CENTER")
+    local lbl = b:CreateFontString(nil,OVERLAY,NORMAL_SMALL)
+    lbl:SetAllPoints() ; lbl:SetJustifyH(CENTER)
     lbl:SetText(text) ; lbl:SetTextColor(C.btn_text[1],C.btn_text[2],C.btn_text[3])
-    b:SetScript("OnEnter", function(s)
+    b:SetScript(ONENTER, function(s)
         if s:IsEnabled() then
             s:SetBackdropColor(C.btn_hover[1],C.btn_hover[2],C.btn_hover[3])
             s:SetBackdropBorderColor(0.70,0.42,1.00,1)
         end
     end)
-    b:SetScript("OnLeave", function(s)
+    b:SetScript(ONLEAVE, function(s)
         if s:IsEnabled() then
             s:SetBackdropColor(C.btn_bg[1],C.btn_bg[2],C.btn_bg[3])
             s:SetBackdropBorderColor(C.btn_bdr[1],C.btn_bdr[2],C.btn_bdr[3],1)
@@ -278,31 +289,31 @@ function MakeBtn(parent, text, w, h)
 end
 
 function MakeHeader(parent, text, w)
-    local f = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+    local f = CreateFrame(FRAME, nil, parent, BACKDROP_TEMPLATE)
     f:SetHeight(28)
     if w then f:SetWidth(w) else
-        f:SetPoint("LEFT",  parent, "LEFT",  WSID_PAD, 0)
-        f:SetPoint("RIGHT", parent, "RIGHT", -WSID_PAD, 0)
+        f:SetPoint(LEFT,  parent, LEFT,  WSID_PAD, 0)
+        f:SetPoint(RIGHT, parent, RIGHT, -WSID_PAD, 0)
     end
     BgBorder(f, C.header_bg[1],C.header_bg[2],C.header_bg[3], C.divider[1],C.divider[2],C.divider[3])
-    local stripe = f:CreateTexture(nil,"ARTWORK")
+    local stripe = f:CreateTexture(nil,ARTWORK)
     stripe:SetColorTexture(C.nav_border[1],C.nav_border[2],C.nav_border[3],1)
-    stripe:SetSize(3,28) ; stripe:SetPoint("LEFT",f,"LEFT",0,0)
-    local lbl = f:CreateFontString(nil,"OVERLAY","GameFontNormal")
-    lbl:SetPoint("LEFT",f,"LEFT",12,0)
+    stripe:SetSize(3,28) ; stripe:SetPoint(LEFT,f,LEFT,0,0)
+    local lbl = f:CreateFontString(nil,OVERLAY,NORMAL)
+    lbl:SetPoint(LEFT,f,LEFT,12,0)
     lbl:SetText(text) ; lbl:SetTextColor(C.header_txt[1],C.header_txt[2],C.header_txt[3])
     return f
 end
 
 function MakeDimLabel(parent, text, anchorFrame, anchorPoint, ox, oy)
-    local fs = parent:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    fs:SetPoint("TOPLEFT", anchorFrame, anchorPoint or "BOTTOMLEFT", ox or 0, oy or -6)
+    local fs = parent:CreateFontString(nil,OVERLAY,NORMAL_SMALL)
+    fs:SetPoint(TOPLEFT, anchorFrame, anchorPoint or BOTTOMLEFT, ox or 0, oy or -6)
     fs:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
     fs:SetText(text)
     return fs
 end
 
 function MakePanel(parent)
-    local p = CreateFrame("Frame", nil, parent)
+    local p = CreateFrame(FRAME, nil, parent)
     p:SetAllPoints(parent) ; p:Hide() ; return p
 end

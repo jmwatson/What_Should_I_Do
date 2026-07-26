@@ -3,6 +3,7 @@
 -- Author: I_AM_T3X | v1.0.0
 
 WSID_ADDON_NAME = "WhatShouldIDo"
+WSID_STRING = "What Should I Do?"
 
 WSID_WIN_W  = 660
 WSID_WIN_H  = 520
@@ -16,3 +17,67 @@ WSID_SET_NAV = 110
 WSID_SET_PAD = 12
 WSID_SET_CW  = WSID_SET_W - WSID_SET_NAV - WSID_SET_PAD * 2  -- 566
 WSID_SET_COL = math.floor((WSID_SET_CW - 12) / 2)            -- 277
+
+IDENTITY = "player"
+
+EMPTY_STRING = ""
+DASH_DASH = "--"
+
+FRAME = "Frame"
+EDIT_BOX = "EditBox"
+BACKDROP_TEMPLATE = "BackdropTemplate"
+UI_PANEL_CLOSE_BUTTON = "UIPanelCloseButton"
+LEFT_BUTTON = "LeftButton"
+RIGHT_BUTTON = "RightButton"
+BUTTON = "Button"
+
+ACTIVITY_LABEL = "Activity"
+CREATOR_LABEL = "Creator"
+LEVELING_LABEL = "Leveling"
+NAMES_LABEL = "Name Generator"
+PROFESSIONS_LABEL = "Professions"
+RAIDS_AND_DUNGEONS_LABEL = "Raids & Dungeons"
+SETTINGS_LABEL = "Settings"
+ABOUT_LABEL = "About"
+
+ARTWORK = "ARTWORK"
+DIALOG = "DIALOG"
+OVERLAY = "OVERLAY"
+BACKGROUND = "BACKGROUND"
+
+-- LAYOUT
+TOPLEFT = "TOPLEFT"
+TOP = "TOP"
+TOPRIGHT = "TOPRIGHT"
+LEFT = "LEFT"
+CENTER = "CENTER"
+RIGHT = "RIGHT"
+BOTTOMLEFT = "BOTTOMLEFT"
+BOTTOM = BOTTOM
+BOTTOMRIGHT = "BOTTOMRIGHT"
+
+-- EVENTS
+ONCHAR = "OnChar"
+ONCLICK = "OnClick"
+ONDRAGSTART = "OnDragStart"
+ONDRAGSTOP = "OnDragStop"
+ONEDITFOCUSGAINED = "OnEditFocusGained"
+ONEDITFOCUSLOST = "OnEditFocusLost"
+ONENTER = "OnEnter"
+ONENTERPRESSED = "OnEnterPressed"
+ONESCAPEPRESSED = "OnEscapePressed"
+ONEVENT = "OnEvent"
+ONLEAVE = "OnLeave"
+ONSHOW = "OnShow"
+ONTEXTCHANGED = "OnTextChanged"
+ONMOUSEWHEEL = "OnMouseWheel"
+ADDON_LOADED = "ADDON_LOADED"
+PLAYER_LOGIN = "PLAYER_LOGIN"
+
+-- FONT
+GAME_FONT = "Fonts\\FRIZQT__.TTF"
+NORMAL = NORMAL
+NORMAL_SMALL = "GameFontNormalSmall"
+NORMAL_LARGE = "GameFontNormalLarge"
+
+BG_FILE = "Interface\\Buttons\\WHITE8x8"

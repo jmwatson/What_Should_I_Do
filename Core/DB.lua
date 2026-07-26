@@ -20,7 +20,7 @@ function InitDB()
     end
     
     if not WhatShouldIDoDB.seenChars then WhatShouldIDoDB.seenChars = {} end
-    if not WhatShouldIDoDB.colorTheme then WhatShouldIDoDB.colorTheme = "Default" end
+    if not WhatShouldIDoDB.colorTheme then WhatShouldIDoDB.colorTheme = DEFAULT end
     if not WhatShouldIDoDB.uiScale then WhatShouldIDoDB.uiScale = 1.0 end
     if not WhatShouldIDoDB.customColors then WhatShouldIDoDB.customColors = {} end
     if not WhatShouldIDoDB.excludedChars then WhatShouldIDoDB.excludedChars = {} end

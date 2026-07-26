@@ -3,14 +3,14 @@
 
 function BuildRaidDungeonPanel(contentArea)
     local panel = MakePanel(contentArea)
-    local hdr = MakeHeader(panel, "Raids & Dungeons")
-    hdr:SetPoint("TOPLEFT", panel, "TOPLEFT", WSID_PAD, -WSID_PAD)
+    local hdr = MakeHeader(panel, RAIDS_AND_DUNGEONS_LABEL)
+    hdr:SetPoint(TOPLEFT, panel, TOPLEFT, WSID_PAD, -WSID_PAD)
 
-    local desc = MakeDimLabel(panel, "Choose Raids or Dungeons, spin an expansion, then spin a random instance.", hdr, "BOTTOMLEFT", 4, -8)
+    local desc = MakeDimLabel(panel, "Choose Raids or Dungeons, spin an expansion, then spin a random instance.", hdr, BOTTOMLEFT, 4, -8)
 
     -- Mode toggle: Raids or Dungeons
-    local modeLbl = panel:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    modeLbl:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -10)
+    local modeLbl = panel:CreateFontString(nil,OVERLAY,NORMAL_SMALL)
+    modeLbl:SetPoint(TOPLEFT, desc, BOTTOMLEFT, 0, -10)
     modeLbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
     modeLbl:SetText("Mode:")
 
@@ -18,9 +18,9 @@ function BuildRaidDungeonPanel(contentArea)
     local modeBtns = {}
     for i, m in ipairs({"Raids","Dungeons"}) do
         local mb = MakeBtn(panel, m, 100, 26)
-        mb:SetPoint("LEFT", modeLbl, "RIGHT", 6+(i-1)*104, 0)
+        mb:SetPoint(LEFT, modeLbl, RIGHT, 6+(i-1)*104, 0)
         local mv = m
-        mb:SetScript("OnClick", function()
+        mb:SetScript(ONCLICK, function()
             mode = mv
             for _, b in ipairs(modeBtns) do
                 b:SetBackdropColor(C.btn_bg[1],C.btn_bg[2],C.btn_bg[3])
@@ -40,30 +40,30 @@ function BuildRaidDungeonPanel(contentArea)
 
     -- Expansion result
     local expBox, expLabel = MakeResult(panel, nil, 52, "EXPANSION")
-    expBox:SetPoint("TOPLEFT", modeLbl, "BOTTOMLEFT", 0, -12)
+    expBox:SetPoint(TOPLEFT, modeLbl, BOTTOMLEFT, 0, -12)
     expLabel:SetText("Expansion")
 
     -- Instance result
     local instBox, instLabel = MakeResult(panel, nil, 52, "RAID / DUNGEON")
-    instBox:SetPoint("TOPLEFT", expBox, "BOTTOMLEFT", 0, -8)
-    instLabel:SetText("--")
+    instBox:SetPoint(TOPLEFT, expBox, BOTTOMLEFT, 0, -8)
+    instLabel:SetText(DASH_DASH)
 
     -- Spin buttons
     local spinExpBtn = MakeBtn(panel, "Spin Expansion", nil, 30)
-    spinExpBtn:SetPoint("TOP", instBox, "BOTTOM", 0, -10)
-    spinExpBtn:SetPoint("LEFT",    panel, "LEFT",  WSID_PAD, 0)
-    spinExpBtn:SetPoint("RIGHT",   panel, "CENTER", -3, 0)
+    spinExpBtn:SetPoint(TOP, instBox, BOTTOM, 0, -10)
+    spinExpBtn:SetPoint(LEFT,    panel, LEFT,  WSID_PAD, 0)
+    spinExpBtn:SetPoint(RIGHT,   panel, CENTER, -3, 0)
 
     local spinInstBtn = MakeBtn(panel, "Spin Instance", nil, 30)
-    spinInstBtn:SetPoint("TOP", instBox, "BOTTOM", 0, -10)
-    spinInstBtn:SetPoint("LEFT",    panel, "CENTER", 3, 0)
-    spinInstBtn:SetPoint("RIGHT",   panel, "RIGHT", -WSID_PAD, 0)
+    spinInstBtn:SetPoint(TOP, instBox, BOTTOM, 0, -10)
+    spinInstBtn:SetPoint(LEFT,    panel, CENTER, 3, 0)
+    spinInstBtn:SetPoint(RIGHT,   panel, RIGHT, -WSID_PAD, 0)
     spinInstBtn:SetEnabled(false)
 
     local spinBothBtn = MakeBtn(panel, "Spin Both", nil, 30)
-    spinBothBtn:SetPoint("TOP", spinExpBtn, "BOTTOM", 0, -6)
-    spinBothBtn:SetPoint("LEFT",    panel, "LEFT",  WSID_PAD, 0)
-    spinBothBtn:SetPoint("RIGHT",   panel, "RIGHT", -WSID_PAD, 0)
+    spinBothBtn:SetPoint(TOP, spinExpBtn, BOTTOM, 0, -6)
+    spinBothBtn:SetPoint(LEFT,    panel, LEFT,  WSID_PAD, 0)
+    spinBothBtn:SetPoint(RIGHT,   panel, RIGHT, -WSID_PAD, 0)
 
     local pickedExp = nil
 
@@ -90,13 +90,13 @@ function BuildRaidDungeonPanel(contentArea)
         return src[exp] or {}
     end
 
-    spinExpBtn:SetScript("OnClick", function()
+    spinExpBtn:SetScript(ONCLICK, function()
         local pool = GetExpansionList()
         if #pool == 0 then return end
         StopSlot()
         spinExpBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false)
         spinInstBtn:SetEnabled(false) ; pickedExp = nil
-        instLabel:SetText("--") ; instLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
+        instLabel:SetText(DASH_DASH) ; instLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
         expLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
         StartSlot(expLabel, pool, function(winner)
             pickedExp = winner
@@ -105,7 +105,7 @@ function BuildRaidDungeonPanel(contentArea)
         end)
     end)
 
-    spinInstBtn:SetScript("OnClick", function()
+    spinInstBtn:SetScript(ONCLICK, function()
         if not pickedExp then return end
         local pool = GetInstanceList(pickedExp)
         if #pool == 0 then instLabel:SetText("None found") return end
@@ -117,13 +117,13 @@ function BuildRaidDungeonPanel(contentArea)
         end)
     end)
 
-    spinBothBtn:SetScript("OnClick", function()
+    spinBothBtn:SetScript(ONCLICK, function()
         local pool = GetExpansionList()
         if #pool == 0 then return end
         StopSlot()
         spinExpBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false) ; spinInstBtn:SetEnabled(false)
         pickedExp = nil
-        instLabel:SetText("--") ; instLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
+        instLabel:SetText(DASH_DASH) ; instLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
         expLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
         StartSlot(expLabel, pool, function(winner)
             pickedExp = winner

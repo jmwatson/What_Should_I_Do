@@ -4,41 +4,42 @@
 function BuildProfessionPanel(contentArea)
     local panel = MakePanel(contentArea)
     local hdr = MakeHeader(panel, "Profession Picker")
-    hdr:SetPoint("TOPLEFT", panel, "TOPLEFT", WSID_PAD, -WSID_PAD)
+    hdr:SetPoint(TOPLEFT, panel, TOPLEFT, WSID_PAD, -WSID_PAD)
 
-    local desc = MakeDimLabel(panel, "Spin two professions for your character.", hdr, "BOTTOMLEFT", 4, -8)
+    local desc = MakeDimLabel(panel, "Spin two professions for your character.", hdr, BOTTOMLEFT, 4, -8)
 
     local prof1Box, prof1Label = MakeResult(panel, nil, 52, "PROFESSION 1")
-    prof1Box:SetPoint("TOP", desc, "BOTTOM", 0, -12)
-    prof1Box:SetPoint("LEFT", panel, "LEFT",  WSID_PAD, 0)
-    prof1Box:SetPoint("RIGHT", panel, "CENTER", -3, 0)
-    prof1Label:SetText("--")
+    prof1Box:SetPoint(TOP, desc, BOTTOM, 0, -12)
+    prof1Box:SetPoint(LEFT, panel, LEFT,  WSID_PAD, 0)
+    prof1Box:SetPoint(RIGHT, panel, CENTER, -3, 0)
+    prof1Label:SetText(DASH_DASH)
 
     local prof2Box, prof2Label = MakeResult(panel, nil, 52, "PROFESSION 2")
-    prof2Box:SetPoint("TOP", desc, "BOTTOM", 0, -12)
-    prof2Box:SetPoint("LEFT", panel, "CENTER", 3, 0)
-    prof2Box:SetPoint("RIGHT", panel, "RIGHT", -WSID_PAD, 0)
-    prof2Label:SetText("--")
+    prof2Box:SetPoint(TOP, desc, BOTTOM, 0, -12)
+    prof2Box:SetPoint(LEFT, panel, CENTER, 3, 0)
+    prof2Box:SetPoint(RIGHT, panel, RIGHT, -WSID_PAD, 0)
+    prof2Label:SetText(DASH_DASH)
 
     local spinBtn = MakeBtn(panel, "Spin Professions", nil, 30)
-    spinBtn:SetPoint("TOP", prof1Box, "BOTTOM", 0, -10)
-    spinBtn:SetPoint("LEFT", panel, "LEFT",  WSID_PAD, 0)
-    spinBtn:SetPoint("RIGHT", panel, "RIGHT", -WSID_PAD, 0)
+    spinBtn:SetPoint(TOP, prof1Box, BOTTOM, 0, -10)
+    spinBtn:SetPoint(LEFT, panel, LEFT,  WSID_PAD, 0)
+    spinBtn:SetPoint(RIGHT, panel, RIGHT, -WSID_PAD, 0)
 
     -- Exclude farming professions checkbox
     local FARMING = WSID_FARM_PROFESSIONS
 
-    local farmBox = CreateFrame("Frame", nil, panel, "BackdropTemplate")
+    local farmBox = CreateFrame(FRAME, nil, panel, BACKDROP_TEMPLATE)
     farmBox:SetSize(14, 14)
-    farmBox:SetPoint("TOPLEFT", spinBtn, "BOTTOMLEFT", 0, -14)
-    farmBox:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8x8",edgeFile="Interface\\Buttons\\WHITE8x8",edgeSize=1})
+    farmBox:SetPoint(TOPLEFT, spinBtn, BOTTOMLEFT, 0, -14)
+    farmBox:SetBackdrop({bgFile=BG_FILE,edgeFile=BG_FILE,edgeSize=1})
 
-    local farmCheck = farmBox:CreateTexture(nil,"OVERLAY")
+    local farmCheck = farmBox:CreateTexture(nil,OVERLAY)
     farmCheck:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
-    farmCheck:SetSize(16,16) ; farmCheck:SetPoint("CENTER", farmBox, "CENTER", 0, 0)
+    farmCheck:SetSize(16,16)
+    farmCheck:SetPoint(CENTER, farmBox, CENTER, 0, 0)
 
-    local farmLbl = panel:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    farmLbl:SetPoint("LEFT", farmBox, "RIGHT", 6, 0)
+    local farmLbl = panel:CreateFontString(nil,OVERLAY,NORMAL_SMALL)
+    farmLbl:SetPoint(LEFT, farmBox, RIGHT, 6, 0)
     farmLbl:SetText("Exclude farming professions (Herbalism, Mining, Skinning)")
 
     local function SetFarmState(on)
@@ -63,23 +64,23 @@ function BuildProfessionPanel(contentArea)
         end
     end
 
-    local farmBtn = CreateFrame("Button", nil, panel)
+    local farmBtn = CreateFrame(BUTTON, nil, panel)
     farmBtn:SetHeight(20)
-    farmBtn:SetPoint("TOPLEFT", spinBtn, "BOTTOMLEFT", 0, -10)
-    farmBtn:SetPoint("RIGHT",   panel,   "RIGHT", -WSID_PAD, 0)
-    farmBtn:SetScript("OnClick", function()
+    farmBtn:SetPoint(TOPLEFT, spinBtn, BOTTOMLEFT, 0, -10)
+    farmBtn:SetPoint(RIGHT,   panel,   RIGHT, -WSID_PAD, 0)
+    farmBtn:SetScript(ONCLICK, function()
         SetFarmState(not (WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming))
     end)
 
     -- Init state after frame shown (C table populated by then)
-    panel:SetScript("OnShow", function()
+    panel:SetScript(ONSHOW, function()
         SetFarmState(WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming or false)
-        panel:SetScript("OnShow", nil)
+        panel:SetScript(ONSHOW, nil)
     end)
 
     local spinning = false
 
-    spinBtn:SetScript("OnClick", function()
+    spinBtn:SetScript(ONCLICK, function()
         if spinning then return end
         local excludeFarming = WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming
         local pool = {}
@@ -91,7 +92,8 @@ function BuildProfessionPanel(contentArea)
             end
         end
         if #pool < 2 then return end
-        spinning = true ; spinBtn:SetEnabled(false)
+        spinning = true
+        spinBtn:SetEnabled(false)
 
         -- Pre-pick two different winners
         local idx1   = math.random(#pool)
@@ -110,7 +112,8 @@ function BuildProfessionPanel(contentArea)
             StartSlot(prof2Label, pool2, function(_)
                 prof2Label:SetText(winner2)
                 prof2Label:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-                spinning = false ; spinBtn:SetEnabled(true)
+                spinning = false
+                spinBtn:SetEnabled(true)
             end)
         end)
     end)
