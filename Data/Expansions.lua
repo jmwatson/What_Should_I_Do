@@ -2,19 +2,6 @@
 -- Expansion list and level-gated pool logic
 -- Author: I_AM_T3X | v1.0.0
 
-CLASSIC = "Classic"
-TBC = "The Burning Crusade"
-WRATH = "Wrath of the Lich King"
-CATA = "Cataclysm"
-MISTS = "Mists of Pandaria"
-WOD = "Warlords of Draenor"
-LEGION = "Legion"
-BFA = "Battle for Azeroth"
-SL = "Shadowlands"
-DF = "Dragonflight"
-TWW = "The War Within"
-MIDNIGHT = "Midnight"
-
 WSID_EXPANSIONS = {
     CLASSIC,
     TBC,
@@ -31,18 +18,16 @@ WSID_EXPANSIONS = {
 }
 
 function GetExpansionPool(level)
+    -- Should probably find a better way to make this generic,
+    -- but for now it being hardcoded to the last 2 expansions is fine.
     if level >= 80 then
         return {MIDNIGHT}
     elseif level >= 70 then
         return {TWW}
     elseif level >= 10 then
-        local pool = {}
-        for _, e in ipairs(WSID_EXPANSIONS) do
-            if e ~= TWW and e ~= MIDNIGHT then
-                table.insert(pool, e)
-            end
-        end
-        return pool
+        -- Trim last 2 expansions from the list
+        local new_len = #WSID_EXPANSIONS - 2
+        return table.move(WSID_EXPANSIONS, 1, new_len, 1, {})
     else
         return {"Finish your starting zone and reroll!"}
     end
