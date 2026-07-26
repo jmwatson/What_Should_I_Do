@@ -92,8 +92,8 @@ function BuildCreatorPanel(contentArea)
         pickedRace = WSID_RACE_INFO[winner]
         raceLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
         if pickedRace then
-            local fc = pickedRace.faction=="Alliance" and "|cff4499ff"
-                    or pickedRace.faction=="Horde"    and "|cffff4444" or "|cffaaaaaa"
+            local fc = pickedRace.faction==ALLIANCE and "|cff4499ff"
+                    or pickedRace.faction==HORDE    and "|cffff4444" or "|cffaaaaaa"
             infoLbl:SetText(pickedRace.rtype.."  --  "..fc..pickedRace.faction.."|r")
         end
         spinRaceBtn:SetEnabled(true)
