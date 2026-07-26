@@ -579,11 +579,20 @@ function BuildSettingsWindow()
     -- Encode tables (no collisions between CLASS/RACE/FACT within same field)
     local CLASS_ENC = {}
     local CLASS_DEC = {}
-    for enc in WSID_CLASS_INFO do table.insert(CLASS_ENC,enc) end
-    for k,v in pairs(CLASS_ENC) do CLASS_DEC[v]=k end
+    for _, c in ipairs(WSID_CLASS_INFO) do
+        CLASS_ENC[c.name] = c.short_name
+        CLASS_DEC[c.short_name] = c.name
+    end
 
+    local RACE_ENC = {}
     local RACE_DEC = {}
-    for k,v in pairs(RACE_ENC) do RACE_DEC[v]=k end
+    for _, key in ipairs(WSID_RACE_ORDER) do
+        local r = WSID_RACE_INFO[key]
+        if r then
+            RACE_ENC[key] = r.short_name
+            RACE_DEC[r.short_name] = key
+        end
+    end
 
     local FACT_ENC = {["Alliance"]="Al",["Horde"]="Ho",["Neutral"]="Ne"}
     local FACT_DEC = {Al="Alliance",Ho="Horde",Ne="Neutral"}

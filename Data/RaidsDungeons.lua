@@ -1,29 +1,6 @@
 -- Data/RaidsDungeons.lua
 -- Raid and dungeon data
 
-CLASSIC = 0
-TBC = 1
-WRATH = 2
-CATA = 3
-MISTS = 4
-WOD = 5
-LEGION = 6
-BFA = 7
-SL = 8
-DF = 9
-TWW = 10
-MIDNIGHT = 11
-
-WSID_EXPANSION_NAMES = {
-}
-
--- Map numeric expansion constants (which start at 0) to names from the central list
-WSID_EXPANSION_NAMES = {}
-for i, name in ipairs(WSID_EXPANSIONS) do
-    -- constants in this file use 0-based indices, so subtract 1
-    WSID_EXPANSION_NAMES[i-1] = name
-end
-
 WSID_RAIDS_BY_EXPANSION = {
     [CLASSIC] = {
         "Molten Core",

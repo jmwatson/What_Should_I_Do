@@ -72,8 +72,9 @@ function BuildRaidDungeonPanel(contentArea)
         local src = mode == "Raids" and WSID_RAIDS_BY_EXPANSION or WSID_DUNGEONS_BY_EXPANSION
         local excluded = WhatShouldIDoDB and WhatShouldIDoDB.excludedExpansions or {}
         for exp, instances in pairs(src) do
-            local expName = WSID_EXPANSION_NAMES[exp]
-            if expName and #instances > 0 and not excluded[expName] then table.insert(pool, expName) end
+            if exp and #instances > 0 and not excluded[exp] then
+                table.insert(pool, exp)
+            end
         end
         -- Sort chronologically using the central index map
         table.sort(pool, function(a,b)
@@ -86,10 +87,7 @@ function BuildRaidDungeonPanel(contentArea)
 
     local function GetInstanceList(exp)
         local src = mode == "Raids" and WSID_RAIDS_BY_EXPANSION or WSID_DUNGEONS_BY_EXPANSION
-        -- `exp` here is the expansion name string; map back to numeric id used by the data tables
-        local idx = WSID_EXPANSION_INDEX[exp]
-        if idx then idx = idx - 1 end
-        return src[idx] or {}
+        return src[exp] or {}
     end
 
     spinExpBtn:SetScript("OnClick", function()

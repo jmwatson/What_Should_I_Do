@@ -2,30 +2,43 @@
 -- Expansion list and level-gated pool logic
 -- Author: I_AM_T3X | v1.0.0
 
+CLASSIC = "Classic"
+TBC = "The Burning Crusade"
+WRATH = "Wrath of the Lich King"
+CATA = "Cataclysm"
+MISTS = "Mists of Pandaria"
+WOD = "Warlords of Draenor"
+LEGION = "Legion"
+BFA = "Battle for Azeroth"
+SL = "Shadowlands"
+DF = "Dragonflight"
+TWW = "The War Within"
+MIDNIGHT = "Midnight"
+
 WSID_EXPANSIONS = {
-    "Classic",
-    "The Burning Crusade",
-    "Wrath of the Lich King",
-    "Cataclysm",
-    "Mists of Pandaria",
-    "Warlords of Draenor",
-    "Legion",
-    "Battle for Azeroth",
-    "Shadowlands",
-    "Dragonflight",
-    "The War Within",
-    "Midnight",
+    CLASSIC,
+    TBC,
+    WRATH,
+    CATA,
+    MISTS,
+    WOD,
+    LEGION,
+    BFA,
+    SL,
+    DF,
+    TWW,
+    MIDNIGHT,
 }
 
 function GetExpansionPool(level)
     if level >= 80 then
-        return {"Midnight"}
+        return {MIDNIGHT}
     elseif level >= 70 then
-        return {"The War Within"}
+        return {TWW}
     elseif level >= 10 then
         local pool = {}
         for _, e in ipairs(WSID_EXPANSIONS) do
-            if e ~= "The War Within" and e ~= "Midnight" then
+            if e ~= TWW and e ~= MIDNIGHT then
                 table.insert(pool, e)
             end
         end

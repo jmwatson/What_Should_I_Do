@@ -12,6 +12,7 @@ Core\Theme.lua
 Core\SlotMachine.lua
 
 # Data (loaded before Roster so CLASS_COLORS is available for NormaliseClass)
+Data\Classes.lua
 Data\Races.lua
 Data\Activities.lua
 Data\Expansions.lua

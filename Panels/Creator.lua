@@ -79,24 +79,17 @@ function BuildCreatorPanel(contentArea)
 
     local function GetRaceNames()
         local names={}
-        for _,r in ipairs(WSID_RACE_INFO) do
-            if factionFilter=="Any" or r.faction==factionFilter or r.faction=="Neutral" then
-                table.insert(names, r.race)
+        for _, key in ipairs(WSID_RACE_ORDER) do
+            local race = WSID_RACE_INFO[key]
+            if race and (factionFilter=="Any" or race.faction==factionFilter or race.faction==NEUTRAL) then
+                table.insert(names, race.name)
             end
         end
         return names
     end
 
-    local function FindRace(name)
-        for _,r in ipairs(WSID_RACE_INFO) do
-            if r.race==name then
-                return r
-            end
-        end
-    end
-
     local function AfterRace(winner)
-        pickedRace = FindRace(winner)
+        pickedRace = WSID_RACE_INFO[winner]
         raceLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
         if pickedRace then
             local fc = pickedRace.faction=="Alliance" and "|cff4499ff"
@@ -126,7 +119,7 @@ function BuildCreatorPanel(contentArea)
 
     local function SpinClassBtnClick()
         if pickedRace then
-            local classes=WSID_RACE_INFO[pickedRace.race].classes
+            local classes = pickedRace and pickedRace.classes or nil
             if classes then
                 StopSlot()
                 spinClassBtn:SetEnabled(false)
@@ -161,7 +154,7 @@ function BuildCreatorPanel(contentArea)
             spinRaceBtn:SetEnabled(false)
             spinBothBtn:SetEnabled(false)
             spinClassBtn:SetEnabled(false)
-            local classes = pickedRace and WSID_RACE_INFO[pickedRace.race].classes or {}
+            local classes = pickedRace and pickedRace.classes or {}
             if #classes==0 then spinRaceBtn:SetEnabled(true)
                 spinBothBtn:SetEnabled(true)
                 return end

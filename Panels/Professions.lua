@@ -26,7 +26,7 @@ function BuildProfessionPanel(contentArea)
     spinBtn:SetPoint("RIGHT", panel, "RIGHT", -WSID_PAD, 0)
 
     -- Exclude farming professions checkbox
-    local FARMING = {Herbalism=true, Mining=true, Skinning=true}
+    local FARMING = WSID_FARM_PROFESSIONS
 
     local farmBox = CreateFrame("Frame", nil, panel, "BackdropTemplate")
     farmBox:SetSize(14, 14)
@@ -84,7 +84,7 @@ function BuildProfessionPanel(contentArea)
         local excludeFarming = WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming
         local pool = {}
         for _, p in ipairs(WSID_PROFESSIONS) do
-            if p ~= "Fishing" and p ~= "Cooking" then
+            if p ~= FISHING and p ~= COOKING then
                 if not (excludeFarming and FARMING[p]) then
                     table.insert(pool, p)
                 end
@@ -117,37 +117,4 @@ function BuildProfessionPanel(contentArea)
 
     return panel
 end
-
-------------------------------------------------------------------------
--- RAIDS & DUNGEONS PANEL
-------------------------------------------------------------------------
-
-local WSID_RAIDS_BY_EXPANSION = {
-    ["The Burning Crusade"]     = {"Karazhan","Gruul's Lair","Magtheridon's Lair","Serpentshrine Cavern","Tempest Keep","Mount Hyjal","Black Temple","Sunwell Plateau"},
-    ["Wrath of the Lich King"]  = {"Naxxramas","The Obsidian Sanctum","The Eye of Eternity","Ulduar","Trial of the Crusader","Onyxia's Lair","Icecrown Citadel","The Ruby Sanctum"},
-    ["Cataclysm"]               = {"Blackwing Descent","The Bastion of Twilight","Throne of the Four Winds","Firelands","Dragon Soul"},
-    ["Mists of Pandaria"]       = {"Mogu'shan Vaults","Heart of Fear","Terrace of Endless Spring","Throne of Thunder","Siege of Orgrimmar"},
-    ["Warlords of Draenor"]     = {"Highmaul","Blackrock Foundry","Hellfire Citadel"},
-    ["Legion"]                  = {"The Emerald Nightmare","Trial of Valor","The Nighthold","Tomb of Sargeras","Antorus the Burning Throne"},
-    ["Battle for Azeroth"]      = {"Uldir","Battle of Dazar'alor","Crucible of Storms","The Eternal Palace","Ny'alotha the Waking City"},
-    ["Shadowlands"]             = {"Castle Nathria","Sanctum of Domination","Sepulcher of the First Ones"},
-    ["Dragonflight"]            = {"Vault of the Incarnates","Aberrus the Shadowed Crucible","Amirdrassil the Dream's Hope"},
-    ["The War Within"]          = {"Nerub-ar Palace","Liberation of Undermine"},
-    ["Midnight"]                = {"The Bleeding Edge","Cinderbrew Meadery","Darkflame Cleft","The Dawnbreaker","Operation: Floodgate","Priory of the Sacred Flame","The Rookery","The Stonevault"},
-}
-
-local WSID_DUNGEONS_BY_EXPANSION = {
-    ["Classic"]                 = {"Ragefire Chasm","Wailing Caverns","The Deadmines","Shadowfang Keep","Blackfathom Deeps","The Stockade","Gnomeregan","Razorfen Kraul","Scarlet Monastery","Razorfen Downs","Uldaman","Zul'Farrak","Maraudon","Temple of Atal'Hakkar","Blackrock Depths","Lower Blackrock Spire","Upper Blackrock Spire","Dire Maul","Stratholme","Scholomance"},
-    ["The Burning Crusade"]     = {"Hellfire Ramparts","The Blood Furnace","The Slave Pens","The Underbog","Mana-Tombs","Auchenai Crypts","Sethekk Halls","Shadow Labyrinth","The Shattered Halls","The Steamvault","The Botanica","The Mechanar","Old Hillsbrad Foothills","The Black Morass","Magister's Terrace"},
-    ["Wrath of the Lich King"]  = {"Utgarde Keep","The Nexus","Azjol-Nerub","Ahn'kahet","Drak'Tharon Keep","Violet Hold","Gundrak","Halls of Stone","Halls of Lightning","The Oculus","Utgarde Pinnacle","The Culling of Stratholme","Trial of the Champion","The Forge of Souls","Pit of Saron","Halls of Reflection"},
-    ["Cataclysm"]               = {"Blackrock Caverns","Throne of the Tides","The Stonecore","The Vortex Pinnacle","Lost City of Tol'vir","The Halls of Origination","Grim Batol","Deadmines","Shadowfang Keep","End Time","Well of Eternity","Hour of Twilight","Zul'Gurub","Zul'Aman"},
-    ["Mists of Pandaria"]       = {"Temple of the Jade Serpent","Stormstout Brewery","Shado-pan Monastery","Gate of the Setting Sun","Mogu'shan Palace","Siege of Niuzao Temple","Scarlet Halls","Scarlet Monastery","Scholomance","Siege of Niuzao Temple"},
-    ["Warlords of Draenor"]     = {"Bloodmaul Slag Mines","Iron Docks","Auchindoun","Skyreach","The Everbloom","Grimrail Depot","Upper Blackrock Spire","Shadowmoon Burial Grounds"},
-    ["Legion"]                  = {"Eye of Azshara","Darkheart Thicket","Black Rook Hold","Halls of Valor","Neltharion's Lair","Vault of the Wardens","Court of Stars","The Arcway","Cathedral of Eternal Night","Return to Karazhan","Seat of the Triumvirate"},
-    ["Battle for Azeroth"]      = {"Atal'Dazar","Freehold","Tol Dagor","The MOTHERLODE!!","Waycrest Manor","Kings' Rest","Temple of Sethraliss","Underrot","Shrine of the Storm","Siege of Boralus","Operation: Mechagon"},
-    ["Shadowlands"]             = {"Mists of Tirna Scithe","The Necrotic Wake","De Other Side","Halls of Atonement","Plaguefall","Spires of Ascension","Theater of Pain","Sanguine Depths","Tazavesh the Veiled Market"},
-    ["Dragonflight"]            = {"Ruby Life Pools","The Nokhud Offensive","The Azure Vault","Algeth'ar Academy","Uldaman: Legacy of Tyr","Neltharus","Brackenhide Hollow","Halls of Infusion","Dawn of the Infinite","Murozond's Rise"},
-    ["The War Within"]          = {"The Rookery","The Stonevault","City of Threads","The Dawnbreaker","Ara-Kara City of Echoes","Darkflame Cleft","Priory of the Sacred Flame","The Necrotic Wake"},
-    ["Midnight"]                = {"Cinderbrew Meadery","Darkflame Cleft","The Dawnbreaker","Operation: Floodgate","Priory of the Sacred Flame","The Rookery","The Stonevault","Liberation of Undermine"},
-}
 

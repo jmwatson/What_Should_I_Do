@@ -1,6 +1,21 @@
 -- Data/Activities.lua
 -- Default activity categories and sub-activities
 
+WSID_DEFAULT_ACTIVITIES = {
+    "PvP",
+    "Housing",
+    "Open World",
+    "Rare Hunting",
+    "Delves",
+    "Gathering",
+    "Crafting",
+    "Collections",
+    "Gold Making",
+    "Holiday Events / Trading Post",
+    "Leveling",
+    "Pet Battles",
+    "Anything Goes",
+}
 
 WSID_ACTIVITIES_INFO = {
     ["PvP"] = {"Random Battleground","Epic Battleground","Arena Skirmish","War Mode","World PvP","Brawl"},
@@ -20,7 +35,7 @@ WSID_ACTIVITIES_INFO = {
 
 function GetActivities()
     if WhatShouldIDoDB and WhatShouldIDoDB.activities and #WhatShouldIDoDB.activities == 0 then
-        for activity, _ in pairs(WSID_ACTIVITIES_INFO) do table.insert(WhatShouldIDoDB.activities, activity) end
+        for _, activity in ipairs(WSID_DEFAULT_ACTIVITIES) do table.insert(WhatShouldIDoDB.activities, activity) end
     end
     return WhatShouldIDoDB.activities
 end

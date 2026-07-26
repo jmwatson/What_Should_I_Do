@@ -63,7 +63,7 @@ function BuildNamePanel(contentArea)
     raceList:Hide()
 
     local allRaces = {}
-    for _, r in ipairs(WSID_RACE_INFO) do table.insert(allRaces, r.race) end
+    for _, key in ipairs(WSID_RACE_ORDER) do table.insert(allRaces, key) end
     table.sort(allRaces)
 
     local selectedRace = nil

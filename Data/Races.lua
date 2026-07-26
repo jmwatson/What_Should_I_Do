@@ -1,73 +1,84 @@
 -- Data/Races.lua
--- Race, class, and color data
+-- Races
 
-WSID_RACES = {
-    HUMAN = 0,
-    DWARF = 1,
-    NIGHT_ELF = 2,
-    GNOME = 3,
-    DRAENEI = 4,
-    WORGEN = 5,
-    ORC = 6,
-    UNDEAD = 7,
-    TAUREN = 8,
-    TROLL = 9,
-    BLOOD_ELF = 10,
-    GOBLIN = 11,
-    PANDAREN = 12,
-    DRACHTHYR = 13,
-    VOID_ELF = 14,
-    LIGHTFORGED_DRAENEI = 15,
-    DARK_IRON_DWARF = 16,
-    KUL_TIRAN = 17,
-    MECHAGNOME = 18,
-    NIGHTBORNE = 19,
-    HIGHMOUNTAIN_TAUREN = 20,
-    MAGHAR_ORC = 21,
-    ZANDALARI_TROLL = 22,
-    VULPERA = 23,
-    EARTHEN = 24,
-    HARANIR = 25,
-}
+HUMAN = "Human"
+DWARF = "Dwarf"
+NIGHT_ELF = "Night Elf"
+GNOME = "Gnome"
+DRAENEI = "Draenei"
+WORGEN = "Worgen"
+ORC = "Orc"
+UNDEAD = "Undead"
+TAUREN = "Tauren"
+TROLL = "Troll"
+BLOOD_ELF = "Blood Elf"
+GOBLIN = "Goblin"
+PANDAREN = "Pandaren"
+DRACHTHYR = "Dracthyr"
+VOID_ELF = "Void Elf"
+LIGHTFORGED_DRAENEI = "Lightforged Draenei"
+DARK_IRON_DWARF = "Dark Iron Dwarf"
+KUL_TIRAN = "Kul Tiran"
+MECHAGNOME = "Mechagnome"
+NIGHTBORNE = "Nightborne"
+HIGHMOUNTAIN_TAUREN = "Highmountain Tauren"
+MAGHAR_ORC = "Maghar Orc"
+ZANDALARI_TROLL = "Zandalari Troll"
+VULPERA = "Vulpera"
+EARTHEN = "Earthen"
+HARANIR = "Haranir"
+
+ALLIANCE = "Alliance"
+HORDE = "Horde"
+NEUTRAL = "Neutral"
+
+CORE = "Core"
+ALLIED = "Allied"
 
 WSID_RACE_INFO = {
-    {name="Human", short_name="HU", faction="Alliance", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.PALADIN},},
-    {name="Dwarf", short_name="DW", faction="Alliance", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN, WSID_CLASSES.PALADIN},},
-    {name="Night Elf", short_name="NE", faction="Alliance", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.DRUID, WSID_CLASSES.DEMON_HUNTER},},
-    {name="Gnome", short_name="GN", faction="Alliance", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT},},
-    {name="Draenei", short_name="DN", faction="Alliance", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN, WSID_CLASSES.PALADIN},},
-    {name="Worgen", short_name="WG", faction="Alliance", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.DRUID},},
-    {name="Orc", short_name="OR", faction="Horde", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN},},
-    {name="Undead", short_name="UD", faction="Horde", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT},},
-    {name="Tauren", short_name="TA", faction="Horde", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN, WSID_CLASSES.DRUID, WSID_CLASSES.PALADIN},},
-    {name="Troll", short_name="TR", faction="Horde", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN, WSID_CLASSES.DRUID},},
-    {name="Blood Elf", short_name="BE", faction="Horde", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.PALADIN, WSID_CLASSES.DEMON_HUNTER},},
-    {name="Goblin", short_name="GO", faction="Horde", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN},},
-    {name="Pandaren", short_name="PA", faction="Neutral", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN},},
-    {name="Dracthyr", short_name="DT", faction="Neutral", rtype="Core", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.EVOKER},},
-    {name="Void Elf", short_name="VE", faction="Alliance", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.DEMON_HUNTER},},
-    {name="Lightforged Draenei", short_name="LD", faction="Alliance", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.PALADIN},},
-    {name="Dark Iron Dwarf", short_name="DI", faction="Alliance", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN, WSID_CLASSES.PALADIN},},
-    {name="Kul Tiran", short_name="KT", faction="Alliance", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN, WSID_CLASSES.DRUID},},
-    {name="Mechagnome", short_name="MG", faction="Alliance", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT},},
-    {name="Nightborne", short_name="NB", faction="Horde", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT},},
-    {name="Highmountain Tauren", short_name="HT", faction="Horde", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN, WSID_CLASSES.DRUID},},
-    {name="Mag'har Orc", short_name="MO", faction="Horde", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN},},
-    {name="Zandalari Troll", short_name="ZT", faction="Horde", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN, WSID_CLASSES.DRUID, WSID_CLASSES.PALADIN},},
-    {name="Vulpera", short_name="VU", faction="Horde", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.DEATH_KNIGHT, WSID_CLASSES.SHAMAN},},
-    {name="Earthen", short_name="EA", faction="Neutral", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.SHAMAN, WSID_CLASSES.PALADIN},},
-    {name="Haranir", short_name="HR", faction="Neutral", rtype="Allied", classes={WSID_CLASSES.WARRIOR, WSID_CLASSES.HUNTER, WSID_CLASSES.MAGE, WSID_CLASSES.PRIEST, WSID_CLASSES.ROGUE, WSID_CLASSES.WARLOCK, WSID_CLASSES.MONK, WSID_CLASSES.SHAMAN, WSID_CLASSES.DRUID},},
+    [HUMAN] = {name=HUMAN, short_name="HU", faction=ALLIANCE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,PALADIN}},
+    [DWARF] = {name=DWARF, short_name="DW", faction=ALLIANCE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN,PALADIN}},
+    [NIGHT_ELF] = {name=NIGHT_ELF, short_name="NE", faction=ALLIANCE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,DRUID,DEMON_HUNTER}},
+    [GNOME] = {name=GNOME, short_name="GN", faction=ALLIANCE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT}},
+    [DRAENEI] = {name=DRAENEI, short_name="DN", faction=ALLIANCE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN,PALADIN}},
+    [WORGEN] = {name=WORGEN, short_name="WG", faction=ALLIANCE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,DRUID}},
+    [ORC] = {name=ORC, short_name="OR", faction=HORDE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN}},
+    [UNDEAD] = {name=UNDEAD, short_name="UD", faction=HORDE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT}},
+    [TAUREN] = {name=TAUREN, short_name="TA", faction=HORDE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN,DRUID,PALADIN}},
+    [TROLL] = {name=TROLL, short_name="TR", faction=HORDE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN,DRUID}},
+    [BLOOD_ELF] = {name=BLOOD_ELF, short_name="BE", faction=HORDE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,PALADIN,DEMON_HUNTER}},
+    [GOBLIN] = {name=GOBLIN, short_name="GO", faction=HORDE, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN}},
+    [PANDAREN] = {name=PANDAREN, short_name="PA", faction=NEUTRAL, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN}},
+    [DRACHTHYR] = {name=DRACHTHYR, short_name="DT", faction=NEUTRAL, rtype=CORE, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,EVOKER}},
+    [VOID_ELF] = {name=VOID_ELF, short_name="VE", faction=ALLIANCE, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,DEMON_HUNTER}},
+    [LIGHTFORGED_DRAENEI] = {name=LIGHTFORGED_DRAENEI, short_name="LD", faction=ALLIANCE, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,PALADIN}},
+    [DARK_IRON_DWARF] = {name=DARK_IRON_DWARF, short_name="DI", faction=ALLIANCE, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN,PALADIN}},
+    [KUL_TIRAN] = {name=KUL_TIRAN, short_name="KT", faction=ALLIANCE, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN,DRUID}},
+    [MECHAGNOME] = {name=MECHAGNOME, short_name="MG", faction=ALLIANCE, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT}},
+    [NIGHTBORNE] = {name=NIGHTBORNE, short_name="NB", faction=HORDE, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT}},
+    [HIGHMOUNTAIN_TAUREN] = {name=HIGHMOUNTAIN_TAUREN, short_name="HT", faction=HORDE, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN,DRUID}},
+    [MAGHAR_ORC] = {name=MAGHAR_ORC, short_name="MO", faction=HORDE, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN}},
+    [ZANDALARI_TROLL] = {name=ZANDALARI_TROLL, short_name="ZT", faction=HORDE, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN,DRUID,PALADIN}},
+    [VULPERA] = {name=VULPERA, short_name="VU", faction=HORDE, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,DEATH_KNIGHT,SHAMAN}},
+    [EARTHEN] = {name=EARTHEN, short_name="EA", faction=NEUTRAL, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,SHAMAN,PALADIN}},
+    [HARANIR] = {name=HARANIR, short_name="HR", faction=NEUTRAL, rtype=ALLIED, classes={WARRIOR,HUNTER,MAGE,PRIEST,ROGUE,WARLOCK,MONK,SHAMAN,DRUID}},
 }
 
 function GetRaceNames()
     local names={}
-    for _,r in ipairs(WSID_RACE_INFO) do table.insert(names, r.name) end
+    for _, key in ipairs(WSID_RACE_ORDER) do
+        local r = WSID_RACE_INFO[key]
+        if r then table.insert(names, r.name) end
+    end
     return names
 end
 
 function GetRaceShortNames()
     local short_names={}
-    for _,r in ipairs(WSID_RACE_INFO) do table.insert(short_names, r.short_name) end
+    for _, key in ipairs(WSID_RACE_ORDER) do
+        local r = WSID_RACE_INFO[key]
+        if r then table.insert(short_names, r.short_name) end
+    end
     return short_names
 end
 
@@ -91,56 +102,3 @@ function GetRaceClasses(race)
     return WSID_RACE_INFO[race].classes
 end
 
-WSID_CLASSES = {
-    DEATH_KNIGHT = 0,
-    DEMON_HUNTER = 1,
-    DRUID = 2,
-    EVOKER = 3,
-    HUNTER = 4,
-    MAGE = 5,
-    MONK = 6,
-    PALADIN = 7,
-    PRIEST = 8,
-    ROGUE = 9,
-    SHAMAN = 10,
-    WARLOCK = 11,
-    WARRIOR = 12,
-}
-
-WSID_CLASS_INFO = {
-    {name="Death Knight", short_name="DK", colors={r=0.77, g=0.12, b=0.23},},
-    {name="Demon Hunter", short_name="DH", colors={r=0.64, g=0.19, b=0.79},},
-    {name="Druid", short_name="DR", colors={r=1.00, g=0.49, b=0.04},},
-    {name="Evoker", short_name="EV", colors={r=0.20, g=0.58, b=0.50},},
-    {name="Hunter", short_name="HU", colors={r=0.67, g=0.83, b=0.45},},
-    {name="Mage", short_name="MA", colors={r=0.25, g=0.78, b=0.92},},
-    {name="Monk", short_name="MO", colors={r=0.00, g=1.00, b=0.60},},
-    {name="Paladin", short_name="PA", colors={r=0.96, g=0.55, b=0.73},},
-    {name="Priest", short_name="PR", colors={r=0.90, g=0.90, b=0.90},},
-    {name="Rogue", short_name="RO", colors={r=1.00, g=0.96, b=0.41},},
-    {name="Shaman", short_name="SH", colors={r=0.00, g=0.44, b=0.87},},
-    {name="Warlock", short_name="WL", colors={r=0.53, g=0.53, b=0.93},},
-    {name="Warrior", short_name="WA", colors={r=0.78, g=0.61, b=0.43},},
-}
-
-function GetClassNames()
-    local names={}
-    for _,c in ipairs(WSID_CLASS_INFO) do table.insert(names, c.name) end
-    return names
-end
-
-function GetClassShortNames()
-    local short_name={}
-    for _,c in ipairs(WSID_CLASS_INFO) do table.insert(short_name, c.short_name) end
-    return short_name
-end
-
-function GetClassColor(class)
-    if not class or not WSID_CLASS_INFO[class] then return {r=1,g=1,b=1} end
-    return WSID_CLASS_INFO[class].colors
-end
-
-function EncodeClass(class)
-    if not class or not WSID_CLASS_INFO[class] then return "??" end
-    return WSID_CLASS_INFO[class].short_name
-end

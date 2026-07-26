@@ -135,7 +135,7 @@ function BuildLevelingPanel(contentArea)
     end
 
     local function DoSpinClass(onDone)
-        local pool={} ; for cls in pairs(WSID_CLASS_INFO) do table.insert(pool,cls) end
+        local pool={} ; for _, clsInfo in ipairs(WSID_CLASS_INFO) do table.insert(pool, clsInfo.name) end
         StopSlot() ; pickedClass=nil ; selectedChar=nil
         classLabel:SetText("Class") ; classLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
         expLabel:SetText("Expansion") ; expLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
