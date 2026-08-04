@@ -9,12 +9,12 @@ local roster = {}
 
 local function BuildRoster()
     roster = {}
-    local name    = UnitName(IDENTITY)
-    local cls, _  = UnitClass(IDENTITY)
-    cls = NormaliseClass(cls)
-    local level   = UnitLevel(IDENTITY)
-    local race    = UnitRace(IDENTITY)
-    local faction = UnitFactionGroup(IDENTITY)
+    local name    = UnitName(WSID_IDENTITY)
+    local cls, _  = UnitClass(WSID_IDENTITY)
+    cls = NormalizeClass(cls)
+    local level   = UnitLevel(WSID_IDENTITY)
+    local race    = UnitRace(WSID_IDENTITY)
+    local faction = UnitFactionGroup(WSID_IDENTITY)
     local found   = false
     for _, s in ipairs(WhatShouldIDoDB.seenChars) do
         if s.name == name then
@@ -31,7 +31,7 @@ local function BuildRoster()
     end
     -- Normalise any existing entries that may have token-style class names
     for _, s in ipairs(WhatShouldIDoDB.seenChars) do
-        s.class = NormaliseClass(s.class)
+        s.class = NormalizeClass(s.class)
     end
 
     table.insert(roster, {name=name,class=cls,level=level,race=race,faction=faction,current=true})
@@ -71,11 +71,11 @@ local settingsFrame
 -- INIT
 ------------------------------------------------------------------------
 
-local initFrame=CreateFrame(FRAME)
-initFrame:RegisterEvent(ADDON_LOADED)
-initFrame:RegisterEvent(PLAYER_LOGIN)
-initFrame:SetScript(ONEVENT,function(self,event,arg1)
-    if event==ADDON_LOADED and arg1==WSID_ADDON_NAME then
+local initFrame=CreateFrame(WSID_FRAME)
+initFrame:RegisterEvent(WSID_ADDON_LOADED)
+initFrame:RegisterEvent(WSID_PLAYER_LOGIN)
+initFrame:SetScript(WSID_OnEvent,function(self,event,arg1)
+    if event==WSID_ADDON_LOADED and arg1==WSID_ADDON_NAME then
         InitDB()
         -- Apply saved theme (must run after InitDB sets defaults and after ApplyTheme is defined)
         if WhatShouldIDoDB.colorTheme == CUSTOM and next(WhatShouldIDoDB.customColors) then
@@ -86,7 +86,7 @@ initFrame:SetScript(ONEVENT,function(self,event,arg1)
         MainFrame     = BuildMainFrame()
         settingsFrame = BuildSettingsWindow()
         RegisterMinimapButton()
-    elseif event==PLAYER_LOGIN then
+    elseif event==WSID_PLAYER_LOGIN then
         if WhatShouldIDoDB then BuildRoster() end
     end
 end)

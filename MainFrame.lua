@@ -7,48 +7,48 @@ MainPanels = {}
 WSID_FRAME = "WhatShouldIDoFrame"
 
 function BuildMainFrame()
-    local f=CreateFrame(FRAME,WSID_FRAME,UIParent,BACKDROP_TEMPLATE)
+    local f=CreateFrame(WSID_FRAME,WSID_FRAME,UIParent,WSID_BACKDROP_TEMPLATE)
     f:SetSize(WSID_WIN_W,WSID_WIN_H)
-    f:SetPoint(CENTER)
+    f:SetPoint(WSID_CENTER)
     f:SetMovable(true)
     f:EnableMouse(true)
-    f:RegisterForDrag(LEFT_BUTTON)
-    f:SetScript(ONDRAGSTART,f.StartMoving)
-    f:SetScript(ONDRAGSTOP,f.StopMovingOrSizing)
-    f:SetFrameStrata(DIALOG)
-    f:SetBackdrop({bgFile=BG_FILE,edgeFile=BG_FILE,edgeSize=1})
-    f:SetBackdropColor(C.bg[1],C.bg[2],C.bg[3],1)
-    f:SetBackdropBorderColor(C.win_border[1],C.win_border[2],C.win_border[3],1)
+    f:RegisterForDrag(WSID_WSIDLEFT_BUTTON)
+    f:SetScript(WSID_OnDragStart,f.StartMoving)
+    f:SetScript(WSID_OnDragStop,f.StopMovingOrSizing)
+    f:SetFrameStrata(WSID_DIALOG)
+    f:SetBackdrop({bgFile=WSID_BG_FILE,edgeFile=WSID_BG_FILE,edgeSize=1})
+    f:SetBackdropColor(COLOR_TABLE.bg[1],COLOR_TABLE.bg[2],COLOR_TABLE.bg[3],1)
+    f:SetBackdropBorderColor(COLOR_TABLE.win_border[1],COLOR_TABLE.win_border[2],COLOR_TABLE.win_border[3],1)
 
     -- Title bar
-    local tb=CreateFrame(FRAME,nil,f)
+    local tb=CreateFrame(WSID_FRAME,nil,f)
     tb:SetHeight(30)
-    tb:SetPoint(TOPLEFT,f,TOPLEFT,0,0)
-    tb:SetPoint(TOPRIGHT,f,TOPRIGHT,0,0)
-    Tx(tb,C.sidebar[1],C.sidebar[2],C.sidebar[3])
-    local tbb=tb:CreateTexture(nil,ARTWORK)
-    tbb:SetColorTexture(C.divider[1],C.divider[2],C.divider[3],1)
+    tb:SetPoint(WSID_TOPLEFT,f,WSID_TOPLEFT,0,0)
+    tb:SetPoint(WSID_TOPRIGHT,f,WSID_TOPRIGHT,0,0)
+    Tx(tb,COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
+    local tbb=tb:CreateTexture(nil,WSID_ARTWORK)
+    tbb:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     tbb:SetHeight(1)
-    tbb:SetPoint(BOTTOMLEFT,tb,BOTTOMLEFT,0,0)
-    tbb:SetPoint(BOTTOMRIGHT,tb,BOTTOMRIGHT,0,0)
-    local titleLbl=tb:CreateFontString(nil,OVERLAY,NORMAL_LARGE)
-    titleLbl:SetPoint(CENTER,tb,CENTER,0,0)
+    tbb:SetPoint(WSID_BOTTOMLEFT,tb,WSID_BOTTOMLEFT,0,0)
+    tbb:SetPoint(WSID_BOTTOMRIGHT,tb,WSID_BOTTOMRIGHT,0,0)
+    local titleLbl=tb:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_LARGE)
+    titleLbl:SetPoint(WSID_CENTER,tb,WSID_CENTER,0,0)
     titleLbl:SetText(WSID_STRING)
-    titleLbl:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-    local closeBtn=CreateFrame(BUTTON,nil,f,UI_PANEL_CLOSE_BUTTON)
-    closeBtn:SetPoint(TOPRIGHT,f,TOPRIGHT,-2,-2)
+    titleLbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+    local closeBtn=CreateFrame(WSID_BUTTON,nil,f,WSID_UI_PANEL_CLOSE_BUTTON)
+    closeBtn:SetPoint(WSID_TOPRIGHT,f,WSID_TOPRIGHT,-2,-2)
     closeBtn:SetFrameStrata(f:GetFrameStrata())
     closeBtn:SetFrameLevel(f:GetFrameLevel() + 1)
-    closeBtn:SetScript(ONCLICK,function()
+    closeBtn:SetScript(WSID_OnClick,function()
         f:Hide()
         if SettingsFrame then SettingsFrame:Hide() end
     end)
 
     -- Content area
-    local contentArea=CreateFrame(FRAME,nil,f)
-    contentArea:SetPoint(TOPLEFT,f,TOPLEFT,WSID_NAV_W,-30)
-    contentArea:SetPoint(BOTTOMRIGHT,f,BOTTOMRIGHT,0,0)
-    Tx(contentArea,C.bg[1]+0.005,C.bg[2]+0.005,C.bg[3]+0.01)
+    local contentArea=CreateFrame(WSID_FRAME,nil,f)
+    contentArea:SetPoint(WSID_TOPLEFT,f,WSID_TOPLEFT,WSID_NAV_W,-30)
+    contentArea:SetPoint(WSID_BOTTOMRIGHT,f,WSID_BOTTOMRIGHT,0,0)
+    Tx(contentArea,COLOR_TABLE.bg[1]+0.005,COLOR_TABLE.bg[2]+0.005,COLOR_TABLE.bg[3]+0.01)
 
     local actPanel  = BuildActivityPanel(contentArea)
     local crePanel  = BuildCreatorPanel(contentArea)
@@ -63,16 +63,16 @@ function BuildMainFrame()
     local settings_nav = "settings_nav"
     BuildLeftNav(f,
         {
-            {name="activity",label=ACTIVITY_LABEL},
-            {name="creator",label=CREATOR_LABEL},
-            {name=leveling_nav,label=LEVELING_LABEL},
-            {name="names",label=NAMES_LABEL},
-            {name="professions",label=PROFESSIONS_LABEL},
-            {name="raidsdungeons",label=RAIDS_AND_DUNGEONS_LABEL}
+            {name="activity",label=WSID_ACTIVITY_LABEL},
+            {name="creator",label=WSID_CREATOR_LABEL},
+            {name=leveling_nav,label=WSID_LEVELING_LABEL},
+            {name="names",label=WSID_NAMES_LABEL},
+            {name="professions",label=WSID_PROFESSIONS_LABEL},
+            {name="raidsdungeons",label=WSID_RAIDS_AND_DUNGEONS_LABEL}
         },
         {
-            {name=settings_nav,label=SETTINGS_LABEL},
-            {name="about",label=ABOUT_LABEL}
+            {name=settings_nav,label=WSID_SETTINGS_LABEL},
+            {name="about",label=WSID_ABOUT_LABEL}
         },
         function(name)
             if name==settings_nav then
@@ -101,7 +101,7 @@ function RegisterMinimapButton()
     local broker=LDB:NewDataObject(WSID_ADDON_NAME,{
         type="launcher", icon="Interface\\Icons\\INV_Misc_QuestionMark", label=WSID_STRING,
         OnClick=function(_,btn)
-            if btn==LEFT_BUTTON then
+            if btn==WSID_WSIDLEFT_BUTTON then
                 if MainFrame:IsShown() then
                     MainFrame:Hide()
                     if SettingsFrame then SettingsFrame:Hide() end
@@ -109,7 +109,7 @@ function RegisterMinimapButton()
                     BuildRoster()
                     MainFrame:Show()
                 end
-            elseif btn==RIGHT_BUTTON then
+            elseif btn==WSID_RIGHT_BUTTON then
                 if SettingsFrame:IsShown() then SettingsFrame:Hide() else SettingsFrame:Show() end
             end
         end,
@@ -126,11 +126,11 @@ end
 -- INIT
 ------------------------------------------------------------------------
 
-local initFrame=CreateFrame(FRAME)
-initFrame:RegisterEvent(ADDON_LOADED)
-initFrame:RegisterEvent(PLAYER_LOGIN)
-initFrame:SetScript(ONEVENT,function(self,event,arg1)
-    if event==ADDON_LOADED and arg1==WSID_ADDON_NAME then
+local initFrame=CreateFrame(WSID_FRAME)
+initFrame:RegisterEvent(WSID_ADDON_LOADED)
+initFrame:RegisterEvent(WSID_PLAYER_LOGIN)
+initFrame:SetScript(WSID_OnEvent,function(self,event,arg1)
+    if event==WSID_ADDON_LOADED and arg1==WSID_ADDON_NAME then
         InitDB()
         -- Apply saved theme (must run after InitDB sets defaults and after ApplyTheme is defined)
         if WhatShouldIDoDB.colorTheme == CUSTOM and next(WhatShouldIDoDB.customColors) then
@@ -152,7 +152,7 @@ initFrame:SetScript(ONEVENT,function(self,event,arg1)
         local scale = WhatShouldIDoDB.uiScale or 1.0
         MainFrame:SetScale(scale)
         SettingsFrame:SetScale(scale)
-    elseif event==PLAYER_LOGIN then
+    elseif event==WSID_PLAYER_LOGIN then
         if WhatShouldIDoDB then BuildRoster() end
     end
 end)

@@ -18,66 +18,79 @@ WSID_SET_PAD = 12
 WSID_SET_CW  = WSID_SET_W - WSID_SET_NAV - WSID_SET_PAD * 2  -- 566
 WSID_SET_COL = math.floor((WSID_SET_CW - 12) / 2)            -- 277
 
-IDENTITY = "player"
+WSID_IDENTITY = "player"
 
-EMPTY_STRING = ""
-DASH_DASH = "--"
+WSID_EMPTY_STRING = ""
+WSID_DASH_DASH = "--"
+WSID_UNKNOWN = "??"
 
-FRAME = "Frame"
-EDIT_BOX = "EditBox"
-BACKDROP_TEMPLATE = "BackdropTemplate"
-UI_PANEL_CLOSE_BUTTON = "UIPanelCloseButton"
-LEFT_BUTTON = "LeftButton"
-RIGHT_BUTTON = "RightButton"
-BUTTON = "Button"
+WSID_FRAME = "Frame"
+WSID_EDIT_BOX = "EditBox"
+WSID_BACKDROP_TEMPLATE = "BackdropTemplate"
+WSID_UI_PANEL_CLOSE_BUTTON = "UIPanelCloseButton"
+WSID_WSIDLEFT_BUTTON = "LeftButton"
+WSID_RIGHT_BUTTON = "RightButton"
+WSID_BUTTON = "Button"
 
-ACTIVITY_LABEL = "Activity"
-CREATOR_LABEL = "Creator"
-LEVELING_LABEL = "Leveling"
-NAMES_LABEL = "Name Generator"
-PROFESSIONS_LABEL = "Professions"
-RAIDS_AND_DUNGEONS_LABEL = "Raids & Dungeons"
-SETTINGS_LABEL = "Settings"
-ABOUT_LABEL = "About"
+WSID_ACTIVITY_LABEL = "Activity"
+WSID_CREATOR_LABEL = "Creator"
+WSID_LEVELING_LABEL = "Leveling"
+WSID_NAMES_LABEL = "Name Generator"
+WSID_PROFESSIONS_LABEL = "Professions"
+WSID_RAIDS_AND_DUNGEONS_LABEL = "Raids & Dungeons"
+WSID_SETTINGS_LABEL = "Settings"
+WSID_ABOUT_LABEL = "About"
 
-ARTWORK = "ARTWORK"
-DIALOG = "DIALOG"
-OVERLAY = "OVERLAY"
-BACKGROUND = "BACKGROUND"
+WSID_ARTWORK = "WSID_ARTWORK"
+WSID_DIALOG = "WSID_DIALOG"
+WSID_OVERLAY = "WSID_OVERLAY"
+WSID_BACKGROUND = "WSID_BACKGROUND"
 
--- LAYOUT
-TOPLEFT = "TOPLEFT"
-TOP = "TOP"
-TOPRIGHT = "TOPRIGHT"
-LEFT = "LEFT"
-CENTER = "CENTER"
-RIGHT = "RIGHT"
-BOTTOMLEFT = "BOTTOMLEFT"
-BOTTOM = BOTTOM
-BOTTOMRIGHT = "BOTTOMRIGHT"
+-- NINE SLICE
+WSID_TOPLEFT = "TOPLEFT"
+WSID_TOP = "TOP"
+WSID_TOPRIGHT = "TOPRIGHT"
+WSID_LEFT = "LEFT"
+WSID_CENTER = "CENTER"
+WSID_RIGHT = "RIGHT"
+WSID_BOTTOMLEFT = "BOTTOMLEFT"
+WSID_BOTTOM = "BOTTOM"
+WSID_BOTTOMRIGHT = "BOTTOMRIGHT"
 
 -- EVENTS
-ONCHAR = "OnChar"
-ONCLICK = "OnClick"
-ONDRAGSTART = "OnDragStart"
-ONDRAGSTOP = "OnDragStop"
-ONEDITFOCUSGAINED = "OnEditFocusGained"
-ONEDITFOCUSLOST = "OnEditFocusLost"
-ONENTER = "OnEnter"
-ONENTERPRESSED = "OnEnterPressed"
-ONESCAPEPRESSED = "OnEscapePressed"
-ONEVENT = "OnEvent"
-ONLEAVE = "OnLeave"
-ONSHOW = "OnShow"
-ONTEXTCHANGED = "OnTextChanged"
-ONMOUSEWHEEL = "OnMouseWheel"
-ADDON_LOADED = "ADDON_LOADED"
-PLAYER_LOGIN = "PLAYER_LOGIN"
+WSID_OnChar = "WSID_OnChar"
+WSID_OnClick = "WSID_OnClick"
+WSID_OnDragStart = "WSID_OnDragStart"
+WSID_OnDragStop = "WSID_OnDragStop"
+WSID_OnEditFocusGained = "WSID_OnEditFocusGained"
+WSID_OnEditFocusLost = "WSID_OnEditFocusLost"
+WSID_OnEnter = "WSID_OnEnter"
+WSID_OnEnterPressed = "WSID_OnEnterPressed"
+WSID_OnEscapePressed = "WSID_OnEscapePressed"
+WSID_OnEvent = "WSID_OnEvent"
+WSID_OnLeave = "WSID_OnLeave"
+WSID_OnShow = "WSID_OnShow"
+WSID_OnTextChanged = "WSID_OnTextChanged"
+WSID_OnMouseWheel = "WSID_OnMouseWheel"
 
--- FONT
-GAME_FONT = "Fonts\\FRIZQT__.TTF"
-NORMAL = NORMAL
-NORMAL_SMALL = "GameFontNormalSmall"
-NORMAL_LARGE = "GameFontNormalLarge"
+WSID_ADDON_LOADED = "WSID_ADDON_LOADED"
+WSID_PLAYER_LOGIN = "WSID_PLAYER_LOGIN"
 
-BG_FILE = "Interface\\Buttons\\WHITE8x8"
+-- FONTS
+WSID_GAME_FONT = "Fonts\\FRIZQT__.TTF"
+WSID_NORMAL = "GameFontNormal"
+WSID_NORMAL_SMALL = "GameFontNormalSmall"
+WSID_NORMAL_LARGE = "GameFontNormalLarge"
+
+WSID_BG_FILE = "Interface\\Buttons\\WHITE8x8"
+
+-- Common utility functions
+function FilterFunction(arr, filter)
+    local filtered = {}
+    for _, value in ipairs(arr) do
+        if not filter[value] then
+            table.insert(filtered, value)
+        end
+    end
+    return filtered
+end

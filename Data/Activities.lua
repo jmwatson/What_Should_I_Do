@@ -1,22 +1,6 @@
 -- Data/Activities.lua
 -- Default activity categories and sub-activities
 
-WSID_DEFAULT_ACTIVITIES = {
-    "PvP",
-    "Housing",
-    "Open World",
-    "Rare Hunting",
-    "Delves",
-    "Gathering",
-    "Crafting",
-    "Collections",
-    "Gold Making",
-    "Holiday Events / Trading Post",
-    "Leveling",
-    "Pet Battles",
-    "Anything Goes",
-}
-
 WSID_ACTIVITIES_INFO = {
     ["PvP"] = {"Random Battleground","Epic Battleground","Arena Skirmish","War Mode","World PvP","Brawl"},
     ["Housing"] = {"Work on House Layout","Gather Decor","Endeavor Tasks","Theme Room","Farm Housing Items","Decorate a Room"},
@@ -33,18 +17,21 @@ WSID_ACTIVITIES_INFO = {
     ["Anything Goes"] = {"Do the Weirdest Thing","Finish Something Half-Done","One Hour Chaos Mode","Pick Something from Your Backlog"},
 }
 
+local activities = {}
+for activity, _ in WSID_ACTIVITIES_INFO do table.insert(activites, activity) end
+
 function GetActivities()
-    if WhatShouldIDoDB and WhatShouldIDoDB.activities and #WhatShouldIDoDB.activities == 0 then
-        for _, activity in ipairs(WSID_DEFAULT_ACTIVITIES) do table.insert(WhatShouldIDoDB.activities, activity) end
+    local filteredActivities = {}
+    if WhatShouldIDoDB and WhatShouldIDoDB.excludedActivities and #WhatShouldIDoDB.excludedActivities > 0 then
+        filteredActivities = FilterFunction(activities, WhatShouldIDoDB.excludedActivities)
     end
-    return WhatShouldIDoDB.activities
+    return filteredActivities
 end
 
-function GetSubPool(category)
-    if WhatShouldIDoDB and WhatShouldIDoDB.subActivities and WhatShouldIDoDB.subActivities[category] then
-        if #WhatShouldIDoDB.subActivities[category] == 0 then
-            WhatShouldIDoDB.subActivities[category] = WSID_ACTIVITIES_INFO[category]
-        end
+function GetSubActivities()
+    local filtered = {}
+    if WhatShouldIDoDB and WhatShouldIDoDB.excludedSubActivities and #WhatShouldIDoDB.excludedSubActivities > 0 then
+        filtered = FilterFunction(WSID_ACTIVITIES_INFO, WhatShouldIDoDB.excludedSubActivities)
     end
-    return WhatShouldIDoDB.subActivities[category]
+    return filtered
 end

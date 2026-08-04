@@ -65,25 +65,19 @@ WSID_RACE_INFO = {
 }
 
 function GetRaceNames()
-    local names={}
-    for _, key in ipairs(WSID_RACE_ORDER) do
-        local r = WSID_RACE_INFO[key]
-        if r then table.insert(names, r.name) end
-    end
+    local names = {}
+    for _, race in ipairs(WSID_RACE_INFO) do table.insert(names, race.name) end
     return names
 end
 
 function GetRaceShortNames()
     local short_names={}
-    for _, key in ipairs(WSID_RACE_ORDER) do
-        local r = WSID_RACE_INFO[key]
-        if r then table.insert(short_names, r.short_name) end
-    end
+    for _, race in ipairs(WSID_RACE_INFO) do table.insert(short_names, race.short_name) end
     return short_names
 end
 
 function EncodeRace(race)
-    if not race or not WSID_RACE_INFO[race] then return "??" end
+    if not race or not WSID_RACE_INFO[race] then return WSID_UNKNOWN end
     return WSID_RACE_INFO[race].short_name
 end
 
