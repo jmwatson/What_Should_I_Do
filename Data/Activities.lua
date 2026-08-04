@@ -1,7 +1,7 @@
 -- Data/Activities.lua
 -- Default activity categories and sub-activities
 
-WSID_ACTIVITIES_INFO = {
+local activities_info = {
     ["PvP"] = {"Random Battleground","Epic Battleground","Arena Skirmish","War Mode","World PvP","Brawl"},
     ["Housing"] = {"Work on House Layout","Gather Decor","Endeavor Tasks","Theme Room","Farm Housing Items","Decorate a Room"},
     ["Open World"] = {"World Quests","Weekly Quests","Reputation Grind","Renown Catch-up","Zone Completion","Public Events","Rituals","Void Assaults","Rare Hunting","Daily Objectives"},
@@ -17,10 +17,11 @@ WSID_ACTIVITIES_INFO = {
     ["Anything Goes"] = {"Do the Weirdest Thing","Finish Something Half-Done","One Hour Chaos Mode","Pick Something from Your Backlog"},
 }
 
+-- Local array so we don't recalculate each time we want the filtered activities.
 local activities = {}
-for activity, _ in WSID_ACTIVITIES_INFO do table.insert(activites, activity) end
+for activity, _ in activities_info do table.insert(activities, activity) end
 
-WSID["GetActivities"] = function()
+WSID.GetActivities = function()
     local filteredActivities = {}
     if WhatShouldIDoDB and WhatShouldIDoDB.excludedActivities and #WhatShouldIDoDB.excludedActivities > 0 then
         filteredActivities = WSID.FilterFunction(activities, WhatShouldIDoDB.excludedActivities)
@@ -28,10 +29,18 @@ WSID["GetActivities"] = function()
     return filteredActivities
 end
 
-WSID["GetSubActivities"] = function()
+WSID.ResetActivities = function()
+    WhatShouldIDoDB.excludedActivities = {}
+end
+
+WSID.GetSubActivities = function(activity)
     local filtered = {}
     if WhatShouldIDoDB and WhatShouldIDoDB.excludedSubActivities and #WhatShouldIDoDB.excludedSubActivities > 0 then
-        filtered = WSID.FilterFunction(WSID_ACTIVITIES_INFO, WhatShouldIDoDB.excludedSubActivities)
+        filtered = WSID.FilterFunction(activities_info[activity] or {}, WhatShouldIDoDB.excludedSubActivities)
     end
     return filtered
+end
+
+WSID.ResetSubActivities = function()
+    WhatShouldIDoDB.excludedSubActivities = {}
 end

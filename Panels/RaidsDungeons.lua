@@ -1,12 +1,12 @@
 -- Panels/RaidsDungeons.lua
 -- Author: I_AM_T3X | v1.0.0
 
-function BuildRaidDungeonPanel(contentArea)
-    local panel = MakePanel(contentArea)
-    local hdr = MakeHeader(panel, WSID.RAIDS_AND_DUNGEONS_LABEL)
+WSID.BuildRaidDungeonPanel = function(contentArea)
+    local panel = WSID.MakePanel(contentArea)
+    local hdr = WSID.MakeHeader(panel, WSID.RAIDS_AND_DUNGEONS_LABEL)
     hdr:SetPoint(WSID.TOPLEFT, panel, WSID.TOPLEFT, WSID.PAD, -WSID.PAD)
 
-    local desc = MakeLabel(panel, "Choose Raids or Dungeons, spin an expansion, then spin a random instance.", hdr, WSID.BOTTOMLEFT, 4, -8)
+    local desc = WSID.MakeLabel(panel, "Choose Raids or Dungeons, spin an expansion, then spin a random instance.", hdr, WSID.BOTTOMLEFT, 4, -8)
 
     -- Mode toggle: Raids or Dungeons
     local modeLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
@@ -17,7 +17,7 @@ function BuildRaidDungeonPanel(contentArea)
     local mode = "Raids"
     local modeBtns = {}
     for i, m in ipairs({"Raids","Dungeons"}) do
-        local mb = MakeBtn(panel, m, 100, 26)
+        local mb = WSID.MakeBtn(panel, m, 100, 26)
         mb:SetPoint(WSID.LEFT, modeLbl, WSID.RIGHT, 6+(i-1)*104, 0)
         local mv = m
         mb:SetScript(WSID.OnClick, function()
@@ -39,28 +39,28 @@ function BuildRaidDungeonPanel(contentArea)
     modeBtns[1]._lbl:SetTextColor(1,1,1)
 
     -- Expansion result
-    local expBox, expLabel = MakeResult(panel, nil, 52, "EXPANSION")
+    local expBox, expLabel = WSID.MakeResult(panel, nil, 52, "EXPANSION")
     expBox:SetPoint(WSID.TOPLEFT, modeLbl, WSID.BOTTOMLEFT, 0, -12)
     expLabel:SetText("Expansion")
 
     -- Instance result
-    local instBox, instLabel = MakeResult(panel, nil, 52, "RAID / DUNGEON")
+    local instBox, instLabel = WSID.MakeResult(panel, nil, 52, "RAID / DUNGEON")
     instBox:SetPoint(WSID.TOPLEFT, expBox, WSID.BOTTOMLEFT, 0, -8)
     instLabel:SetText(WSID.DASH_DASH)
 
     -- Spin buttons
-    local spinExpBtn = MakeBtn(panel, "Spin Expansion", nil, 30)
+    local spinExpBtn = WSID.MakeBtn(panel, "Spin Expansion", nil, 30)
     spinExpBtn:SetPoint(WSID.TOP, instBox, WSID.BOTTOM, 0, -10)
     spinExpBtn:SetPoint(WSID.LEFT,    panel, WSID.LEFT,  WSID.PAD, 0)
     spinExpBtn:SetPoint(WSID.RIGHT,   panel, WSID.CENTER, -3, 0)
 
-    local spinInstBtn = MakeBtn(panel, "Spin Instance", nil, 30)
+    local spinInstBtn = WSID.MakeBtn(panel, "Spin Instance", nil, 30)
     spinInstBtn:SetPoint(WSID.TOP, instBox, WSID.BOTTOM, 0, -10)
     spinInstBtn:SetPoint(WSID.LEFT,    panel, WSID.CENTER, 3, 0)
     spinInstBtn:SetPoint(WSID.RIGHT,   panel, WSID.RIGHT, -WSID.PAD, 0)
     spinInstBtn:SetEnabled(false)
 
-    local spinBothBtn = MakeBtn(panel, "Spin Both", nil, 30)
+    local spinBothBtn = WSID.MakeBtn(panel, "Spin Both", nil, 30)
     spinBothBtn:SetPoint(WSID.TOP, spinExpBtn, WSID.BOTTOM, 0, -6)
     spinBothBtn:SetPoint(WSID.LEFT,    panel, WSID.LEFT,  WSID.PAD, 0)
     spinBothBtn:SetPoint(WSID.RIGHT,   panel, WSID.RIGHT, -WSID.PAD, 0)
@@ -93,12 +93,12 @@ function BuildRaidDungeonPanel(contentArea)
     spinExpBtn:SetScript(WSID.OnClick, function()
         local pool = GetExpansionList()
         if #pool == 0 then return end
-        StopSlot()
+        WSID.StopSlot()
         spinExpBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false)
         spinInstBtn:SetEnabled(false) ; pickedExp = nil
         instLabel:SetText(WSID.DASH_DASH) ; instLabel:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
         expLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-        StartSlot(expLabel, pool, function(winner)
+        WSID.StartSlot(expLabel, pool, function(winner)
             pickedExp = winner
             expLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
             spinExpBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinInstBtn:SetEnabled(true)
@@ -109,9 +109,9 @@ function BuildRaidDungeonPanel(contentArea)
         if not pickedExp then return end
         local pool = GetInstanceList(pickedExp)
         if #pool == 0 then instLabel:SetText("None found") return end
-        StopSlot() ; spinInstBtn:SetEnabled(false)
+        WSID.StopSlot() ; spinInstBtn:SetEnabled(false)
         instLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-        StartSlot(instLabel, pool, function(_)
+        WSID.StartSlot(instLabel, pool, function(_)
             instLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
             spinInstBtn:SetEnabled(true)
         end)
@@ -120,12 +120,12 @@ function BuildRaidDungeonPanel(contentArea)
     spinBothBtn:SetScript(WSID.OnClick, function()
         local pool = GetExpansionList()
         if #pool == 0 then return end
-        StopSlot()
+        WSID.StopSlot()
         spinExpBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false) ; spinInstBtn:SetEnabled(false)
         pickedExp = nil
         instLabel:SetText(WSID.DASH_DASH) ; instLabel:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
         expLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-        StartSlot(expLabel, pool, function(winner)
+        WSID.StartSlot(expLabel, pool, function(winner)
             pickedExp = winner
             expLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
             local instPool = GetInstanceList(winner)
@@ -133,7 +133,7 @@ function BuildRaidDungeonPanel(contentArea)
                 spinExpBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; return
             end
             instLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-            StartSlot(instLabel, instPool, function(_)
+            WSID.StartSlot(instLabel, instPool, function(_)
                 instLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
                 spinExpBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinInstBtn:SetEnabled(true)
             end)

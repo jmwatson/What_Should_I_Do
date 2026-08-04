@@ -124,7 +124,7 @@ local NAME_ALIASES = {
     ["Vulpera"]             = "Goblin",
 }
 
-function GenerateName(race, gender)
+WSID.GenerateName = function(race, gender)
     local key = NAME_ALIASES[race] or race
     local data = NAME_DATA[key]
     if not data then
@@ -138,10 +138,10 @@ function GenerateName(race, gender)
     return prefixes[math.random(#prefixes)] .. suffixes[math.random(#suffixes)]
 end
 
-function GenerateNameList(race, gender, count)
+WSID.GenerateNameList = function(race, gender, count)
     local names, seen, attempts = {}, {}, 0
     while #names < count and attempts < count * 10 do
-        local n = GenerateName(race, gender)
+        local n = WSID.GenerateName(race, gender)
         if not seen[n] then seen[n] = true ; table.insert(names, n) end
         attempts = attempts + 1
     end

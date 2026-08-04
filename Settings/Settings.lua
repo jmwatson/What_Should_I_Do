@@ -29,7 +29,7 @@ WSID["BuildSettingsWindow"] = function()
     tb:SetHeight(30)
     tb:SetPoint(WSID.TOPLEFT,f,WSID.TOPLEFT,0,0)
     tb:SetPoint(WSID.TOPRIGHT,f,WSID.TOPRIGHT,0,0)
-    Tx(tb,COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
+    WSID.Tx(tb,COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
     local tbBord=tb:CreateTexture(nil,WSID.ARTWORK)
     tbBord:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     tbBord:SetHeight(1)
@@ -49,7 +49,7 @@ WSID["BuildSettingsWindow"] = function()
     navBg:SetPoint(WSID.TOPLEFT,f,WSID.TOPLEFT,0,-30)
     navBg:SetPoint(WSID.BOTTOMLEFT,f,WSID.BOTTOMLEFT,0,0)
     navBg:SetWidth(WSID.SET_NAV)
-    Tx(navBg,COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
+    WSID.Tx(navBg,COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
     local nd=navBg:CreateTexture(nil,WSID.ARTWORK)
     nd:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     nd:SetWidth(1)
@@ -213,17 +213,17 @@ WSID["BuildSettingsWindow"] = function()
     local GAP    = 10
 
     -- Left column: Categories
-    local catHdr = MakeHeader(actPanel, "Categories", WSID.SET_COL)
+    local catHdr = WSID.MakeHeader(actPanel, "Categories", WSID.SET_COL)
     catHdr:SetPoint(WSID.TOPLEFT, actPanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
 
     local catCount=actPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     catCount:SetPoint(WSID.RIGHT,catHdr,WSID.RIGHT,-6,0)
     catCount:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
 
-    local catBG,catContent,catReset=MakeScrollBox(actPanel,WSID.SET_COL,SCRL_H)
+    local catBG,catContent,catReset=WSID.MakeScrollBox(actPanel,WSID.SET_COL,SCRL_H)
     catBG:SetPoint(WSID.TOPLEFT,catHdr,WSID.BOTTOMLEFT,0,-4)
 
-    local catAddBtn=MakeBtn(actPanel,"Add",54,BTN_H)
+    local catAddBtn=WSID.MakeBtn(actPanel,"Add",54,BTN_H)
     catAddBtn:SetPoint(WSID.TOPRIGHT,catBG,WSID.BOTTOMRIGHT,0,-GAP)
 
     local catAddBox=CreateFrame(WSID.EDIT_BOX,nil,actPanel,WSID.BACKDROP_TEMPLATE)
@@ -241,11 +241,11 @@ WSID["BuildSettingsWindow"] = function()
     catAddBox:SetScript(WSID.OnEditFocusGained,function(s) s:SetBackdropBorderColor(COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3],1) end)
     catAddBox:SetScript(WSID.OnEditFocusLost,  function(s) s:SetBackdropBorderColor(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1) end)
 
-    local catResetBtn=MakeBtn(actPanel,"Reset All Defaults",WSID.SET_COL,BTN_H)
+    local catResetBtn=WSID.MakeBtn(actPanel,"Reset All Defaults",WSID.SET_COL,BTN_H)
     catResetBtn:SetPoint(WSID.TOPLEFT,catBG,WSID.BOTTOMLEFT,0,-(GAP+BTN_H+28))
 
     -- Right column: Sub-Activities
-    local subHdr=MakeHeader(actPanel,"Sub-Activities",WSID.SET_COL)
+    local subHdr=WSID.MakeHeader(actPanel,"Sub-Activities",WSID.SET_COL)
     subHdr:SetPoint(WSID.TOPLEFT,catHdr,WSID.TOPRIGHT,12,0)
 
     local subCount=actPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
@@ -260,10 +260,10 @@ WSID["BuildSettingsWindow"] = function()
 
     -- Sub scroll must align vertically with cat scroll despite the extra label line
     -- Anchor subBG to subHdr bottom + fixed 28px (label height) to keep tops aligned
-    local subBG,subContent,subReset=MakeScrollBox(actPanel,WSID.SET_COL,SCRL_H)
+    local subBG,subContent,subReset=WSID.MakeScrollBox(actPanel,WSID.SET_COL,SCRL_H)
     subBG:SetPoint(WSID.TOPLEFT,subHdr,WSID.BOTTOMLEFT,0,-28)
 
-    local subAddBtn=MakeBtn(actPanel,"Add",54,BTN_H)
+    local subAddBtn=WSID.MakeBtn(actPanel,"Add",54,BTN_H)
     subAddBtn:SetPoint(WSID.TOPRIGHT,subBG,WSID.BOTTOMRIGHT,0,-GAP)
     subAddBtn:SetEnabled(false)
 
@@ -355,7 +355,7 @@ WSID["BuildSettingsWindow"] = function()
         subRows={}
         subCount:SetText(WSID.EMPTY_STRING)
         subAddBtn:SetEnabled(false)
-        local acts=WhatShouldIDoDB.activities
+        local acts = WSID.GetActivities()
         catCount:SetText("["..#acts.."]")
         for i,act in ipairs(acts) do
             local even=(i%2==0)
@@ -381,7 +381,7 @@ WSID["BuildSettingsWindow"] = function()
             xL:SetText("|cffcc3333x|r")
             local idx=i
             xBtn:SetScript(WSID.OnClick,function()
-                if selectedCat==WhatShouldIDoDB.activities[idx] then
+                if selectedCat==WSID.GetActivities()[idx] then
                     selectedCat=nil
                     subSelLbl:SetText("(click a category to edit its sub-activities)")
                     subSelLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
@@ -390,7 +390,7 @@ WSID["BuildSettingsWindow"] = function()
                     subCount:SetText(WSID.EMPTY_STRING)
                     subAddBtn:SetEnabled(false)
                 end
-                table.remove(WhatShouldIDoDB.activities,idx)
+                table.remove(WSID.GetActivities(),idx)
                 WSID_refreshActivities()
             end)
             xBtn:SetScript(WSID.OnEnter,function() xL:SetText("|cffff5555x|r") end)
@@ -409,7 +409,7 @@ WSID["BuildSettingsWindow"] = function()
     local function DoCatAdd()
         local txt=strtrim(catAddBox:GetText())
         if txt~=WSID.EMPTY_STRING then
-            table.insert(WhatShouldIDoDB.activities,txt)
+            table.insert(WSID.GetActivities(),txt)
             catAddBox:SetText(WSID.EMPTY_STRING)
             WSID_refreshActivities()
         end
@@ -442,9 +442,8 @@ WSID["BuildSettingsWindow"] = function()
     subAddBox:SetScript(WSID.OnEnterPressed,DoSubAdd)
 
     catResetBtn:SetScript(WSID.OnClick,function()
-        WhatShouldIDoDB.activities={}
-        for activity, _ in ipairs(WSID_ACTIVITIES_INFO) do table.insert(WhatShouldIDoDB.activities,activity) end
-        WhatShouldIDoDB.subActivities={}
+        WSID.ResetActivities()
+        WSID.ResetSubActivities()
         WSID_refreshActivities()
     end)
 
@@ -452,7 +451,7 @@ WSID["BuildSettingsWindow"] = function()
     -- ROSTER PANEL
     --------------------------------------------------------------------
 
-    local rostHdr=MakeHeader(rostPanel,"Seen Characters",WSID.SET_CW)
+    local rostHdr=WSID.MakeHeader(rostPanel,"Seen Characters",WSID.SET_CW)
     rostHdr:SetPoint(WSID.TOPLEFT,rostPanel,WSID.TOPLEFT,WSID.SET_PAD,-WSID.SET_PAD)
     local rostCount=rostPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     rostCount:SetPoint(WSID.RIGHT,rostHdr,WSID.RIGHT,-6,0)
@@ -463,7 +462,7 @@ WSID["BuildSettingsWindow"] = function()
     rostNote:SetText("Log into each alt to add it. Levels update on every login.")
     rostNote:SetWidth(WSID.SET_CW)
 
-    local rostBG,rostContent,rostReset=MakeScrollBox(rostPanel,WSID.SET_CW,WSID.SET_H-30-WSID.SET_PAD*2-80)
+    local rostBG,rostContent,rostReset=WSID.MakeScrollBox(rostPanel,WSID.SET_CW,WSID.SET_H-30-WSID.SET_PAD*2-80)
     rostBG:SetPoint(WSID.TOPLEFT,rostNote,WSID.BOTTOMLEFT,0,-8)
 
     local rostRows={}
@@ -481,7 +480,7 @@ WSID["BuildSettingsWindow"] = function()
             local rb=row:CreateTexture(nil,WSID.BACKGROUND)
             rb:SetAllPoints()
             rb:SetColorTexture(even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],even and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3],1)
-            local cc=WSID_CLASS_INFO[ch.class] or {r=0.8,g=0.8,b=0.8}
+            local cc=WSID.CLASS_INFO[ch.class] or {r=0.8,g=0.8,b=0.8}
             local isExcluded = WhatShouldIDoDB.excludedChars[ch.name] == true
             local fs=row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
             fs:SetPoint(WSID.LEFT,row,WSID.LEFT,10,0)
@@ -533,7 +532,7 @@ WSID["BuildSettingsWindow"] = function()
                 xL2:SetJustifyH(WSID.CENTER)
                 xL2:SetText("|cffcc3333x|r")
                 xBtn:SetScript(WSID.OnClick,function()
-                    RemoveCharFromRoster(cn)
+                    WSID.RemoveCharFromRoster(cn)
                     WSID_refreshRoster()
                 end)
                 xBtn:SetScript(WSID.OnEnter,function() xL2:SetText("|cffff5555x|r") end)
@@ -545,7 +544,7 @@ WSID["BuildSettingsWindow"] = function()
         rostReset()
     end
 
-    local clearBtn=MakeBtn(rostPanel,"Clear All Others",WSID.SET_CW,BTN_H)
+    local clearBtn=WSID.MakeBtn(rostPanel,"Clear All Others",WSID.SET_CW,BTN_H)
     clearBtn:SetPoint(WSID.TOPLEFT,rostBG,WSID.BOTTOMLEFT,0,-10)
     clearBtn:SetScript(WSID.OnClick,function()
         local cur=UnitName(WSID.IDENTITY)
@@ -554,7 +553,7 @@ WSID["BuildSettingsWindow"] = function()
             if ch.name==cur then table.insert(kept,ch) end
         end
         WhatShouldIDoDB.seenChars=kept
-        BuildRoster()
+        WSID.BuildRoster()
         WSID_refreshRoster()
         print("|cffd5a742What Should I Do?:|r Roster cleared.")
     end)
@@ -574,7 +573,7 @@ WSID["BuildSettingsWindow"] = function()
     -- Encode tables (no collisions between CLASS/RACE/FACT within same field)
     local CLASS_ENC = {}
     local CLASS_DEC = {}
-    for _, c in ipairs(WSID_CLASS_INFO) do
+    for _, c in ipairs(WSID.CLASS_INFO) do
         CLASS_ENC[c.name] = c.short_name
         CLASS_DEC[c.short_name] = c.name
     end
@@ -597,8 +596,8 @@ WSID["BuildSettingsWindow"] = function()
         local excl = WhatShouldIDoDB.excludedChars or {}
         local parts = {}
         for _, ch in ipairs(chars) do
-            local cls  = EncodeClass(ch.class)  or (ch.class   or "?")
-            local race = EncodeRace(ch.race)    or (ch.race    or "?")
+            local cls  = WSID.EncodeClass(ch.class)  or (ch.class   or "?")
+            local race = WSID.EncodeRace(ch.race)    or (ch.race    or "?")
             local fact = FACT_ENC[ch.faction] or (ch.faction or "?")
             table.insert(parts, (ch.name or "?")..":"..cls..":"..tostring(ch.level or 0)..":"..race..":"..fact..":".. (excl[ch.name] and "1" or "0"))
         end
@@ -606,7 +605,7 @@ WSID["BuildSettingsWindow"] = function()
     end
 
     -- EXPORT section
-    local expHdr = MakeHeader(ioPanel, "Export Roster", WSID.SET_CW)
+    local expHdr = WSID.MakeHeader(ioPanel, "Export Roster", WSID.SET_CW)
     expHdr:SetPoint(WSID.TOPLEFT, ioNoteBg, WSID.BOTTOMLEFT, -4, -10)
 
     local expBoxBg = CreateFrame(WSID.FRAME, nil, ioPanel, WSID.BACKDROP_TEMPLATE)
@@ -692,7 +691,7 @@ WSID["BuildSettingsWindow"] = function()
     expBox:SetScript(WSID.OnEnterPressed,    function(s) s:ClearFocus() end)
     expBox:SetScript(WSID.OnEditFocusGained, function(s) s:HighlightText() end)
 
-    local expGenBtn = MakeBtn(ioPanel, "Export", WSID.SET_CW, 24)
+    local expGenBtn = WSID.MakeBtn(ioPanel, "Export", WSID.SET_CW, 24)
     expGenBtn:SetPoint(WSID.TOPLEFT, expBoxBg, WSID.BOTTOMLEFT, 0, -4)
 
     expGenBtn:SetScript(WSID.OnClick, function()
@@ -715,7 +714,7 @@ WSID["BuildSettingsWindow"] = function()
     ioRule:SetPoint(WSID.TOPRIGHT, expGenBtn, WSID.BOTTOMRIGHT, 0, -10)
 
     -- IMPORT
-    local impHdr = MakeHeader(ioPanel, "Import Roster", WSID.SET_CW)
+    local impHdr = WSID.MakeHeader(ioPanel, "Import Roster", WSID.SET_CW)
     impHdr:SetPoint(WSID.TOPLEFT, ioRule, WSID.BOTTOMLEFT, 0, -8)
 
     local impBoxBg = CreateFrame(WSID.FRAME, nil, ioPanel, WSID.BACKDROP_TEMPLATE)
@@ -739,7 +738,7 @@ WSID["BuildSettingsWindow"] = function()
         impBoxBg:SetBackdropBorderColor(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     end)
 
-    local impBtn = MakeBtn(ioPanel, "Import Roster", WSID.SET_CW, 24)
+    local impBtn = WSID.MakeBtn(ioPanel, "Import Roster", WSID.SET_CW, 24)
     impBtn:SetPoint(WSID.TOPLEFT, impBoxBg, WSID.BOTTOMLEFT, 0, -4)
 
     local impStatus = ioPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
@@ -783,11 +782,11 @@ WSID["BuildSettingsWindow"] = function()
             local name,cls,level,race,faction,excl = entry:match("^([^:]+):([^:]+):([^:]+):([^:]+):([^:]+):?([01]?)$")
             if name and name ~= WSID.EMPTY_STRING then
                 if compressed then
-                    cls     = DecodeClass(cls) or NormalizeClass(cls)
+                    cls     = WSID.DecodeClass(cls) or WSID.NormalizeClass(cls)
                     race    = RACE_DEC[race]    or race
                     faction = FACT_DEC[faction] or faction
                 else
-                    cls = NormalizeClass(cls)
+                    cls = WSID.NormalizeClass(cls)
                 end
                 local exists = false
                 for _, ch in ipairs(WhatShouldIDoDB.seenChars) do
@@ -812,7 +811,7 @@ WSID["BuildSettingsWindow"] = function()
                 end
             end
         end
-        BuildRoster()
+        WSID.BuildRoster()
         if WSID_refreshRoster then WSID_refreshRoster() end
         impBox:SetText(WSID.EMPTY_STRING)
         impStatus:SetTextColor(0.3,0.8,0.3)
@@ -831,11 +830,11 @@ WSID["BuildSettingsWindow"] = function()
     -- COLORS PANEL
     --------------------------------------------------------------------
 
-    local colScrollBG, colScrollContent, _ = MakeScrollBox(colorsPanel, WSID.SET_CW, WSID.SET_H - 30 - WSID.SET_PAD * 2)
+    local colScrollBG, colScrollContent, _ = WSID.MakeScrollBox(colorsPanel, WSID.SET_CW, WSID.SET_H - 30 - WSID.SET_PAD * 2)
     colScrollBG:SetPoint(WSID.TOPLEFT, colorsPanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
 
     -- COLOR THEME
-    local colHdr = MakeHeader(colScrollContent, "Color Theme", WSID.SET_CW - 4)
+    local colHdr = WSID.MakeHeader(colScrollContent, "Color Theme", WSID.SET_CW - 4)
     colHdr:SetPoint(WSID.TOPLEFT, colScrollContent, WSID.TOPLEFT, 0, -4)
 
     local colDesc = colScrollContent:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
@@ -874,16 +873,16 @@ WSID["BuildSettingsWindow"] = function()
     end
 
     local THEME_DEFS = {
-        {name=DEFAULT,      label=DEFAULT,      desc="The original purple theme."},
-        {name=DEUTERANOPIA, label=DEUTERANOPIA, desc="Red-green colorblind. Blue/cyan accents."},
-        {name=PROTANOPIA,   label=PROTANOPIA,   desc="Red blind. Deep blue accents."},
-        {name=TRITANOPIA,   label=TRITANOPIA,   desc="Blue-yellow blind. Orange/amber accents."},
-        {name=HIGHCONTRAST, label="High Contrast",desc="Black background with yellow accents."},
+        {name=WSID.DEFAULT_THEME,      label=WSID.DEFAULT_THEME,      desc="The original purple theme."},
+        {name=WSID.DEUTERANOPIA, label=WSID.DEUTERANOPIA, desc="Red-green colorblind. Blue/cyan accents."},
+        {name=WSID.PROTANOPIA,   label=WSID.PROTANOPIA,   desc="Red blind. Deep blue accents."},
+        {name=WSID.TRITANOPIA,   label=WSID.TRITANOPIA,   desc="Blue-yellow blind. Orange/amber accents."},
+        {name=WSID.HIGHCONTRAST, label="High Contrast",desc="Black background with yellow accents."},
     }
 
     local themeBtns = {}
     local function UpdateThemeBtns()
-        local cur = WhatShouldIDoDB.colorTheme or DEFAULT
+        local cur = WhatShouldIDoDB.colorTheme or WSID.DEFAULT_THEME
         for _, tb in ipairs(themeBtns) do
             if tb._theme == cur then
                 tb:SetBackdropColor(COLOR_TABLE.nav_active[1],COLOR_TABLE.nav_active[2],COLOR_TABLE.nav_active[3])
@@ -903,7 +902,7 @@ WSID["BuildSettingsWindow"] = function()
         row:SetSize(WSID.SET_CW - 4, 28)
         row:SetPoint(WSID.TOPLEFT, prevRow, WSID.BOTTOMLEFT, 0, -6)
 
-        local btn = MakeBtn(row, td.label, 140, 26)
+        local btn = WSID.MakeBtn(row, td.label, 140, 26)
         btn:SetPoint(WSID.TOPLEFT, row, WSID.TOPLEFT, 0, 0)
         local tname = td.name
         local tlabel = td.label
@@ -947,7 +946,7 @@ WSID["BuildSettingsWindow"] = function()
 
     local function OpenColorPicker(key, swatch)
         -- Auto-select Custom theme when editing colors
-        WhatShouldIDoDB.colorTheme = CUSTOM
+        WhatShouldIDoDB.colorTheme = WSID.CUSTOM_THEME
         UpdateThemeBtns()
         if not WhatShouldIDoDB.customColors then WhatShouldIDoDB.customColors = {} end
         -- Seed all keys from current C table if not yet set
@@ -993,7 +992,7 @@ WSID["BuildSettingsWindow"] = function()
         rlbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
         rlbl:SetText(ck.label)
 
-        local editBtn = MakeBtn(row, "Edit", 50, 22)
+        local editBtn = WSID.MakeBtn(row, "Edit", 50, 22)
         editBtn:SetPoint(WSID.LEFT, rlbl, WSID.RIGHT, 10, 0)
         local k = ck.key
         editBtn:SetScript(WSID.OnClick, function() OpenColorPicker(k, swatch) end)
@@ -1002,18 +1001,18 @@ WSID["BuildSettingsWindow"] = function()
     end
 
     -- Apply Custom button with confirmation
-    local applyCustomBtn = MakeBtn(colScrollContent, "Apply Custom Theme", 220, 30)
+    local applyCustomBtn = WSID.MakeBtn(colScrollContent, "Apply Custom Theme", 220, 30)
     applyCustomBtn:SetPoint(WSID.TOPLEFT, prevCustom, WSID.BOTTOMLEFT, 0, -12)
     applyCustomBtn:SetScript(WSID.OnClick, function()
-        StaticPopupDialogs["WSID_CONFIRM_CUSTOM"] = {
+        StaticPopupDialogs["WSID_CONFIRM_WSID.CUSTOM_THEME"] = {
             text = "Apply your custom color theme?\n\nThe UI will reload to apply the new colors.",
             button1 = "Yes, Apply",
             button2 = "Cancel",
             OnAccept = function()
-                WhatShouldIDoDB.colorTheme = CUSTOM
+                WhatShouldIDoDB.colorTheme = WSID.CUSTOM_THEME
                 -- Write custom colors into C so they survive the reload via DB
                 if WhatShouldIDoDB.customColors then
-                    ApplyTheme(CUSTOM, WhatShouldIDoDB.customColors)
+                    WSID.ApplyTheme(WSID.CUSTOM_THEME, WhatShouldIDoDB.customColors)
                 end
                 ReloadUI()
             end,
@@ -1021,7 +1020,7 @@ WSID["BuildSettingsWindow"] = function()
             whileDead = true,
             hideOnEscape = true,
         }
-        StaticPopup_Show("WSID_CONFIRM_CUSTOM")
+        StaticPopup_Show("WSID_CONFIRM_WSID.CUSTOM_THEME")
     end)
 
     -- Set scroll content height
@@ -1031,7 +1030,7 @@ WSID["BuildSettingsWindow"] = function()
     -- EXPANSIONS PANEL
     --------------------------------------------------------------------
 
-    local expExclHdr = MakeHeader(expExclPanel, "Raid & Dungeon Expansions", WSID.SET_CW)
+    local expExclHdr = WSID.MakeHeader(expExclPanel, "Raid & Dungeon Expansions", WSID.SET_CW)
     expExclHdr:SetPoint(WSID.TOPLEFT, expExclPanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
 
     local expExclDesc = expExclPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
@@ -1040,10 +1039,10 @@ WSID["BuildSettingsWindow"] = function()
     expExclDesc:SetText("Uncheck an expansion to exclude it from the Raids & Dungeons spinner.")
     expExclDesc:SetWidth(WSID.SET_CW - 8)
 
-    local expExclScrollBG, expExclContent, _ = MakeScrollBox(expExclPanel, WSID.SET_CW, WSID.SET_H - 160)
+    local expExclScrollBG, expExclContent, _ = WSID.MakeScrollBox(expExclPanel, WSID.SET_CW, WSID.SET_H - 160)
     expExclScrollBG:SetPoint(WSID.TOPLEFT, expExclDesc, WSID.BOTTOMLEFT, -4, -8)
 
-    local ORDER = WSID_EXPANSIONS
+    local ORDER = WSID.EXPANSIONS
 
     local ROW_H = 28
 
@@ -1133,14 +1132,14 @@ WSID["BuildSettingsWindow"] = function()
     expExclContent:SetHeight(math.ceil(#ORDER / 2) * ROW_H)
 
     -- Enable All / Disable All buttons
-    local expEnableAllBtn = MakeBtn(expExclPanel, "Enable All", math.floor(WSID.SET_CW/2) - 3, 24)
+    local expEnableAllBtn = WSID.MakeBtn(expExclPanel, "Enable All", math.floor(WSID.SET_CW/2) - 3, 24)
     expEnableAllBtn:SetPoint(WSID.BOTTOMLEFT, expExclPanel, WSID.BOTTOMLEFT, WSID.SET_PAD, WSID.SET_PAD)
     expEnableAllBtn:SetScript(WSID.OnClick, function()
         if WhatShouldIDoDB.excludedExpansions then wipe(WhatShouldIDoDB.excludedExpansions) end
         for _, setState in pairs(expRows) do setState(true) end
     end)
 
-    local expDisableAllBtn = MakeBtn(expExclPanel, "Disable All", math.floor(WSID.SET_CW/2) - 3, 24)
+    local expDisableAllBtn = WSID.MakeBtn(expExclPanel, "Disable All", math.floor(WSID.SET_CW/2) - 3, 24)
     expDisableAllBtn:SetPoint(WSID.BOTTOMRIGHT, expExclPanel, WSID.BOTTOMRIGHT, -WSID.SET_PAD, WSID.SET_PAD)
     expDisableAllBtn:SetScript(WSID.OnClick, function()
         if not WhatShouldIDoDB.excludedExpansions then WhatShouldIDoDB.excludedExpansions = {} end
@@ -1154,7 +1153,7 @@ WSID["BuildSettingsWindow"] = function()
     -- UI SCALE PANEL
     --------------------------------------------------------------------
 
-    local scaleHdr = MakeHeader(scalePanel, "UI Scale", WSID.SET_CW)
+    local scaleHdr = WSID.MakeHeader(scalePanel, "UI Scale", WSID.SET_CW)
     scaleHdr:SetPoint(WSID.TOPLEFT, scalePanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
 
     local scaleDesc = scalePanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
@@ -1180,7 +1179,7 @@ WSID["BuildSettingsWindow"] = function()
     local scaleBox = CreateFrame(WSID.BUTTON, nil, scalePanel, WSID.BACKDROP_TEMPLATE)
     scaleBox:SetSize(100, 26)
     scaleBox:SetPoint(WSID.LEFT, scaleLbl, WSID.RIGHT, 8, 0)
-    BgBorder(scaleBox, COLOR_TABLE.result_bg[1],COLOR_TABLE.result_bg[2],COLOR_TABLE.result_bg[3], COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3])
+    WSID.BgBorder(scaleBox, COLOR_TABLE.result_bg[1],COLOR_TABLE.result_bg[2],COLOR_TABLE.result_bg[3], COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3])
     local scaleBoxLbl = scaleBox:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     scaleBoxLbl:SetPoint(WSID.LEFT, scaleBox, WSID.LEFT, 8, 0)
     scaleBoxLbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
@@ -1191,7 +1190,7 @@ WSID["BuildSettingsWindow"] = function()
     scaleDropdown:SetSize(100, #scaleOptions * 22)
     scaleDropdown:SetPoint(WSID.TOPLEFT, scaleBox, WSID.BOTTOMLEFT, 0, -2)
     scaleDropdown:SetFrameStrata("TOOLTIP")
-    BgBorder(scaleDropdown, COLOR_TABLE.bg[1],COLOR_TABLE.bg[2],COLOR_TABLE.bg[3], COLOR_TABLE.win_border[1],COLOR_TABLE.win_border[2],COLOR_TABLE.win_border[3])
+    WSID.BgBorder(scaleDropdown, COLOR_TABLE.bg[1],COLOR_TABLE.bg[2],COLOR_TABLE.bg[3], COLOR_TABLE.win_border[1],COLOR_TABLE.win_border[2],COLOR_TABLE.win_border[3])
     scaleDropdown:Hide()
 
     local function ApplyScale(val, label)
@@ -1234,7 +1233,7 @@ WSID["BuildSettingsWindow"] = function()
         if scaleDropdown:IsShown() then scaleDropdown:Hide() else scaleDropdown:Show() end
     end)
 
-    local scaleResetBtn = MakeBtn(scalePanel, "Reset to 100%", 120, 26)
+    local scaleResetBtn = WSID.MakeBtn(scalePanel, "Reset to 100%", 120, 26)
     scaleResetBtn:SetPoint(WSID.TOPLEFT, scaleLbl, WSID.BOTTOMLEFT, 0, -14)
     scaleResetBtn:SetScript(WSID.OnClick, function()
         ApplyScale(1.0, "100%")
@@ -1244,13 +1243,13 @@ WSID["BuildSettingsWindow"] = function()
     -- CHANGELOG PANEL
     --------------------------------------------------------------------
 
-    local clScrollBG, clScrollContent, _ = MakeScrollBox(changelogPanel, WSID.SET_CW, WSID.SET_H - 50)
+    local clScrollBG, clScrollContent, _ = WSID.MakeScrollBox(changelogPanel, WSID.SET_CW, WSID.SET_H - 50)
     clScrollBG:SetPoint(WSID.TOPLEFT, changelogPanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
 
     local yOff = -6
     for _, block in ipairs(WSID_CHANGELOG) do
         -- Version header
-        local vHdr = MakeHeader(clScrollContent, "v"..block.version, WSID.SET_CW - 4)
+        local vHdr = WSID.MakeHeader(clScrollContent, "v"..block.version, WSID.SET_CW - 4)
         vHdr:SetPoint(WSID.TOPLEFT, clScrollContent, WSID.TOPLEFT, 0, yOff)
         yOff = yOff - 34
 

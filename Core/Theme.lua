@@ -6,14 +6,14 @@
 -- THEME DEFINITIONS
 ------------------------------------------------------------------------
 
-DEFAULT = "Default"
-DEUTERANOPIA = "Deuteranopia"
-PROTANOPIA = "Protanopia"
-TRITANOPIA = "Tritanopia"
-HIGHCONTRAST = "HighContrast"
-CUSTOM = "Custom"
+WSID.DEFAULT_THEME = "Default"
+WSID.DEUTERANOPIA = "Deuteranopia"
+WSID.PROTANOPIA = "Protanopia"
+WSID.TRITANOPIA = "Tritanopia"
+WSID.HIGHCONTRAST = "HighContrast"
+WSID.CUSTOM_THEME = "Custom"
 
-WSID_THEMES = {
+WSID.THEMES = {
     Default = {
         bg          = {0.058, 0.048, 0.075},
         sidebar     = {0.040, 0.032, 0.058},
@@ -148,19 +148,19 @@ WSID_THEMES = {
 -- C is the live color table, starts as Default
 COLOR_TABLE = {}
 
-function ApplyTheme(themeName, customColors)
-    local src = WSID_THEMES[themeName]
-    if not src and themeName == CUSTOM then
-        src = customColors or WSID_THEMES.Default
+WSID.ApplyTheme = function(themeName, customColors)
+    local src = WSID.THEMES[themeName]
+    if not src and themeName == WSID.CUSTOM_THEME then
+        src = customColors or WSID.THEMES.Default
     end
-    if not src then src = WSID_THEMES.Default end
+    if not src then src = WSID.THEMES.Default end
     for k, v in pairs(src) do
         COLOR_TABLE[k] = {v[1], v[2], v[3]}
     end
     return COLOR_TABLE
 end
 
-ApplyTheme(DEFAULT)
+WSID.ApplyTheme(WSID.DEFAULT_THEME)
 
 ------------------------------------------------------------------------
 -- RENDERING HELPERS
@@ -168,14 +168,14 @@ ApplyTheme(DEFAULT)
 
 local FLAT = {bgFile=WSID.BG_FILE, edgeFile=WSID.BG_FILE, edgeSize=1}
 
-function Tx(f, r, g, b, a)
+WSID.Tx = function(f, r, g, b, a)
     local t = f:CreateTexture(nil, WSID.BACKGROUND)
     t:SetAllPoints()
     t:SetColorTexture(r, g, b, a or 1)
     return t
 end
 
-function BgBorder(f, br, bg_, bb, er, eg, eb)
+WSID.BgBorder = function(f, br, bg_, bb, er, eg, eb)
     f:SetBackdrop(FLAT)
     f:SetBackdropColor(br, bg_, bb, 1)
     f:SetBackdropBorderColor(er, eg, eb, 1)
@@ -185,14 +185,14 @@ end
 -- SCROLL BOX
 ------------------------------------------------------------------------
 
-function MakeScrollBox(parent, w, h)
+WSID.MakeScrollBox = function(parent, w, h)
     local bg = CreateFrame(WSID.FRAME, nil, parent, WSID.BACKDROP_TEMPLATE)
     bg:SetHeight(h)
     if w then bg:SetWidth(w) else
         bg:SetPoint(WSID.LEFT,  parent, WSID.LEFT,  WSID.PAD, 0)
         bg:SetPoint(WSID.RIGHT, parent, WSID.RIGHT, -WSID.PAD, 0)
     end
-    BgBorder(bg, COLOR_TABLE.row_even[1],COLOR_TABLE.row_even[2],COLOR_TABLE.row_even[3],
+    WSID.BgBorder(bg, COLOR_TABLE.row_even[1],COLOR_TABLE.row_even[2],COLOR_TABLE.row_even[3],
                  COLOR_TABLE.divider[1], COLOR_TABLE.divider[2], COLOR_TABLE.divider[3])
     local clip = CreateFrame(WSID.FRAME, nil, bg)
     clip:SetPoint(WSID.TOPLEFT,     bg, WSID.TOPLEFT,     1, -1)
@@ -227,7 +227,7 @@ end
 -- UI PRIMITIVES
 ------------------------------------------------------------------------
 
-function MakeResult(parent, w, h, tagText)
+WSID.MakeResult = function(parent, w, h, tagText)
     local f = CreateFrame(WSID.FRAME, nil, parent, WSID.BACKDROP_TEMPLATE)
     f:SetHeight(h or 52)
     -- If w is a number use fixed size; if nil stretch to parent
@@ -236,7 +236,7 @@ function MakeResult(parent, w, h, tagText)
         f:SetPoint(WSID.LEFT,  parent, WSID.LEFT,  WSID.PAD, 0)
         f:SetPoint(WSID.RIGHT, parent, WSID.RIGHT, -WSID.PAD, 0)
     end
-    BgBorder(f, COLOR_TABLE.result_bg[1],COLOR_TABLE.result_bg[2],COLOR_TABLE.result_bg[3],
+    WSID.BgBorder(f, COLOR_TABLE.result_bg[1],COLOR_TABLE.result_bg[2],COLOR_TABLE.result_bg[3],
                 COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3])
     if tagText then
         local tag = f:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
@@ -256,12 +256,12 @@ function MakeResult(parent, w, h, tagText)
     return f, lbl
 end
 
-function MakeBtn(parent, text, w, h)
+WSID.MakeBtn = function(parent, text, w, h)
     local b = CreateFrame(WSID.BUTTON, nil, parent, WSID.BACKDROP_TEMPLATE)
     b:SetHeight(h or 30)
     if w then b:SetWidth(w) end
     -- RIGHT anchor set by caller when w is nil
-    BgBorder(b, COLOR_TABLE.btn_bg[1],COLOR_TABLE.btn_bg[2],COLOR_TABLE.btn_bg[3], COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3])
+    WSID.BgBorder(b, COLOR_TABLE.btn_bg[1],COLOR_TABLE.btn_bg[2],COLOR_TABLE.btn_bg[3], COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3])
     local lbl = b:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     lbl:SetAllPoints()
     lbl:SetJustifyH(WSID.CENTER)
@@ -297,14 +297,14 @@ function MakeBtn(parent, text, w, h)
     return b
 end
 
-function MakeHeader(parent, text, w)
+WSID.MakeHeader = function(parent, text, w)
     local f = CreateFrame(WSID.FRAME, nil, parent, WSID.BACKDROP_TEMPLATE)
     f:SetHeight(28)
     if w then f:SetWidth(w) else
         f:SetPoint(WSID.LEFT,  parent, WSID.LEFT,  WSID.PAD, 0)
         f:SetPoint(WSID.RIGHT, parent, WSID.RIGHT, -WSID.PAD, 0)
     end
-    BgBorder(f, COLOR_TABLE.header_bg[1],COLOR_TABLE.header_bg[2],COLOR_TABLE.header_bg[3], COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3])
+    WSID.BgBorder(f, COLOR_TABLE.header_bg[1],COLOR_TABLE.header_bg[2],COLOR_TABLE.header_bg[3], COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3])
     local stripe = f:CreateTexture(nil,WSID.ARTWORK)
     stripe:SetColorTexture(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
     stripe:SetSize(3,28)
@@ -316,7 +316,7 @@ function MakeHeader(parent, text, w)
     return f
 end
 
-function MakeLabel(parent, text, anchorFrame, anchorPoint, ox, oy)
+WSID.MakeLabel = function(parent, text, anchorFrame, anchorPoint, ox, oy)
     local fs = parent:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     fs:SetPoint(WSID.TOPLEFT, anchorFrame, anchorPoint or WSID.BOTTOMLEFT, ox or 0, oy or -6)
     fs:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
@@ -324,7 +324,7 @@ function MakeLabel(parent, text, anchorFrame, anchorPoint, ox, oy)
     return fs
 end
 
-function MakePanel(parent)
+WSID.MakePanel = function(parent)
     local p = CreateFrame(WSID.FRAME, nil, parent)
     p:SetAllPoints(parent)
     p:Hide()

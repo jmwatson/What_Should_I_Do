@@ -2,7 +2,7 @@
 -- Expansion list and level-gated pool logic
 -- Author: I_AM_T3X | v1.0.0
 
-WSID_EXPANSIONS = {
+WSID.EXPANSIONS = {
     CLASSIC,
     TBC,
     WRATH,
@@ -17,7 +17,7 @@ WSID_EXPANSIONS = {
     MIDNIGHT,
 }
 
-function GetExpansionPool(level)
+WSID.GetExpansionPool = function(level)
     -- Should probably find a better way to make this generic,
     -- but for now it being hardcoded to the last 2 expansions is fine.
     if level >= 80 then
@@ -26,8 +26,8 @@ function GetExpansionPool(level)
         return {TWW}
     elseif level >= 10 then
         -- Trim last 2 expansions from the list
-        local new_len = #WSID_EXPANSIONS - 2
-        return table.move(WSID_EXPANSIONS, 1, new_len, 1, {})
+        local new_len = #WSID.EXPANSIONS - 2
+        return table.move(WSID.EXPANSIONS, 1, new_len, 1, {})
     else
         return {"Finish your starting zone and reroll!"}
     end
@@ -35,4 +35,4 @@ end
 
 -- Helper: map expansion name -> chronological index
 WSID_EXPANSION_INDEX = {}
-for i, name in ipairs(WSID_EXPANSIONS) do WSID_EXPANSION_INDEX[name] = i end
+for i, name in ipairs(WSID.EXPANSIONS) do WSID_EXPANSION_INDEX[name] = i end

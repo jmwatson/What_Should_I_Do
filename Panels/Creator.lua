@@ -1,18 +1,18 @@
 -- Panels/Creator.lua
 -- Author: I_AM_T3X | v1.0.0
 
-function BuildCreatorPanel(contentArea)
-    local panel = MakePanel(contentArea)
-    local hdr = MakeHeader(panel, "Character Creator")
+WSID.BuildCreatorPanel = function(contentArea)
+    local panel = WSID.MakePanel(contentArea)
+    local hdr = WSID.MakeHeader(panel, "Character Creator")
     hdr:SetPoint(WSID.TOPLEFT, panel, WSID.TOPLEFT, WSID.PAD, -WSID.PAD)
 
-    local desc = MakeLabel(panel, "Spin a random valid Race + Class combo for a new character.", hdr, WSID.BOTTOMLEFT, 4, -8)
+    local desc = WSID.MakeLabel(panel, "Spin a random valid Race + Class combo for a new character.", hdr, WSID.BOTTOMLEFT, 4, -8)
 
-    local raceBox, raceLabel = MakeResult(panel, nil, 52, "RACE")
+    local raceBox, raceLabel = WSID.MakeResult(panel, nil, 52, "RACE")
     raceBox:SetPoint(WSID.TOPLEFT, desc, WSID.BOTTOMLEFT, -4, -12)
     raceLabel:SetText("Race")
 
-    local classBox, classLabel = MakeResult(panel, nil, 52, "CLASS")
+    local classBox, classLabel = WSID.MakeResult(panel, nil, 52, "CLASS")
     classBox:SetPoint(WSID.TOPLEFT, raceBox, WSID.BOTTOMLEFT, 0, -10)
     classLabel:SetText("Class")
 
@@ -30,7 +30,7 @@ function BuildCreatorPanel(contentArea)
     local factionFilter = "Any"
     local filterBtns = {}
     for i, opt in ipairs({"Any",ALLIANCE,HORDE}) do
-        local fb = MakeBtn(panel, opt, 84, 26)
+        local fb = WSID.MakeBtn(panel, opt, 84, 26)
         fb:SetPoint(WSID.LEFT, filterLbl, WSID.RIGHT, 6+(i-1)*88, 0)
         local fo = opt
         local function Activate(b)
@@ -59,18 +59,18 @@ function BuildCreatorPanel(contentArea)
     filterBtns[1]:SetBackdropBorderColor(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
     filterBtns[1]._lbl:SetTextColor(1,1,1)
 
-    local spinRaceBtn = MakeBtn(panel, "Spin Race", nil, 30)
+    local spinRaceBtn = WSID.MakeBtn(panel, "Spin Race", nil, 30)
     spinRaceBtn:SetPoint(WSID.TOP, filterLbl, WSID.BOTTOM, 0, -10)
     spinRaceBtn:SetPoint(WSID.LEFT,    panel, WSID.LEFT,  WSID.PAD, 0)
     spinRaceBtn:SetPoint(WSID.RIGHT,   panel, WSID.CENTER, -3, 0)
 
-    local spinClassBtn = MakeBtn(panel, "Spin Class", nil, 30)
+    local spinClassBtn = WSID.MakeBtn(panel, "Spin Class", nil, 30)
     spinClassBtn:SetPoint(WSID.TOP, filterLbl, WSID.BOTTOM, 0, -10)
     spinClassBtn:SetPoint(WSID.LEFT,    panel, WSID.CENTER, 3, 0)
     spinClassBtn:SetPoint(WSID.RIGHT,   panel, WSID.RIGHT, -WSID.PAD, 0)
     spinClassBtn:SetEnabled(false)
 
-    local spinBothBtn = MakeBtn(panel, "Spin Both", nil, 30)
+    local spinBothBtn = WSID.MakeBtn(panel, "Spin Both", nil, 30)
     spinBothBtn:SetPoint(WSID.TOP, spinRaceBtn, WSID.BOTTOM, 0, -6)
     spinBothBtn:SetPoint(WSID.LEFT,    panel, WSID.LEFT,  WSID.PAD, 0)
     spinBothBtn:SetPoint(WSID.RIGHT,   panel, WSID.RIGHT, -WSID.PAD, 0)
@@ -103,7 +103,7 @@ function BuildCreatorPanel(contentArea)
     local function SpinRaceBtnClick()
         local names=GetRaceNames()
         if #names>0 then
-            StopSlot()
+            WSID.StopSlot()
             spinRaceBtn:SetEnabled(false)
             spinBothBtn:SetEnabled(false)
             spinClassBtn:SetEnabled(false)
@@ -112,7 +112,7 @@ function BuildCreatorPanel(contentArea)
             classLabel:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
             infoLbl:SetText(" ")
             raceLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-            StartSlot(raceLabel, names, AfterRace)
+            WSID.StartSlot(raceLabel, names, AfterRace)
         end
     end
 
@@ -120,11 +120,11 @@ function BuildCreatorPanel(contentArea)
         if pickedRace then
             local classes = pickedRace and pickedRace.classes or nil
             if classes then
-                StopSlot()
+                WSID.StopSlot()
                 spinClassBtn:SetEnabled(false)
                 classLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-                StartSlot(classLabel, classes, function(w)
-                    local cc=WSID_CLASS_INFO[w]
+                WSID.StartSlot(classLabel, classes, function(w)
+                    local cc=WSID.CLASS_INFO[w]
                     if cc then
                         classLabel:SetTextColor(cc.r,cc.g,cc.b)
                     else
@@ -139,7 +139,7 @@ function BuildCreatorPanel(contentArea)
     local function SpinBothBtnClick()
         local names=GetRaceNames()
         if #names==0 then return end
-        StopSlot()
+        WSID.StopSlot()
         spinRaceBtn:SetEnabled(false)
         spinClassBtn:SetEnabled(false)
         spinBothBtn:SetEnabled(false)
@@ -148,7 +148,7 @@ function BuildCreatorPanel(contentArea)
         classLabel:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
         infoLbl:SetText(" ")
         raceLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-        StartSlot(raceLabel, names, function(winner)
+        WSID.StartSlot(raceLabel, names, function(winner)
             AfterRace(winner)
             spinRaceBtn:SetEnabled(false)
             spinBothBtn:SetEnabled(false)
@@ -158,8 +158,8 @@ function BuildCreatorPanel(contentArea)
                 spinBothBtn:SetEnabled(true)
                 return end
             classLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-            StartSlot(classLabel, classes, function(cls)
-                local cc=WSID_CLASS_INFO[cls]
+            WSID.StartSlot(classLabel, classes, function(cls)
+                local cc=WSID.CLASS_INFO[cls]
                 if cc then
                     classLabel:SetTextColor(cc.r,cc.g,cc.b)
                 else

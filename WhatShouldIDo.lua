@@ -11,7 +11,7 @@ local function BuildRoster()
     roster = {}
     local name    = UnitName(WSID.IDENTITY)
     local cls, _  = UnitClass(WSID.IDENTITY)
-    cls = NormalizeClass(cls)
+    cls = WSID.NormalizeClass(cls)
     local level   = UnitLevel(WSID.IDENTITY)
     local race    = UnitRace(WSID.IDENTITY)
     local faction = UnitFactionGroup(WSID.IDENTITY)
@@ -31,7 +31,7 @@ local function BuildRoster()
     end
     -- Normalise any existing entries that may have token-style class names
     for _, s in ipairs(WhatShouldIDoDB.seenChars) do
-        s.class = NormalizeClass(s.class)
+        s.class = WSID.NormalizeClass(s.class)
     end
 
     table.insert(roster, {name=name,class=cls,level=level,race=race,faction=faction,current=true})
@@ -46,14 +46,14 @@ end
 
 -- C is the live color table -- starts as Default, swapped by ApplyTheme
 local C = {}
-for k,v in pairs(WSID_THEMES.Default) do C[k] = {v[1],v[2],v[3]} end
+for k,v in pairs(WSID.THEMES.Default) do C[k] = {v[1],v[2],v[3]} end
 
 local function ApplyTheme(themeName, customColors)
-    local src = WSID_THEMES[themeName]
-    if not src and themeName == CUSTOM then
-        src = customColors or WSID_THEMES.Default
+    local src = WSID.THEMES[themeName]
+    if not src and themeName == WSID.CUSTOM_THEME then
+        src = customColors or WSID.THEMES.Default
     end
-    if not src then src = WSID_THEMES.Default end
+    if not src then src = WSID.THEMES.Default end
     for k,v in pairs(src) do
         C[k][1] = v[1]
         C[k][2] = v[2]
@@ -76,12 +76,12 @@ initFrame:RegisterEvent(WSID.ADDON_LOADED)
 initFrame:RegisterEvent(WSID.PLAYER_LOGIN)
 initFrame:SetScript(WSID.OnEvent,function(self,event,arg1)
     if event==WSID.ADDON_LOADED and arg1==WSID.ADDON_NAME then
-        InitDB()
+        WSID.InitDB()
         -- Apply saved theme (must run after InitDB sets defaults and after ApplyTheme is defined)
-        if WhatShouldIDoDB.colorTheme == CUSTOM and next(WhatShouldIDoDB.customColors) then
-            ApplyTheme(CUSTOM, WhatShouldIDoDB.customColors)
+        if WhatShouldIDoDB.colorTheme == WSID.CUSTOM_THEME and next(WhatShouldIDoDB.customColors) then
+            ApplyTheme(WSID.CUSTOM_THEME, WhatShouldIDoDB.customColors)
         else
-            ApplyTheme(WhatShouldIDoDB.colorTheme or DEFAULT)
+            ApplyTheme(WhatShouldIDoDB.colorTheme or WSID.DEFAULT_THEME)
         end
         MainFrame     = WSID.BuildMainFrame()
         settingsFrame = WSID.BuildSettingsWindow()

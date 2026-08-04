@@ -1,26 +1,26 @@
 -- Panels/Professions.lua
 -- Author: I_AM_T3X | v1.0.0
 
-function BuildProfessionPanel(contentArea)
-    local panel = MakePanel(contentArea)
-    local hdr = MakeHeader(panel, "Profession Picker")
+WSID.BuildProfessionPanel = function(contentArea)
+    local panel = WSID.MakePanel(contentArea)
+    local hdr = WSID.MakeHeader(panel, "Profession Picker")
     hdr:SetPoint(WSID.TOPLEFT, panel, WSID.TOPLEFT, WSID.PAD, -WSID.PAD)
 
-    local desc = MakeLabel(panel, "Spin two professions for your character.", hdr, WSID.BOTTOMLEFT, 4, -8)
+    local desc = WSID.MakeLabel(panel, "Spin two professions for your character.", hdr, WSID.BOTTOMLEFT, 4, -8)
 
-    local prof1Box, prof1Label = MakeResult(panel, nil, 52, "PROFESSION 1")
+    local prof1Box, prof1Label = WSID.MakeResult(panel, nil, 52, "PROFESSION 1")
     prof1Box:SetPoint(WSID.TOP, desc, WSID.BOTTOM, 0, -12)
     prof1Box:SetPoint(WSID.LEFT, panel, WSID.LEFT,  WSID.PAD, 0)
     prof1Box:SetPoint(WSID.RIGHT, panel, WSID.CENTER, -3, 0)
     prof1Label:SetText(WSID.DASH_DASH)
 
-    local prof2Box, prof2Label = MakeResult(panel, nil, 52, "PROFESSION 2")
+    local prof2Box, prof2Label = WSID.MakeResult(panel, nil, 52, "PROFESSION 2")
     prof2Box:SetPoint(WSID.TOP, desc, WSID.BOTTOM, 0, -12)
     prof2Box:SetPoint(WSID.LEFT, panel, WSID.CENTER, 3, 0)
     prof2Box:SetPoint(WSID.RIGHT, panel, WSID.RIGHT, -WSID.PAD, 0)
     prof2Label:SetText(WSID.DASH_DASH)
 
-    local spinBtn = MakeBtn(panel, "Spin Professions", nil, 30)
+    local spinBtn = WSID.MakeBtn(panel, "Spin Professions", nil, 30)
     spinBtn:SetPoint(WSID.TOP, prof1Box, WSID.BOTTOM, 0, -10)
     spinBtn:SetPoint(WSID.LEFT, panel, WSID.LEFT,  WSID.PAD, 0)
     spinBtn:SetPoint(WSID.RIGHT, panel, WSID.RIGHT, -WSID.PAD, 0)
@@ -106,10 +106,10 @@ function BuildProfessionPanel(contentArea)
         prof2Label:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
 
         -- Chain: spin 1 then spin 2
-        StartSlot(prof1Label, pool, function(_)
+        WSID.StartSlot(prof1Label, pool, function(_)
             prof1Label:SetText(winner1)
             prof1Label:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
-            StartSlot(prof2Label, pool2, function(_)
+            WSID.StartSlot(prof2Label, pool2, function(_)
                 prof2Label:SetText(winner2)
                 prof2Label:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
                 spinning = false

@@ -1,12 +1,12 @@
 -- Panels/Names.lua
 -- Author: I_AM_T3X | v1.0.0
 
-function BuildNamePanel(contentArea)
-    local panel = MakePanel(contentArea)
-    local hdr = MakeHeader(panel, WSID.NAMES_LABEL)
+WSID.BuildNamePanel = function(contentArea)
+    local panel = WSID.MakePanel(contentArea)
+    local hdr = WSID.MakeHeader(panel, WSID.NAMES_LABEL)
     hdr:SetPoint(WSID.TOPLEFT, panel, WSID.TOPLEFT, WSID.PAD, -WSID.PAD)
 
-    local desc = MakeLabel(panel, "Pick a race and gender to generate a list of names.", hdr, WSID.BOTTOMLEFT, 4, -8)
+    local desc = WSID.MakeLabel(panel, "Pick a race and gender to generate a list of names.", hdr, WSID.BOTTOMLEFT, 4, -8)
 
     -- Race dropdown (we'll use a simple scrollable button list)
     local raceLabel = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
@@ -18,7 +18,7 @@ function BuildNamePanel(contentArea)
     local raceBox = CreateFrame(WSID.BUTTON, nil, panel, WSID.BACKDROP_TEMPLATE)
     raceBox:SetSize(200, 26)
     raceBox:SetPoint(WSID.LEFT, raceLabel, WSID.RIGHT, 8, 0)
-    BgBorder(raceBox, COLOR_TABLE.result_bg[1],COLOR_TABLE.result_bg[2],COLOR_TABLE.result_bg[3], COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3])
+    WSID.BgBorder(raceBox, COLOR_TABLE.result_bg[1],COLOR_TABLE.result_bg[2],COLOR_TABLE.result_bg[3], COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3])
     local raceBoxLbl = raceBox:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     raceBoxLbl:SetPoint(WSID.LEFT, raceBox, WSID.LEFT, 8, 0)
     raceBoxLbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
@@ -33,7 +33,7 @@ function BuildNamePanel(contentArea)
     local selectedGender = "Male"
     local genderBtns = {}
     for i, g in ipairs({"Male","Female"}) do
-        local gb = MakeBtn(panel, g, 72, 26)
+        local gb = WSID.MakeBtn(panel, g, 72, 26)
         gb:SetPoint(WSID.LEFT, genderLbl, WSID.RIGHT, 6+(i-1)*76, 0)
         local gv = g
         gb:SetScript(WSID.OnClick, function()
@@ -59,16 +59,16 @@ function BuildNamePanel(contentArea)
     raceList:SetSize(200, 300)
     raceList:SetPoint(WSID.TOPLEFT, raceBox, WSID.BOTTOMLEFT, 0, -2)
     raceList:SetFrameStrata("TOOLTIP")
-    BgBorder(raceList, COLOR_TABLE.bg[1],COLOR_TABLE.bg[2],COLOR_TABLE.bg[3], COLOR_TABLE.win_border[1],COLOR_TABLE.win_border[2],COLOR_TABLE.win_border[3])
+    WSID.BgBorder(raceList, COLOR_TABLE.bg[1],COLOR_TABLE.bg[2],COLOR_TABLE.bg[3], COLOR_TABLE.win_border[1],COLOR_TABLE.win_border[2],COLOR_TABLE.win_border[3])
     raceList:Hide()
 
-    local allRaces = GetRaceNames()
+    local allRaces = WSID.GetRaceNames()
     table.sort(allRaces)
 
     local selectedRace = nil
     local raceRowFrames = {}
 
-    local raceScroll, raceScrollContent, _ = MakeScrollBox(raceList, 198, 298)
+    local raceScroll, raceScrollContent, _ = WSID.MakeScrollBox(raceList, 198, 298)
     raceScroll:SetPoint(WSID.TOPLEFT, raceList, WSID.TOPLEFT, 1, -1)
 
     for i, race in ipairs(allRaces) do
@@ -104,17 +104,17 @@ function BuildNamePanel(contentArea)
     end)
 
     -- Generate button
-    local generateBtn = MakeBtn(panel, "Generate Names", nil, 30)
+    local generateBtn = WSID.MakeBtn(panel, "Generate Names", nil, 30)
     generateBtn:SetPoint(WSID.TOP,   raceLabel, WSID.BOTTOM,  0, -14)
     generateBtn:SetPoint(WSID.LEFT,  panel, WSID.LEFT,   WSID.PAD, 0)
     generateBtn:SetPoint(WSID.RIGHT, panel, WSID.RIGHT,  -WSID.PAD, 0)
 
     -- Name list scroll
-    local nameHdr = MakeHeader(panel, "Generated Names  (click to copy to chat)")
+    local nameHdr = WSID.MakeHeader(panel, "Generated Names  (click to copy to chat)")
     nameHdr:SetPoint(WSID.TOP,  generateBtn, WSID.BOTTOM, 0, -10)
     nameHdr:SetPoint(WSID.LEFT, panel, WSID.LEFT, WSID.PAD, 0)
 
-    local nameBG, nameContent, nameReset = MakeScrollBox(panel, nil, 200)
+    local nameBG, nameContent, nameReset = WSID.MakeScrollBox(panel, nil, 200)
     nameBG:SetPoint(WSID.TOPLEFT, nameHdr, WSID.BOTTOMLEFT, 0, 0)
 
     local nameRows = {}
@@ -172,7 +172,7 @@ function BuildNamePanel(contentArea)
             return
         end
         raceList:Hide()
-        local names = GenerateNameList(selectedRace, selectedGender, 10)
+        local names = WSID.GenerateNameList(selectedRace, selectedGender, 10)
         RenderNames(names)
     end)
 

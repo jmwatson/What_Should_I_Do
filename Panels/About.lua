@@ -1,10 +1,10 @@
 -- Panels/About.lua
 -- Author: I_AM_T3X | v1.0.0
 
-function BuildAboutPanel(contentArea)
-    local panel = MakePanel(contentArea)
+WSID.BuildAboutPanel = function(contentArea)
+    local panel = WSID.MakePanel(contentArea)
 
-    local scrollBG, scrollContent, scrollReset = MakeScrollBox(panel, W, WSID.WIN_H-30-WSID.PAD*2)
+    local scrollBG, scrollContent, scrollReset = WSID.MakeScrollBox(panel, W, WSID.WIN_H-30-WSID.PAD*2)
     scrollBG:SetPoint(WSID.TOPLEFT, panel, WSID.TOPLEFT, WSID.PAD, -WSID.PAD)
 
     local lines = {

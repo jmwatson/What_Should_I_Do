@@ -25,7 +25,7 @@ WSID["BuildMainFrame"] = function()
     tb:SetHeight(30)
     tb:SetPoint(WSID.TOPLEFT,f,WSID.TOPLEFT,0,0)
     tb:SetPoint(WSID.TOPRIGHT,f,WSID.TOPRIGHT,0,0)
-    Tx(tb,COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
+    WSID.Tx(tb,COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
     local tbb=tb:CreateTexture(nil,WSID.ARTWORK)
     tbb:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     tbb:SetHeight(1)
@@ -48,15 +48,15 @@ WSID["BuildMainFrame"] = function()
     local contentArea=CreateFrame(WSID.FRAME,nil,f)
     contentArea:SetPoint(WSID.TOPLEFT,f,WSID.TOPLEFT,WSID.NAV_W,-30)
     contentArea:SetPoint(WSID.BOTTOMRIGHT,f,WSID.BOTTOMRIGHT,0,0)
-    Tx(contentArea,COLOR_TABLE.bg[1]+0.005,COLOR_TABLE.bg[2]+0.005,COLOR_TABLE.bg[3]+0.01)
+    WSID.Tx(contentArea,COLOR_TABLE.bg[1]+0.005,COLOR_TABLE.bg[2]+0.005,COLOR_TABLE.bg[3]+0.01)
 
-    local actPanel  = BuildActivityPanel(contentArea)
-    local crePanel  = BuildCreatorPanel(contentArea)
-    local levPanel  = BuildLevelingPanel(contentArea)
-    local namPanel  = BuildNamePanel(contentArea)
-    local profPanel = BuildProfessionPanel(contentArea)
-    local rdPanel   = BuildRaidDungeonPanel(contentArea)
-    local abtPanel  = BuildAboutPanel(contentArea)
+    local actPanel  = WSID.BuildActivityPanel(contentArea)
+    local crePanel  = WSID.BuildCreatorPanel(contentArea)
+    local levPanel  = WSID.BuildLevelingPanel(contentArea)
+    local namPanel  = WSID.BuildNamePanel(contentArea)
+    local profPanel = WSID.BuildProfessionPanel(contentArea)
+    local rdPanel   = WSID.BuildRaidDungeonPanel(contentArea)
+    local abtPanel  = WSID.BuildAboutPanel(contentArea)
     MainPanels={activity=actPanel,creator=crePanel,leveling=levPanel,names=namPanel,professions=profPanel,raidsdungeons=rdPanel,about=abtPanel}
 
     local leveling_nav = "leveling"
@@ -82,7 +82,7 @@ WSID["BuildMainFrame"] = function()
                 return
             end
             -- Always refresh WSID_Roster when switching to leveling so imports show immediately
-            if name==leveling_nav then BuildRoster() end
+            if name==leveling_nav then WSID.BuildRoster() end
             for k,p in pairs(MainPanels) do if k==name then p:Show() else p:Hide() end end
         end
     )
@@ -106,7 +106,7 @@ WSID["RegisterMinimapButton"] = function()
                     MainFrame:Hide()
                     if SettingsFrame then SettingsFrame:Hide() end
                 else
-                    BuildRoster()
+                    WSID.BuildRoster()
                     MainFrame:Show()
                 end
             elseif btn==WSID.RIGHT_BUTTON then
@@ -131,17 +131,17 @@ initFrame:RegisterEvent(WSID.ADDON_LOADED)
 initFrame:RegisterEvent(WSID.PLAYER_LOGIN)
 initFrame:SetScript(WSID.OnEvent,function(self,event,arg1)
     if event==WSID.ADDON_LOADED and arg1==WSID.ADDON_NAME then
-        InitDB()
+        WSID.InitDB()
         -- Apply saved theme (must run after InitDB sets defaults and after ApplyTheme is defined)
-        if WhatShouldIDoDB.colorTheme == CUSTOM and next(WhatShouldIDoDB.customColors) then
-            ApplyTheme(CUSTOM, WhatShouldIDoDB.customColors)
+        if WhatShouldIDoDB.colorTheme == WSID.CUSTOM_THEME and next(WhatShouldIDoDB.customColors) then
+            WSID.ApplyTheme(WSID.CUSTOM_THEME, WhatShouldIDoDB.customColors)
         else
-            ApplyTheme(WhatShouldIDoDB.colorTheme or DEFAULT)
+            WSID.ApplyTheme(WhatShouldIDoDB.colorTheme or WSID.DEFAULT_THEME)
         end
 
         -- Define StaticPopup dialogs at init time so they're registered before use
         StaticPopupDialogs["WSID_CONFIRM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_THEME"] or {}
-        StaticPopupDialogs["WSID_CONFIRM_CUSTOM"] = StaticPopupDialogs["WSID_CONFIRM_CUSTOM"] or {}
+        StaticPopupDialogs["WSID_CONFIRM_WSID.CUSTOM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_WSID.CUSTOM_THEME"] or {}
         MainFrame     = WSID.BuildMainFrame()
         SettingsFrame = WSID.BuildSettingsWindow()
         WSID.RegisterMinimapButton()
@@ -153,7 +153,7 @@ initFrame:SetScript(WSID.OnEvent,function(self,event,arg1)
         MainFrame:SetScale(scale)
         SettingsFrame:SetScale(scale)
     elseif event==WSID.PLAYER_LOGIN then
-        if WhatShouldIDoDB then BuildRoster() end
+        if WhatShouldIDoDB then WSID.BuildRoster() end
     end
 end)
 
@@ -163,7 +163,7 @@ SlashCmdList["WSID"]=function(msg)
     msg=strtrim(msg)
     local msgL=msg:lower()
     if msgL=="WSID_Roster" then
-        BuildRoster()
+        WSID.BuildRoster()
         print("|cffd5a742What Should I Do?:|r Roster refreshed -- "..#WSID_Roster.." character(s).")
         return
     end
@@ -177,7 +177,7 @@ SlashCmdList["WSID"]=function(msg)
         if MainFrame:IsShown() then
             MainFrame:Hide()
             if SettingsFrame then SettingsFrame:Hide() end
-        else BuildRoster()
+        else WSID.BuildRoster()
             MainFrame:Show()
         end
     end
