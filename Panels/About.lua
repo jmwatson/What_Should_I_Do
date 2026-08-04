@@ -4,11 +4,11 @@
 function BuildAboutPanel(contentArea)
     local panel = MakePanel(contentArea)
 
-    local scrollBG, scrollContent, scrollReset = MakeScrollBox(panel, W, WSID_WIN_H-30-WSID_PAD*2)
-    scrollBG:SetPoint(WSID_TOPLEFT, panel, WSID_TOPLEFT, WSID_PAD, -WSID_PAD)
+    local scrollBG, scrollContent, scrollReset = MakeScrollBox(panel, W, WSID.WIN_H-30-WSID.PAD*2)
+    scrollBG:SetPoint(WSID.TOPLEFT, panel, WSID.TOPLEFT, WSID.PAD, -WSID.PAD)
 
     local lines = {
-        {text=WSID_STRING, size=16, color={COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3]}},
+        {text=WSID.STRING, size=16, color={COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3]}},
         {text="Version 1.1.1",     size=11, color={COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3]}},
         {text=" ", size=5},
         {text="Author:  I_AM_T3X", size=12, color={COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3]}},
@@ -57,12 +57,12 @@ function BuildAboutPanel(contentArea)
 
     local yOff = -8
     for _, line in ipairs(lines) do
-        local fs = scrollContent:CreateFontString(nil, WSID_OVERLAY)
-        fs:SetFont(WSID_GAME_FONT, line.size or 12, WSID_EMPTY_STRING)
-        fs:SetPoint(WSID_TOPLEFT, scrollContent, WSID_TOPLEFT, 10, yOff)
-        fs:SetPoint(WSID_LEFT,  panel, WSID_LEFT,  WSID_PAD + 12, 0)
-        fs:SetPoint(WSID_RIGHT, panel, WSID_RIGHT, -WSID_PAD, 0)
-        fs:SetJustifyH(WSID_LEFT) ; fs:SetWordWrap(true)
+        local fs = scrollContent:CreateFontString(nil, WSID.OVERLAY)
+        fs:SetFont(WSID.GAME_FONT, line.size or 12, WSID.EMPTY_STRING)
+        fs:SetPoint(WSID.TOPLEFT, scrollContent, WSID.TOPLEFT, 10, yOff)
+        fs:SetPoint(WSID.LEFT,  panel, WSID.LEFT,  WSID.PAD + 12, 0)
+        fs:SetPoint(WSID.RIGHT, panel, WSID.RIGHT, -WSID.PAD, 0)
+        fs:SetJustifyH(WSID.LEFT) ; fs:SetWordWrap(true)
         fs:SetText(line.text)
         if line.color then fs:SetTextColor(line.color[1], line.color[2], line.color[3])
         else fs:SetTextColor(COLOR_TABLE.dim_text[1], COLOR_TABLE.dim_text[2], COLOR_TABLE.dim_text[3]) end

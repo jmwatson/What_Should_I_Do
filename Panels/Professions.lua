@@ -4,42 +4,42 @@
 function BuildProfessionPanel(contentArea)
     local panel = MakePanel(contentArea)
     local hdr = MakeHeader(panel, "Profession Picker")
-    hdr:SetPoint(WSID_TOPLEFT, panel, WSID_TOPLEFT, WSID_PAD, -WSID_PAD)
+    hdr:SetPoint(WSID.TOPLEFT, panel, WSID.TOPLEFT, WSID.PAD, -WSID.PAD)
 
-    local desc = MakeLabel(panel, "Spin two professions for your character.", hdr, WSID_BOTTOMLEFT, 4, -8)
+    local desc = MakeLabel(panel, "Spin two professions for your character.", hdr, WSID.BOTTOMLEFT, 4, -8)
 
     local prof1Box, prof1Label = MakeResult(panel, nil, 52, "PROFESSION 1")
-    prof1Box:SetPoint(WSID_TOP, desc, WSID_BOTTOM, 0, -12)
-    prof1Box:SetPoint(WSID_LEFT, panel, WSID_LEFT,  WSID_PAD, 0)
-    prof1Box:SetPoint(WSID_RIGHT, panel, WSID_CENTER, -3, 0)
-    prof1Label:SetText(WSID_DASH_DASH)
+    prof1Box:SetPoint(WSID.TOP, desc, WSID.BOTTOM, 0, -12)
+    prof1Box:SetPoint(WSID.LEFT, panel, WSID.LEFT,  WSID.PAD, 0)
+    prof1Box:SetPoint(WSID.RIGHT, panel, WSID.CENTER, -3, 0)
+    prof1Label:SetText(WSID.DASH_DASH)
 
     local prof2Box, prof2Label = MakeResult(panel, nil, 52, "PROFESSION 2")
-    prof2Box:SetPoint(WSID_TOP, desc, WSID_BOTTOM, 0, -12)
-    prof2Box:SetPoint(WSID_LEFT, panel, WSID_CENTER, 3, 0)
-    prof2Box:SetPoint(WSID_RIGHT, panel, WSID_RIGHT, -WSID_PAD, 0)
-    prof2Label:SetText(WSID_DASH_DASH)
+    prof2Box:SetPoint(WSID.TOP, desc, WSID.BOTTOM, 0, -12)
+    prof2Box:SetPoint(WSID.LEFT, panel, WSID.CENTER, 3, 0)
+    prof2Box:SetPoint(WSID.RIGHT, panel, WSID.RIGHT, -WSID.PAD, 0)
+    prof2Label:SetText(WSID.DASH_DASH)
 
     local spinBtn = MakeBtn(panel, "Spin Professions", nil, 30)
-    spinBtn:SetPoint(WSID_TOP, prof1Box, WSID_BOTTOM, 0, -10)
-    spinBtn:SetPoint(WSID_LEFT, panel, WSID_LEFT,  WSID_PAD, 0)
-    spinBtn:SetPoint(WSID_RIGHT, panel, WSID_RIGHT, -WSID_PAD, 0)
+    spinBtn:SetPoint(WSID.TOP, prof1Box, WSID.BOTTOM, 0, -10)
+    spinBtn:SetPoint(WSID.LEFT, panel, WSID.LEFT,  WSID.PAD, 0)
+    spinBtn:SetPoint(WSID.RIGHT, panel, WSID.RIGHT, -WSID.PAD, 0)
 
     -- Exclude farming professions checkbox
     local FARMING = WSID_FARM_PROFESSIONS
 
-    local farmBox = CreateFrame(WSID_FRAME, nil, panel, WSID_BACKDROP_TEMPLATE)
+    local farmBox = CreateFrame(WSID.FRAME, nil, panel, WSID.BACKDROP_TEMPLATE)
     farmBox:SetSize(14, 14)
-    farmBox:SetPoint(WSID_TOPLEFT, spinBtn, WSID_BOTTOMLEFT, 0, -14)
-    farmBox:SetBackdrop({bgFile=WSID_BG_FILE,edgeFile=WSID_BG_FILE,edgeSize=1})
+    farmBox:SetPoint(WSID.TOPLEFT, spinBtn, WSID.BOTTOMLEFT, 0, -14)
+    farmBox:SetBackdrop({bgFile=WSID.BG_FILE,edgeFile=WSID.BG_FILE,edgeSize=1})
 
-    local farmCheck = farmBox:CreateTexture(nil,WSID_OVERLAY)
+    local farmCheck = farmBox:CreateTexture(nil,WSID.OVERLAY)
     farmCheck:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
     farmCheck:SetSize(16,16)
-    farmCheck:SetPoint(WSID_CENTER, farmBox, WSID_CENTER, 0, 0)
+    farmCheck:SetPoint(WSID.CENTER, farmBox, WSID.CENTER, 0, 0)
 
-    local farmLbl = panel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    farmLbl:SetPoint(WSID_LEFT, farmBox, WSID_RIGHT, 6, 0)
+    local farmLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    farmLbl:SetPoint(WSID.LEFT, farmBox, WSID.RIGHT, 6, 0)
     farmLbl:SetText("Exclude farming professions (Herbalism, Mining, Skinning)")
 
     local function SetFarmState(on)
@@ -64,23 +64,23 @@ function BuildProfessionPanel(contentArea)
         end
     end
 
-    local farmBtn = CreateFrame(WSID_BUTTON, nil, panel)
+    local farmBtn = CreateFrame(WSID.BUTTON, nil, panel)
     farmBtn:SetHeight(20)
-    farmBtn:SetPoint(WSID_TOPLEFT, spinBtn, WSID_BOTTOMLEFT, 0, -10)
-    farmBtn:SetPoint(WSID_RIGHT,   panel,   WSID_RIGHT, -WSID_PAD, 0)
-    farmBtn:SetScript(WSID_OnClick, function()
+    farmBtn:SetPoint(WSID.TOPLEFT, spinBtn, WSID.BOTTOMLEFT, 0, -10)
+    farmBtn:SetPoint(WSID.RIGHT,   panel,   WSID.RIGHT, -WSID.PAD, 0)
+    farmBtn:SetScript(WSID.OnClick, function()
         SetFarmState(not (WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming))
     end)
 
     -- Init state after frame shown (C table populated by then)
-    panel:SetScript(WSID_OnShow, function()
+    panel:SetScript(WSID.OnShow, function()
         SetFarmState(WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming or false)
-        panel:SetScript(WSID_OnShow, nil)
+        panel:SetScript(WSID.OnShow, nil)
     end)
 
     local spinning = false
 
-    spinBtn:SetScript(WSID_OnClick, function()
+    spinBtn:SetScript(WSID.OnClick, function()
         if spinning then return end
         local excludeFarming = WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming
         local pool = {}

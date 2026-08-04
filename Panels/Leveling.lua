@@ -4,20 +4,20 @@
 function BuildLevelingPanel(contentArea)
     local panel = MakePanel(contentArea)
     local hdr = MakeHeader(panel, "Leveling Wheel")
-    hdr:SetPoint(WSID_TOPLEFT, panel, WSID_TOPLEFT, WSID_PAD, -WSID_PAD)
+    hdr:SetPoint(WSID.TOPLEFT, panel, WSID.TOPLEFT, WSID.PAD, -WSID.PAD)
 
-    local desc = MakeLabel(panel, "Spin a class -> pick a character -> spin an expansion.", hdr, WSID_BOTTOMLEFT, 4, -8)
+    local desc = MakeLabel(panel, "Spin a class -> pick a character -> spin an expansion.", hdr, WSID.BOTTOMLEFT, 4, -8)
 
     -- Auto-pick character toggle
-    local autoPickLbl = panel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    autoPickLbl:SetPoint(WSID_TOPLEFT, desc, WSID_BOTTOMLEFT, 0, -8)
+    local autoPickLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    autoPickLbl:SetPoint(WSID.TOPLEFT, desc, WSID.BOTTOMLEFT, 0, -8)
     autoPickLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     autoPickLbl:SetText("Auto-pick a character after class spin:")
 
     local autoPick = false
     local autoPickBtn = MakeBtn(panel, "Off", 60, 24)
-    autoPickBtn:SetPoint(WSID_LEFT, autoPickLbl, WSID_RIGHT, 8, 0)
-    autoPickBtn:SetScript(WSID_OnClick, function()
+    autoPickBtn:SetPoint(WSID.LEFT, autoPickLbl, WSID.RIGHT, 8, 0)
+    autoPickBtn:SetScript(WSID.OnClick, function()
         autoPick = not autoPick
         if autoPick then
             autoPickBtn._lbl:SetText("On")
@@ -33,37 +33,37 @@ function BuildLevelingPanel(contentArea)
     end)
 
     local classBox, classLabel = MakeResult(panel, nil, 52, "CLASS")
-    classBox:SetPoint(WSID_TOPLEFT, autoPickLbl, WSID_BOTTOMLEFT, 0, -10)
+    classBox:SetPoint(WSID.TOPLEFT, autoPickLbl, WSID.BOTTOMLEFT, 0, -10)
     classLabel:SetText("Class")
 
     local spinClassBtn = MakeBtn(panel, "Spin Class", nil, 30)
-    spinClassBtn:SetPoint(WSID_TOP, classBox, WSID_BOTTOM, 0, -10)
-    spinClassBtn:SetPoint(WSID_LEFT,    panel, WSID_LEFT,  WSID_PAD, 0)
-    spinClassBtn:SetPoint(WSID_RIGHT,   panel, WSID_RIGHT, -WSID_PAD, 0)
+    spinClassBtn:SetPoint(WSID.TOP, classBox, WSID.BOTTOM, 0, -10)
+    spinClassBtn:SetPoint(WSID.LEFT,    panel, WSID.LEFT,  WSID.PAD, 0)
+    spinClassBtn:SetPoint(WSID.RIGHT,   panel, WSID.RIGHT, -WSID.PAD, 0)
 
     local charHdr = MakeHeader(panel, "Characters of that class  (click to select)")
-    charHdr:SetPoint(WSID_TOPLEFT, spinClassBtn, WSID_BOTTOMLEFT, 0, -10)
+    charHdr:SetPoint(WSID.TOPLEFT, spinClassBtn, WSID.BOTTOMLEFT, 0, -10)
 
     local listBG, listContent, listReset = MakeScrollBox(panel, nil, 110)
-    listBG:SetPoint(WSID_TOPLEFT, charHdr, WSID_BOTTOMLEFT, 0, 0)
+    listBG:SetPoint(WSID.TOPLEFT, charHdr, WSID.BOTTOMLEFT, 0, 0)
 
     local expBox, expLabel = MakeResult(panel, nil, 52, "EXPANSION")
-    expBox:SetPoint(WSID_TOPLEFT, listBG, WSID_BOTTOMLEFT, 0, -10)
+    expBox:SetPoint(WSID.TOPLEFT, listBG, WSID.BOTTOMLEFT, 0, -10)
     expLabel:SetText("Expansion")
 
     local spinExpBtn = MakeBtn(panel, "Spin Expansion", nil, 30)
-    spinExpBtn:SetPoint(WSID_TOP, expBox, WSID_BOTTOM, 0, -10)
-    spinExpBtn:SetPoint(WSID_LEFT,    panel, WSID_LEFT,  WSID_PAD, 0)
-    spinExpBtn:SetPoint(WSID_RIGHT,   panel, WSID_CENTER, -3, 0)
+    spinExpBtn:SetPoint(WSID.TOP, expBox, WSID.BOTTOM, 0, -10)
+    spinExpBtn:SetPoint(WSID.LEFT,    panel, WSID.LEFT,  WSID.PAD, 0)
+    spinExpBtn:SetPoint(WSID.RIGHT,   panel, WSID.CENTER, -3, 0)
     spinExpBtn:SetEnabled(false)
 
     local spinAllBtn = MakeBtn(panel, "Spin All Steps", nil, 30)
-    spinAllBtn:SetPoint(WSID_TOP, expBox, WSID_BOTTOM, 0, -10)
-    spinAllBtn:SetPoint(WSID_LEFT,    panel, WSID_CENTER, 3, 0)
-    spinAllBtn:SetPoint(WSID_RIGHT,   panel, WSID_RIGHT, -WSID_PAD, 0)
+    spinAllBtn:SetPoint(WSID.TOP, expBox, WSID.BOTTOM, 0, -10)
+    spinAllBtn:SetPoint(WSID.LEFT,    panel, WSID.CENTER, 3, 0)
+    spinAllBtn:SetPoint(WSID.RIGHT,   panel, WSID.RIGHT, -WSID.PAD, 0)
 
-    local noteLbl = panel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    noteLbl:SetPoint(WSID_TOPLEFT, spinExpBtn, WSID_BOTTOMLEFT, 0, -10)
+    local noteLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    noteLbl:SetPoint(WSID.TOPLEFT, spinExpBtn, WSID.BOTTOMLEFT, 0, -10)
     noteLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     noteLbl:SetText("Roster fills automatically as you log into each character.")
 
@@ -84,31 +84,31 @@ function BuildLevelingPanel(contentArea)
             end
         end
         if #matches==0 then
-            local none=listContent:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-            none:SetPoint(WSID_TOPLEFT,listContent,WSID_TOPLEFT,8,-8)
+            local none=listContent:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+            none:SetPoint(WSID.TOPLEFT,listContent,WSID.TOPLEFT,8,-8)
             none:SetTextColor(0.65,0.30,0.30)
             none:SetText("No "..class.."s available for leveling.  (Max level characters are excluded.)")
             table.insert(charRows, none) ; listContent:SetHeight(30) ; return
         end
         for i,ch in ipairs(matches) do
             local even=(i%2==0)
-            local row=CreateFrame(WSID_BUTTON,nil,listContent)
+            local row=CreateFrame(WSID.BUTTON,nil,listContent)
             row:SetHeight(24)
-            row:SetPoint(WSID_TOP,   listContent, WSID_TOP,   0, -(i-1)*24)
-            row:SetPoint(WSID_LEFT,  listContent, WSID_LEFT,  0, 0)
-            row:SetPoint(WSID_RIGHT, listContent, WSID_RIGHT, 0, 0)
-            local rowBg=row:CreateTexture(nil,WSID_BACKGROUND) ; rowBg:SetAllPoints()
+            row:SetPoint(WSID.TOP,   listContent, WSID.TOP,   0, -(i-1)*24)
+            row:SetPoint(WSID.LEFT,  listContent, WSID.LEFT,  0, 0)
+            row:SetPoint(WSID.RIGHT, listContent, WSID.RIGHT, 0, 0)
+            local rowBg=row:CreateTexture(nil,WSID.BACKGROUND) ; rowBg:SetAllPoints()
             rowBg:SetColorTexture(even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],
                                   even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],
                                   even and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3],1)
             local cc=WSID_CLASS_INFO[ch.class] or {r=0.8,g=0.8,b=0.8}
-            local fs=row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-            fs:SetPoint(WSID_LEFT,row,WSID_LEFT,10,0) ; fs:SetJustifyH(WSID_LEFT)
+            local fs=row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+            fs:SetPoint(WSID.LEFT,row,WSID.LEFT,10,0) ; fs:SetJustifyH(WSID.LEFT)
             fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s|r  |cffffcc00Lv %d|r%s",
-                cc.r*255,cc.g*255,cc.b*255,ch.name,ch.race or WSID_EMPTY_STRING,ch.level or 0,
-                ch.current and "  |cff55cc55(you)|r" or WSID_EMPTY_STRING))
+                cc.r*255,cc.g*255,cc.b*255,ch.name,ch.race or WSID.EMPTY_STRING,ch.level or 0,
+                ch.current and "  |cff55cc55(you)|r" or WSID.EMPTY_STRING))
             local charData=ch
-            row:SetScript(WSID_OnClick, function()
+            row:SetScript(WSID.OnClick, function()
                 selectedChar=charData
                 for _,r in ipairs(charRows) do
                     if r._bg then
@@ -120,9 +120,9 @@ function BuildLevelingPanel(contentArea)
                 end
                 rowBg:SetColorTexture(COLOR_TABLE.row_select[1],COLOR_TABLE.row_select[2],COLOR_TABLE.row_select[3],1)
             end)
-            row:SetScript(WSID_OnEnter, function()
+            row:SetScript(WSID.OnEnter, function()
                 if selectedChar~=charData then rowBg:SetColorTexture(COLOR_TABLE.row_hover[1],COLOR_TABLE.row_hover[2],COLOR_TABLE.row_hover[3],1) end end)
-            row:SetScript(WSID_OnLeave, function()
+            row:SetScript(WSID.OnLeave, function()
                 if selectedChar~=charData then
                     rowBg:SetColorTexture(even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],
                                          even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],
@@ -159,7 +159,7 @@ function BuildLevelingPanel(contentArea)
                     C_Timer.After(0.3, function()
                         local pick = eligible[math.random(#eligible)]
                         -- Simulate a click on that row
-                        pick:GetScript(WSID_OnClick)(pick)
+                        pick:GetScript(WSID.OnClick)(pick)
                         -- Flash the selected row so user sees it
                         if pick._bg then
                             pick._bg:SetColorTexture(COLOR_TABLE.spin_text[1]*0.6,COLOR_TABLE.spin_text[2]*0.6,COLOR_TABLE.spin_text[3]*0.6,1)
@@ -175,12 +175,12 @@ function BuildLevelingPanel(contentArea)
         end)
     end
 
-    spinClassBtn:SetScript(WSID_OnClick, function()
+    spinClassBtn:SetScript(WSID.OnClick, function()
         spinClassBtn:SetEnabled(false) ; spinAllBtn:SetEnabled(false)
         DoSpinClass(function(_) spinClassBtn:SetEnabled(true) ; spinAllBtn:SetEnabled(true) end)
     end)
 
-    spinExpBtn:SetScript(WSID_OnClick, function()
+    spinExpBtn:SetScript(WSID.OnClick, function()
         if not selectedChar then
             UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r Select a character first.",1,0.8,0.2) ; return
         end
@@ -197,7 +197,7 @@ function BuildLevelingPanel(contentArea)
         end)
     end)
 
-    spinAllBtn:SetScript(WSID_OnClick, function()
+    spinAllBtn:SetScript(WSID.OnClick, function()
         spinClassBtn:SetEnabled(false) ; spinAllBtn:SetEnabled(false) ; spinExpBtn:SetEnabled(false)
         DoSpinClass(function(winner)
             local autoChar=nil

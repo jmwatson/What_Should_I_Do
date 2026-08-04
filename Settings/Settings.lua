@@ -8,77 +8,77 @@ WSID_refreshRoster = nil
 WSID_WSID_refreshActivities = nil
 WSID_WSID_refreshRoster = nil
 
-function BuildSettingsWindow()
-    local f = CreateFrame(WSID_FRAME,"WhatShouldIDoSettings",UIParent,WSID_BACKDROP_TEMPLATE)
-    f:SetSize(WSID_SET_W, WSID_SET_H)
-    f:SetPoint(WSID_CENTER,UIParent,WSID_CENTER,280,0)
+WSID["BuildSettingsWindow"] = function()
+    local f = CreateFrame(WSID.FRAME,"WhatShouldIDoSettings",UIParent,WSID.BACKDROP_TEMPLATE)
+    f:SetSize(WSID.SET_W, WSID.SET_H)
+    f:SetPoint(WSID.CENTER,UIParent,WSID.CENTER,280,0)
     f:SetMovable(true)
     f:EnableMouse(true)
-    f:RegisterForDrag(WSID_WSIDLEFT_BUTTON)
-    f:SetScript(WSID_OnDragStart,f.StartMoving)
-    f:SetScript(WSID_OnDragStop,f.StopMovingOrSizing)
-    f:SetFrameStrata(WSID_DIALOG)
+    f:RegisterForDrag(WSID.LEFT_BUTTON)
+    f:SetScript(WSID.OnDragStart,f.StartMoving)
+    f:SetScript(WSID.OnDragStop,f.StopMovingOrSizing)
+    f:SetFrameStrata(WSID.DIALOG)
     f:SetFrameLevel(20)
-    f:SetBackdrop({bgFile=WSID_BG_FILE,edgeFile=WSID_BG_FILE,edgeSize=1})
+    f:SetBackdrop({bgFile=WSID.BG_FILE,edgeFile=WSID.BG_FILE,edgeSize=1})
     f:SetBackdropColor(COLOR_TABLE.bg[1],COLOR_TABLE.bg[2],COLOR_TABLE.bg[3],1)
     f:SetBackdropBorderColor(COLOR_TABLE.win_border[1],COLOR_TABLE.win_border[2],COLOR_TABLE.win_border[3],1)
     f:Hide()
 
     -- Title bar
-    local tb=CreateFrame(WSID_FRAME,nil,f)
+    local tb=CreateFrame(WSID.FRAME,nil,f)
     tb:SetHeight(30)
-    tb:SetPoint(WSID_TOPLEFT,f,WSID_TOPLEFT,0,0)
-    tb:SetPoint(WSID_TOPRIGHT,f,WSID_TOPRIGHT,0,0)
+    tb:SetPoint(WSID.TOPLEFT,f,WSID.TOPLEFT,0,0)
+    tb:SetPoint(WSID.TOPRIGHT,f,WSID.TOPRIGHT,0,0)
     Tx(tb,COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
-    local tbBord=tb:CreateTexture(nil,WSID_ARTWORK)
+    local tbBord=tb:CreateTexture(nil,WSID.ARTWORK)
     tbBord:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     tbBord:SetHeight(1)
-    tbBord:SetPoint(WSID_BOTTOMLEFT,tb,WSID_BOTTOMLEFT,0,0)
-    tbBord:SetPoint(WSID_BOTTOMRIGHT,tb,WSID_BOTTOMRIGHT,0,0)
-    local tbLbl=tb:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL)
-    tbLbl:SetPoint(WSID_LEFT,tb,WSID_LEFT,10,0)
+    tbBord:SetPoint(WSID.BOTTOMLEFT,tb,WSID.BOTTOMLEFT,0,0)
+    tbBord:SetPoint(WSID.BOTTOMRIGHT,tb,WSID.BOTTOMRIGHT,0,0)
+    local tbLbl=tb:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL)
+    tbLbl:SetPoint(WSID.LEFT,tb,WSID.LEFT,10,0)
     tbLbl:SetText("What Should I Do?  --  Settings")
     tbLbl:SetTextColor(COLOR_TABLE.header_txt[1],COLOR_TABLE.header_txt[2],COLOR_TABLE.header_txt[3])
-    local closeBtn=CreateFrame(WSID_BUTTON,nil,f,WSID_UI_PANEL_CLOSE_BUTTON)
-    closeBtn:SetPoint(WSID_TOPRIGHT,f,WSID_TOPRIGHT,-2,-2)
+    local closeBtn=CreateFrame(WSID.BUTTON,nil,f,WSID.UI_PANEL_CLOSE_BUTTON)
+    closeBtn:SetPoint(WSID.TOPRIGHT,f,WSID.TOPRIGHT,-2,-2)
     closeBtn:SetFrameStrata(f:GetFrameStrata())
     closeBtn:SetFrameLevel(f:GetFrameLevel() + 1)
 
     -- Left nav
-    local navBg=CreateFrame(WSID_FRAME,nil,f)
-    navBg:SetPoint(WSID_TOPLEFT,f,WSID_TOPLEFT,0,-30)
-    navBg:SetPoint(WSID_BOTTOMLEFT,f,WSID_BOTTOMLEFT,0,0)
-    navBg:SetWidth(WSID_SET_NAV)
+    local navBg=CreateFrame(WSID.FRAME,nil,f)
+    navBg:SetPoint(WSID.TOPLEFT,f,WSID.TOPLEFT,0,-30)
+    navBg:SetPoint(WSID.BOTTOMLEFT,f,WSID.BOTTOMLEFT,0,0)
+    navBg:SetWidth(WSID.SET_NAV)
     Tx(navBg,COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
-    local nd=navBg:CreateTexture(nil,WSID_ARTWORK)
+    local nd=navBg:CreateTexture(nil,WSID.ARTWORK)
     nd:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     nd:SetWidth(1)
-    nd:SetPoint(WSID_TOPRIGHT,navBg,WSID_TOPRIGHT,0,0)
-    nd:SetPoint(WSID_BOTTOMRIGHT,navBg,WSID_BOTTOMRIGHT,0,0)
+    nd:SetPoint(WSID.TOPRIGHT,navBg,WSID.TOPRIGHT,0,0)
+    nd:SetPoint(WSID.BOTTOMRIGHT,navBg,WSID.BOTTOMRIGHT,0,0)
 
-    local content=CreateFrame(WSID_FRAME,nil,f)
-    content:SetPoint(WSID_TOPLEFT,f,WSID_TOPLEFT,WSID_SET_NAV,-30)
-    content:SetPoint(WSID_BOTTOMRIGHT,f,WSID_BOTTOMRIGHT,0,0)
+    local content=CreateFrame(WSID.FRAME,nil,f)
+    content:SetPoint(WSID.TOPLEFT,f,WSID.TOPLEFT,WSID.SET_NAV,-30)
+    content:SetPoint(WSID.BOTTOMRIGHT,f,WSID.BOTTOMRIGHT,0,0)
 
-    local actPanel=CreateFrame(WSID_FRAME,nil,content)
+    local actPanel=CreateFrame(WSID.FRAME,nil,content)
     actPanel:SetAllPoints(content)
     actPanel:Hide()
-    local rostPanel=CreateFrame(WSID_FRAME,nil,content)
+    local rostPanel=CreateFrame(WSID.FRAME,nil,content)
     rostPanel:SetAllPoints(content)
     rostPanel:Hide()
-    local ioPanel=CreateFrame(WSID_FRAME,nil,content)
+    local ioPanel=CreateFrame(WSID.FRAME,nil,content)
     ioPanel:SetAllPoints(content)
     ioPanel:Hide()
-    local colorsPanel=CreateFrame(WSID_FRAME,nil,content)
+    local colorsPanel=CreateFrame(WSID.FRAME,nil,content)
     colorsPanel:SetAllPoints(content)
     colorsPanel:Hide()
-    local scalePanel=CreateFrame(WSID_FRAME,nil,content)
+    local scalePanel=CreateFrame(WSID.FRAME,nil,content)
     scalePanel:SetAllPoints(content)
     scalePanel:Hide()
-    local expExclPanel=CreateFrame(WSID_FRAME,nil,content)
+    local expExclPanel=CreateFrame(WSID.FRAME,nil,content)
     expExclPanel:SetAllPoints(content)
     expExclPanel:Hide()
-    local changelogPanel=CreateFrame(WSID_FRAME,nil,content)
+    local changelogPanel=CreateFrame(WSID.FRAME,nil,content)
     changelogPanel:SetAllPoints(content)
     changelogPanel:Hide()
     local PANELS={activities=actPanel,WSID_Roster=rostPanel,importexport=ioPanel,expansions=expExclPanel,colors=colorsPanel,uiscale=scalePanel,changelog=changelogPanel}
@@ -106,30 +106,30 @@ function BuildSettingsWindow()
     end
 
     for i,def in ipairs({{name="activities",label="Activities"},{name="WSID_Roster",label="Roster"},{name="importexport",label="Import/Export"},{name="expansions",label="Expansions"},{name="colors",label="Colors"},{name="uiscale",label="UI Scale"}}) do
-        local row=CreateFrame(WSID_BUTTON,nil,navBg)
-        row:SetSize(WSID_SET_NAV,36)
-        row:SetPoint(WSID_TOPLEFT,navBg,WSID_TOPLEFT,0,-(i-1)*36)
-        local bg=row:CreateTexture(nil,WSID_BACKGROUND)
+        local row=CreateFrame(WSID.BUTTON,nil,navBg)
+        row:SetSize(WSID.SET_NAV,36)
+        row:SetPoint(WSID.TOPLEFT,navBg,WSID.TOPLEFT,0,-(i-1)*36)
+        local bg=row:CreateTexture(nil,WSID.BACKGROUND)
         bg:SetAllPoints()
         bg:SetColorTexture(0,0,0,0)
-        local stripe=row:CreateTexture(nil,WSID_ARTWORK)
+        local stripe=row:CreateTexture(nil,WSID.ARTWORK)
         stripe:SetColorTexture(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
         stripe:SetSize(3,36)
-        stripe:SetPoint(WSID_LEFT,row,WSID_LEFT,0,0)
+        stripe:SetPoint(WSID.LEFT,row,WSID.LEFT,0,0)
         stripe:Hide()
-        local lbl=row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-        lbl:SetPoint(WSID_LEFT,row,WSID_LEFT,12,0)
+        local lbl=row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+        lbl:SetPoint(WSID.LEFT,row,WSID.LEFT,12,0)
         lbl:SetText(def.label)
         lbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
         local name=def.name
-        row:SetScript(WSID_OnClick,function() SetNavActive(name) end)
-        row:SetScript(WSID_OnEnter,function()
+        row:SetScript(WSID.OnClick,function() SetNavActive(name) end)
+        row:SetScript(WSID.OnEnter,function()
             if navActive~=name then
                 bg:SetColorTexture(COLOR_TABLE.nav_hover[1],COLOR_TABLE.nav_hover[2],COLOR_TABLE.nav_hover[3],1)
                 lbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
             end
         end)
-        row:SetScript(WSID_OnLeave,function()
+        row:SetScript(WSID.OnLeave,function()
             if navActive~=name then
                 bg:SetColorTexture(0,0,0,0)
                 lbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
@@ -140,29 +140,29 @@ function BuildSettingsWindow()
 
     -- Reset window size button at bottom of nav
     -- Changelog button above separator
-    local clNavBtn = CreateFrame(WSID_BUTTON, nil, navBg)
-    clNavBtn:SetSize(WSID_SET_NAV, 36)
-    clNavBtn:SetPoint(WSID_BOTTOMLEFT, navBg, WSID_BOTTOMLEFT, 0, 36)
-    local clNavBg = clNavBtn:CreateTexture(nil,WSID_BACKGROUND)
+    local clNavBtn = CreateFrame(WSID.BUTTON, nil, navBg)
+    clNavBtn:SetSize(WSID.SET_NAV, 36)
+    clNavBtn:SetPoint(WSID.BOTTOMLEFT, navBg, WSID.BOTTOMLEFT, 0, 36)
+    local clNavBg = clNavBtn:CreateTexture(nil,WSID.BACKGROUND)
     clNavBg:SetAllPoints()
     clNavBg:SetColorTexture(0,0,0,0)
-    local clNavStripe = clNavBtn:CreateTexture(nil,WSID_ARTWORK)
+    local clNavStripe = clNavBtn:CreateTexture(nil,WSID.ARTWORK)
     clNavStripe:SetColorTexture(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
     clNavStripe:SetSize(3,36)
-    clNavStripe:SetPoint(WSID_LEFT,clNavBtn,WSID_LEFT,0,0)
+    clNavStripe:SetPoint(WSID.LEFT,clNavBtn,WSID.LEFT,0,0)
     clNavStripe:Hide()
-    local clNavLbl = clNavBtn:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    clNavLbl:SetPoint(WSID_LEFT,clNavBtn,WSID_LEFT,12,0)
+    local clNavLbl = clNavBtn:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    clNavLbl:SetPoint(WSID.LEFT,clNavBtn,WSID.LEFT,12,0)
     clNavLbl:SetText("Changelog")
     clNavLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
-    clNavBtn:SetScript(WSID_OnClick, function() SetNavActive("changelog") end)
-    clNavBtn:SetScript(WSID_OnEnter, function()
+    clNavBtn:SetScript(WSID.OnClick, function() SetNavActive("changelog") end)
+    clNavBtn:SetScript(WSID.OnEnter, function()
         if navActive~="changelog" then
             clNavBg:SetColorTexture(COLOR_TABLE.nav_hover[1],COLOR_TABLE.nav_hover[2],COLOR_TABLE.nav_hover[3],1)
             clNavLbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
         end
     end)
-    clNavBtn:SetScript(WSID_OnLeave, function()
+    clNavBtn:SetScript(WSID.OnLeave, function()
         if navActive~="changelog" then
             clNavBg:SetColorTexture(0,0,0,0)
             clNavLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
@@ -170,31 +170,31 @@ function BuildSettingsWindow()
     end)
     navBtns["changelog"] = {bg=clNavBg, stripe=clNavStripe, lbl=clNavLbl}
 
-    local resetSizeRule = navBg:CreateTexture(nil,WSID_ARTWORK)
+    local resetSizeRule = navBg:CreateTexture(nil,WSID.ARTWORK)
     resetSizeRule:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     resetSizeRule:SetHeight(1)
-    resetSizeRule:SetPoint(WSID_BOTTOMLEFT,  navBg, WSID_BOTTOMLEFT,  0, 72)
-    resetSizeRule:SetPoint(WSID_BOTTOMRIGHT, navBg, WSID_BOTTOMRIGHT, 0, 72)
+    resetSizeRule:SetPoint(WSID.BOTTOMLEFT,  navBg, WSID.BOTTOMLEFT,  0, 72)
+    resetSizeRule:SetPoint(WSID.BOTTOMRIGHT, navBg, WSID.BOTTOMRIGHT, 0, 72)
 
-    local resetSizeBtn = CreateFrame(WSID_BUTTON, nil, navBg)
-    resetSizeBtn:SetSize(WSID_SET_NAV, 36)
-    resetSizeBtn:SetPoint(WSID_BOTTOMLEFT, navBg, WSID_BOTTOMLEFT, 0, 0)
-    local rsBg = resetSizeBtn:CreateTexture(nil,WSID_BACKGROUND)
+    local resetSizeBtn = CreateFrame(WSID.BUTTON, nil, navBg)
+    resetSizeBtn:SetSize(WSID.SET_NAV, 36)
+    resetSizeBtn:SetPoint(WSID.BOTTOMLEFT, navBg, WSID.BOTTOMLEFT, 0, 0)
+    local rsBg = resetSizeBtn:CreateTexture(nil,WSID.BACKGROUND)
     rsBg:SetAllPoints()
     rsBg:SetColorTexture(0,0,0,0)
-    local rsLbl = resetSizeBtn:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    rsLbl:SetPoint(WSID_LEFT, resetSizeBtn, WSID_LEFT, 12, 0)
+    local rsLbl = resetSizeBtn:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    rsLbl:SetPoint(WSID.LEFT, resetSizeBtn, WSID.LEFT, 12, 0)
     rsLbl:SetText("Reset Size")
     rsLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
-    resetSizeBtn:SetScript(WSID_OnEnter, function()
+    resetSizeBtn:SetScript(WSID.OnEnter, function()
         rsBg:SetColorTexture(COLOR_TABLE.nav_hover[1],COLOR_TABLE.nav_hover[2],COLOR_TABLE.nav_hover[3],1)
         rsLbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
     end)
-    resetSizeBtn:SetScript(WSID_OnLeave, function()
+    resetSizeBtn:SetScript(WSID.OnLeave, function()
         rsBg:SetColorTexture(0,0,0,0)
         rsLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     end)
-    resetSizeBtn:SetScript(WSID_OnClick, function()
+    resetSizeBtn:SetScript(WSID.OnClick, function()
         WhatShouldIDoDB.uiScale = 1.0
         WhatShouldIDoDB.uiScale = 1.0
         if MainFrame     then MainFrame:SetScale(1.0) end
@@ -205,7 +205,7 @@ function BuildSettingsWindow()
     --------------------------------------------------------------------
     -- ACTIVITIES PANEL: two columns
     --------------------------------------------------------------------
-    -- Column layout: WSID_PAD(12) | COL(277) | gap(12) | COL(277) | WSID_PAD(12) = 590 = WSID_SET_CW ok
+    -- Column layout: WSID.PAD(12) | COL(277) | gap(12) | COL(277) | WSID.PAD(12) = 590 = WSID.SET_CW ok
     -- Row heights: hdr(28) + scroll(280) + gap(10) + addRow(26) + gap(8) + resetBtn(26) = 378 < (500-30-12) = 458 ok
 
     local SCRL_H = 280  -- scroll list height
@@ -213,74 +213,74 @@ function BuildSettingsWindow()
     local GAP    = 10
 
     -- Left column: Categories
-    local catHdr = MakeHeader(actPanel, "Categories", WSID_SET_COL)
-    catHdr:SetPoint(WSID_TOPLEFT, actPanel, WSID_TOPLEFT, WSID_SET_PAD, -WSID_SET_PAD)
+    local catHdr = MakeHeader(actPanel, "Categories", WSID.SET_COL)
+    catHdr:SetPoint(WSID.TOPLEFT, actPanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
 
-    local catCount=actPanel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    catCount:SetPoint(WSID_RIGHT,catHdr,WSID_RIGHT,-6,0)
+    local catCount=actPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    catCount:SetPoint(WSID.RIGHT,catHdr,WSID.RIGHT,-6,0)
     catCount:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
 
-    local catBG,catContent,catReset=MakeScrollBox(actPanel,WSID_SET_COL,SCRL_H)
-    catBG:SetPoint(WSID_TOPLEFT,catHdr,WSID_BOTTOMLEFT,0,-4)
+    local catBG,catContent,catReset=MakeScrollBox(actPanel,WSID.SET_COL,SCRL_H)
+    catBG:SetPoint(WSID.TOPLEFT,catHdr,WSID.BOTTOMLEFT,0,-4)
 
     local catAddBtn=MakeBtn(actPanel,"Add",54,BTN_H)
-    catAddBtn:SetPoint(WSID_TOPRIGHT,catBG,WSID_BOTTOMRIGHT,0,-GAP)
+    catAddBtn:SetPoint(WSID.TOPRIGHT,catBG,WSID.BOTTOMRIGHT,0,-GAP)
 
-    local catAddBox=CreateFrame(WSID_EDIT_BOX,nil,actPanel,WSID_BACKDROP_TEMPLATE)
+    local catAddBox=CreateFrame(WSID.EDIT_BOX,nil,actPanel,WSID.BACKDROP_TEMPLATE)
     catAddBox:SetHeight(BTN_H)
-    catAddBox:SetPoint(WSID_TOPLEFT,catBG,WSID_BOTTOMLEFT,0,-GAP)
-    catAddBox:SetPoint(WSID_TOPRIGHT,catAddBtn,WSID_TOPLEFT,-6,0)
-    catAddBox:SetBackdrop({bgFile=WSID_BG_FILE,edgeFile=WSID_BG_FILE,edgeSize=1})
+    catAddBox:SetPoint(WSID.TOPLEFT,catBG,WSID.BOTTOMLEFT,0,-GAP)
+    catAddBox:SetPoint(WSID.TOPRIGHT,catAddBtn,WSID.TOPLEFT,-6,0)
+    catAddBox:SetBackdrop({bgFile=WSID.BG_FILE,edgeFile=WSID.BG_FILE,edgeSize=1})
     catAddBox:SetBackdropColor(0.04,0.03,0.08,1)
     catAddBox:SetBackdropBorderColor(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
-    catAddBox:SetFont(WSID_GAME_FONT,11,WSID_EMPTY_STRING)
+    catAddBox:SetFont(WSID.GAME_FONT,11,WSID.EMPTY_STRING)
     catAddBox:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
     catAddBox:SetTextInsets(6,6,2,2)
     catAddBox:SetAutoFocus(false)
     catAddBox:SetMaxLetters(64)
-    catAddBox:SetScript(WSID_OnEditFocusGained,function(s) s:SetBackdropBorderColor(COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3],1) end)
-    catAddBox:SetScript(WSID_OnEditFocusLost,  function(s) s:SetBackdropBorderColor(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1) end)
+    catAddBox:SetScript(WSID.OnEditFocusGained,function(s) s:SetBackdropBorderColor(COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3],1) end)
+    catAddBox:SetScript(WSID.OnEditFocusLost,  function(s) s:SetBackdropBorderColor(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1) end)
 
-    local catResetBtn=MakeBtn(actPanel,"Reset All Defaults",WSID_SET_COL,BTN_H)
-    catResetBtn:SetPoint(WSID_TOPLEFT,catBG,WSID_BOTTOMLEFT,0,-(GAP+BTN_H+28))
+    local catResetBtn=MakeBtn(actPanel,"Reset All Defaults",WSID.SET_COL,BTN_H)
+    catResetBtn:SetPoint(WSID.TOPLEFT,catBG,WSID.BOTTOMLEFT,0,-(GAP+BTN_H+28))
 
     -- Right column: Sub-Activities
-    local subHdr=MakeHeader(actPanel,"Sub-Activities",WSID_SET_COL)
-    subHdr:SetPoint(WSID_TOPLEFT,catHdr,WSID_TOPRIGHT,12,0)
+    local subHdr=MakeHeader(actPanel,"Sub-Activities",WSID.SET_COL)
+    subHdr:SetPoint(WSID.TOPLEFT,catHdr,WSID.TOPRIGHT,12,0)
 
-    local subCount=actPanel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    subCount:SetPoint(WSID_RIGHT,subHdr,WSID_RIGHT,-6,0)
+    local subCount=actPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    subCount:SetPoint(WSID.RIGHT,subHdr,WSID.RIGHT,-6,0)
     subCount:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
 
-    local subSelLbl=actPanel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    subSelLbl:SetPoint(WSID_TOPLEFT,subHdr,WSID_BOTTOMLEFT,4,-4)
+    local subSelLbl=actPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    subSelLbl:SetPoint(WSID.TOPLEFT,subHdr,WSID.BOTTOMLEFT,4,-4)
     subSelLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     subSelLbl:SetText("(click a category to edit its sub-activities)")
-    subSelLbl:SetWidth(WSID_SET_COL)
+    subSelLbl:SetWidth(WSID.SET_COL)
 
     -- Sub scroll must align vertically with cat scroll despite the extra label line
     -- Anchor subBG to subHdr bottom + fixed 28px (label height) to keep tops aligned
-    local subBG,subContent,subReset=MakeScrollBox(actPanel,WSID_SET_COL,SCRL_H)
-    subBG:SetPoint(WSID_TOPLEFT,subHdr,WSID_BOTTOMLEFT,0,-28)
+    local subBG,subContent,subReset=MakeScrollBox(actPanel,WSID.SET_COL,SCRL_H)
+    subBG:SetPoint(WSID.TOPLEFT,subHdr,WSID.BOTTOMLEFT,0,-28)
 
     local subAddBtn=MakeBtn(actPanel,"Add",54,BTN_H)
-    subAddBtn:SetPoint(WSID_TOPRIGHT,subBG,WSID_BOTTOMRIGHT,0,-GAP)
+    subAddBtn:SetPoint(WSID.TOPRIGHT,subBG,WSID.BOTTOMRIGHT,0,-GAP)
     subAddBtn:SetEnabled(false)
 
-    local subAddBox=CreateFrame(WSID_EDIT_BOX,nil,actPanel,WSID_BACKDROP_TEMPLATE)
+    local subAddBox=CreateFrame(WSID.EDIT_BOX,nil,actPanel,WSID.BACKDROP_TEMPLATE)
     subAddBox:SetHeight(BTN_H)
-    subAddBox:SetPoint(WSID_TOPLEFT,subBG,WSID_BOTTOMLEFT,0,-GAP)
-    subAddBox:SetPoint(WSID_TOPRIGHT,subAddBtn,WSID_TOPLEFT,-6,0)
-    subAddBox:SetBackdrop({bgFile=WSID_BG_FILE,edgeFile=WSID_BG_FILE,edgeSize=1})
+    subAddBox:SetPoint(WSID.TOPLEFT,subBG,WSID.BOTTOMLEFT,0,-GAP)
+    subAddBox:SetPoint(WSID.TOPRIGHT,subAddBtn,WSID.TOPLEFT,-6,0)
+    subAddBox:SetBackdrop({bgFile=WSID.BG_FILE,edgeFile=WSID.BG_FILE,edgeSize=1})
     subAddBox:SetBackdropColor(0.04,0.03,0.08,1)
     subAddBox:SetBackdropBorderColor(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
-    subAddBox:SetFont(WSID_GAME_FONT,11,WSID_EMPTY_STRING)
+    subAddBox:SetFont(WSID.GAME_FONT,11,WSID.EMPTY_STRING)
     subAddBox:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
     subAddBox:SetTextInsets(6,6,2,2)
     subAddBox:SetAutoFocus(false)
     subAddBox:SetMaxLetters(64)
-    subAddBox:SetScript(WSID_OnEditFocusGained,function(s) s:SetBackdropBorderColor(COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3],1) end)
-    subAddBox:SetScript(WSID_OnEditFocusLost,  function(s) s:SetBackdropBorderColor(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1) end)
+    subAddBox:SetScript(WSID.OnEditFocusGained,function(s) s:SetBackdropBorderColor(COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3],1) end)
+    subAddBox:SetScript(WSID.OnEditFocusLost,  function(s) s:SetBackdropBorderColor(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1) end)
 
     -- State
     local selectedCat=nil
@@ -292,43 +292,43 @@ function BuildSettingsWindow()
         for _,r in ipairs(subRows) do r:Hide() end
         subRows={}
         if not selectedCat then
-            subCount:SetText(WSID_EMPTY_STRING)
+            subCount:SetText(WSID.EMPTY_STRING)
             subAddBtn:SetEnabled(false)
             return
         end
         -- if not WhatShouldIDoDB.subActivities then WhatShouldIDoDB.subActivities={} end
         if not WhatShouldIDoDB.excludedSubActivities then WhatShouldIDoDB.excludedSubActivities = {} end
-        local subs = GetSubActivities()
+        local subs = WSID.GetSubActivities()
         subCount:SetText("["..#subs.."]")
         subAddBtn:SetEnabled(true)
         for i,sub in ipairs(subs) do
             local even=(i%2==0)
-            local row=CreateFrame(WSID_FRAME,nil,subContent)
-            row:SetSize(WSID_SET_COL-2,22)
-            row:SetPoint(WSID_TOPLEFT,subContent,WSID_TOPLEFT,0,-(i-1)*22)
-            local rb=row:CreateTexture(nil,WSID_BACKGROUND)
+            local row=CreateFrame(WSID.FRAME,nil,subContent)
+            row:SetSize(WSID.SET_COL-2,22)
+            row:SetPoint(WSID.TOPLEFT,subContent,WSID.TOPLEFT,0,-(i-1)*22)
+            local rb=row:CreateTexture(nil,WSID.BACKGROUND)
             rb:SetAllPoints()
             rb:SetColorTexture(even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],even and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3],1)
-            local fs=row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-            fs:SetPoint(WSID_LEFT,row,WSID_LEFT,6,0)
+            local fs=row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+            fs:SetPoint(WSID.LEFT,row,WSID.LEFT,6,0)
             fs:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-            fs:SetJustifyH(WSID_LEFT)
+            fs:SetJustifyH(WSID.LEFT)
             fs:SetText(sub)
-            fs:SetWidth(WSID_SET_COL-28)
-            local xBtn=CreateFrame(WSID_BUTTON,nil,row)
+            fs:SetWidth(WSID.SET_COL-28)
+            local xBtn=CreateFrame(WSID.BUTTON,nil,row)
             xBtn:SetSize(20,22)
-            xBtn:SetPoint(WSID_RIGHT,row,WSID_RIGHT,0,0)
-            local xL=xBtn:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
+            xBtn:SetPoint(WSID.RIGHT,row,WSID.RIGHT,0,0)
+            local xL=xBtn:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
             xL:SetAllPoints()
-            xL:SetJustifyH(WSID_CENTER)
+            xL:SetJustifyH(WSID.CENTER)
             xL:SetText("|cffcc3333x|r")
             local idx=i
-            xBtn:SetScript(WSID_OnClick,function()
+            xBtn:SetScript(WSID.OnClick,function()
                 table.remove(WhatShouldIDoDB.subActivities[selectedCat],idx)
                 RefreshSubList()
             end)
-            xBtn:SetScript(WSID_OnEnter,function() xL:SetText("|cffff5555x|r") end)
-            xBtn:SetScript(WSID_OnLeave,function() xL:SetText("|cffcc3333x|r") end)
+            xBtn:SetScript(WSID.OnEnter,function() xL:SetText("|cffff5555x|r") end)
+            xBtn:SetScript(WSID.OnLeave,function() xL:SetText("|cffcc3333x|r") end)
             table.insert(subRows,row)
         end
         subContent:SetHeight(math.max(22,#subs*22+2))
@@ -353,52 +353,52 @@ function BuildSettingsWindow()
         subSelLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
         for _,r in ipairs(subRows) do r:Hide() end
         subRows={}
-        subCount:SetText(WSID_EMPTY_STRING)
+        subCount:SetText(WSID.EMPTY_STRING)
         subAddBtn:SetEnabled(false)
         local acts=WhatShouldIDoDB.activities
         catCount:SetText("["..#acts.."]")
         for i,act in ipairs(acts) do
             local even=(i%2==0)
-            local row=CreateFrame(WSID_BUTTON,nil,catContent)
-            row:SetSize(WSID_SET_COL-2,22)
-            row:SetPoint(WSID_TOPLEFT,catContent,WSID_TOPLEFT,0,-(i-1)*22)
-            local rb=row:CreateTexture(nil,WSID_BACKGROUND)
+            local row=CreateFrame(WSID.BUTTON,nil,catContent)
+            row:SetSize(WSID.SET_COL-2,22)
+            row:SetPoint(WSID.TOPLEFT,catContent,WSID.TOPLEFT,0,-(i-1)*22)
+            local rb=row:CreateTexture(nil,WSID.BACKGROUND)
             rb:SetAllPoints()
             rb:SetColorTexture(even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],even and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3],1)
             table.insert(catRowBgs,rb)
-            local nl=row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-            nl:SetPoint(WSID_LEFT,row,WSID_LEFT,6,0)
+            local nl=row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+            nl:SetPoint(WSID.LEFT,row,WSID.LEFT,6,0)
             nl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-            nl:SetJustifyH(WSID_LEFT)
+            nl:SetJustifyH(WSID.LEFT)
             nl:SetText(act)
-            nl:SetWidth(WSID_SET_COL-28)
-            local xBtn=CreateFrame(WSID_BUTTON,nil,row)
+            nl:SetWidth(WSID.SET_COL-28)
+            local xBtn=CreateFrame(WSID.BUTTON,nil,row)
             xBtn:SetSize(20,22)
-            xBtn:SetPoint(WSID_RIGHT,row,WSID_RIGHT,0,0)
-            local xL=xBtn:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
+            xBtn:SetPoint(WSID.RIGHT,row,WSID.RIGHT,0,0)
+            local xL=xBtn:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
             xL:SetAllPoints()
-            xL:SetJustifyH(WSID_CENTER)
+            xL:SetJustifyH(WSID.CENTER)
             xL:SetText("|cffcc3333x|r")
             local idx=i
-            xBtn:SetScript(WSID_OnClick,function()
+            xBtn:SetScript(WSID.OnClick,function()
                 if selectedCat==WhatShouldIDoDB.activities[idx] then
                     selectedCat=nil
                     subSelLbl:SetText("(click a category to edit its sub-activities)")
                     subSelLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
                     for _,r in ipairs(subRows) do r:Hide() end
                     subRows={}
-                    subCount:SetText(WSID_EMPTY_STRING)
+                    subCount:SetText(WSID.EMPTY_STRING)
                     subAddBtn:SetEnabled(false)
                 end
                 table.remove(WhatShouldIDoDB.activities,idx)
                 WSID_refreshActivities()
             end)
-            xBtn:SetScript(WSID_OnEnter,function() xL:SetText("|cffff5555x|r") end)
-            xBtn:SetScript(WSID_OnLeave,function() xL:SetText("|cffcc3333x|r") end)
+            xBtn:SetScript(WSID.OnEnter,function() xL:SetText("|cffff5555x|r") end)
+            xBtn:SetScript(WSID.OnLeave,function() xL:SetText("|cffcc3333x|r") end)
             local actName=act
-            row:SetScript(WSID_OnClick,function() SelectCat(actName,rb) end)
-            row:SetScript(WSID_OnEnter,function() if selectedCat~=actName then rb:SetColorTexture(COLOR_TABLE.row_hover[1],COLOR_TABLE.row_hover[2],COLOR_TABLE.row_hover[3],1) end end)
-            row:SetScript(WSID_OnLeave,function()
+            row:SetScript(WSID.OnClick,function() SelectCat(actName,rb) end)
+            row:SetScript(WSID.OnEnter,function() if selectedCat~=actName then rb:SetColorTexture(COLOR_TABLE.row_hover[1],COLOR_TABLE.row_hover[2],COLOR_TABLE.row_hover[3],1) end end)
+            row:SetScript(WSID.OnLeave,function()
                 if selectedCat~=actName then rb:SetColorTexture(even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],even and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3],1) end end)
             table.insert(catRows,row)
         end
@@ -408,40 +408,40 @@ function BuildSettingsWindow()
 
     local function DoCatAdd()
         local txt=strtrim(catAddBox:GetText())
-        if txt~=WSID_EMPTY_STRING then
+        if txt~=WSID.EMPTY_STRING then
             table.insert(WhatShouldIDoDB.activities,txt)
-            catAddBox:SetText(WSID_EMPTY_STRING)
+            catAddBox:SetText(WSID.EMPTY_STRING)
             WSID_refreshActivities()
         end
     end
-    catAddBtn:SetScript(WSID_OnClick,DoCatAdd)
-    catAddBox:SetScript(WSID_OnEnterPressed,DoCatAdd)
+    catAddBtn:SetScript(WSID.OnClick,DoCatAdd)
+    catAddBox:SetScript(WSID.OnEnterPressed,DoCatAdd)
 
     local function DoSubAdd()
         if selectedCat then
             local txt=strtrim(subAddBox:GetText())
-            if txt~=WSID_EMPTY_STRING then
+            if txt~=WSID.EMPTY_STRING then
                 if not WhatShouldIDoDB.subActivities then WhatShouldIDoDB.subActivities={} end
                 if not WhatShouldIDoDB.subActivities[selectedCat] then WhatShouldIDoDB.subActivities[selectedCat]={} end
                 table.insert(WhatShouldIDoDB.subActivities[selectedCat],txt)
-                subAddBox:SetText(WSID_EMPTY_STRING)
+                subAddBox:SetText(WSID.EMPTY_STRING)
                 RefreshSubList()
             end
         end
         local txt=strtrim(subAddBox:GetText())
-        if txt~=WSID_EMPTY_STRING then
+        if txt~=WSID.EMPTY_STRING then
             if not WhatShouldIDoDB.subActivities then WhatShouldIDoDB.subActivities={} end
             if not WhatShouldIDoDB.subActivities[selectedCat] then WhatShouldIDoDB.subActivities[selectedCat]={} end
             table.insert(WhatShouldIDoDB.subActivities[selectedCat],txt)
-            subAddBox:SetText(WSID_EMPTY_STRING)
+            subAddBox:SetText(WSID.EMPTY_STRING)
             RefreshSubList()
         end
     end
 
-    subAddBtn:SetScript(WSID_OnClick,DoSubAdd)
-    subAddBox:SetScript(WSID_OnEnterPressed,DoSubAdd)
+    subAddBtn:SetScript(WSID.OnClick,DoSubAdd)
+    subAddBox:SetScript(WSID.OnEnterPressed,DoSubAdd)
 
-    catResetBtn:SetScript(WSID_OnClick,function()
+    catResetBtn:SetScript(WSID.OnClick,function()
         WhatShouldIDoDB.activities={}
         for activity, _ in ipairs(WSID_ACTIVITIES_INFO) do table.insert(WhatShouldIDoDB.activities,activity) end
         WhatShouldIDoDB.subActivities={}
@@ -452,19 +452,19 @@ function BuildSettingsWindow()
     -- ROSTER PANEL
     --------------------------------------------------------------------
 
-    local rostHdr=MakeHeader(rostPanel,"Seen Characters",WSID_SET_CW)
-    rostHdr:SetPoint(WSID_TOPLEFT,rostPanel,WSID_TOPLEFT,WSID_SET_PAD,-WSID_SET_PAD)
-    local rostCount=rostPanel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    rostCount:SetPoint(WSID_RIGHT,rostHdr,WSID_RIGHT,-6,0)
+    local rostHdr=MakeHeader(rostPanel,"Seen Characters",WSID.SET_CW)
+    rostHdr:SetPoint(WSID.TOPLEFT,rostPanel,WSID.TOPLEFT,WSID.SET_PAD,-WSID.SET_PAD)
+    local rostCount=rostPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    rostCount:SetPoint(WSID.RIGHT,rostHdr,WSID.RIGHT,-6,0)
     rostCount:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
-    local rostNote=rostPanel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    rostNote:SetPoint(WSID_TOPLEFT,rostHdr,WSID_BOTTOMLEFT,4,-6)
+    local rostNote=rostPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    rostNote:SetPoint(WSID.TOPLEFT,rostHdr,WSID.BOTTOMLEFT,4,-6)
     rostNote:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     rostNote:SetText("Log into each alt to add it. Levels update on every login.")
-    rostNote:SetWidth(WSID_SET_CW)
+    rostNote:SetWidth(WSID.SET_CW)
 
-    local rostBG,rostContent,rostReset=MakeScrollBox(rostPanel,WSID_SET_CW,WSID_SET_H-30-WSID_SET_PAD*2-80)
-    rostBG:SetPoint(WSID_TOPLEFT,rostNote,WSID_BOTTOMLEFT,0,-8)
+    local rostBG,rostContent,rostReset=MakeScrollBox(rostPanel,WSID.SET_CW,WSID.SET_H-30-WSID.SET_PAD*2-80)
+    rostBG:SetPoint(WSID.TOPLEFT,rostNote,WSID.BOTTOMLEFT,0,-8)
 
     local rostRows={}
     WSID_refreshRoster=function()
@@ -475,29 +475,29 @@ function BuildSettingsWindow()
         if not WhatShouldIDoDB.excludedChars then WhatShouldIDoDB.excludedChars = {} end
         for i,ch in ipairs(chars) do
             local even=(i%2==0)
-            local row=CreateFrame(WSID_FRAME,nil,rostContent)
-            row:SetSize(WSID_SET_CW-2,24)
-            row:SetPoint(WSID_TOPLEFT,rostContent,WSID_TOPLEFT,0,-(i-1)*24)
-            local rb=row:CreateTexture(nil,WSID_BACKGROUND)
+            local row=CreateFrame(WSID.FRAME,nil,rostContent)
+            row:SetSize(WSID.SET_CW-2,24)
+            row:SetPoint(WSID.TOPLEFT,rostContent,WSID.TOPLEFT,0,-(i-1)*24)
+            local rb=row:CreateTexture(nil,WSID.BACKGROUND)
             rb:SetAllPoints()
             rb:SetColorTexture(even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],even and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3],1)
             local cc=WSID_CLASS_INFO[ch.class] or {r=0.8,g=0.8,b=0.8}
             local isExcluded = WhatShouldIDoDB.excludedChars[ch.name] == true
-            local fs=row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-            fs:SetPoint(WSID_LEFT,row,WSID_LEFT,10,0)
-            fs:SetJustifyH(WSID_LEFT)
+            local fs=row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+            fs:SetPoint(WSID.LEFT,row,WSID.LEFT,10,0)
+            fs:SetJustifyH(WSID.LEFT)
             fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s %s|r  |cffffcc00Lv %d|r%s",
                 isExcluded and 80 or cc.r*255,
                 isExcluded and 80 or cc.g*255,
                 isExcluded and 80 or cc.b*255,
-                ch.name, ch.race or WSID_EMPTY_STRING, ch.class or WSID_EMPTY_STRING, ch.level or 0,
-                isExcluded and "  |cff888888[excluded]|r" or WSID_EMPTY_STRING))
-            local isCurrent=(ch.name==UnitName(WSID_IDENTITY))
+                ch.name, ch.race or WSID.EMPTY_STRING, ch.class or WSID.EMPTY_STRING, ch.level or 0,
+                isExcluded and "  |cff888888[excluded]|r" or WSID.EMPTY_STRING))
+            local isCurrent=(ch.name==UnitName(WSID.IDENTITY))
             -- Exclude toggle button (all chars including current)
-            local exBtn=CreateFrame(WSID_BUTTON,nil,row,WSID_BACKDROP_TEMPLATE)
+            local exBtn=CreateFrame(WSID.BUTTON,nil,row,WSID.BACKDROP_TEMPLATE)
             exBtn:SetSize(58,18)
-            exBtn:SetPoint(WSID_RIGHT,row,WSID_RIGHT, isCurrent and -4 or -26, 0)
-            exBtn:SetBackdrop({bgFile=WSID_BG_FILE,edgeFile=WSID_BG_FILE,edgeSize=1})
+            exBtn:SetPoint(WSID.RIGHT,row,WSID.RIGHT, isCurrent and -4 or -26, 0)
+            exBtn:SetBackdrop({bgFile=WSID.BG_FILE,edgeFile=WSID.BG_FILE,edgeSize=1})
             local function UpdateExBtn()
                 local ex = WhatShouldIDoDB.excludedChars[ch.name] == true
                 exBtn:SetBackdropColor(ex and 0.25 or 0.08, ex and 0.08 or 0.18, ex and 0.08 or 0.08)
@@ -505,13 +505,13 @@ function BuildSettingsWindow()
                 local exL = exBtn._lbl
                 if exL then exL:SetText(ex and "|cffff6666Excluded|r" or "|cff888888Exclude|r") end
             end
-            local exL=exBtn:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
+            local exL=exBtn:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
             exL:SetAllPoints()
-            exL:SetJustifyH(WSID_CENTER)
+            exL:SetJustifyH(WSID.CENTER)
             exBtn._lbl = exL
             UpdateExBtn()
             local cn=ch.name
-            exBtn:SetScript(WSID_OnClick,function()
+            exBtn:SetScript(WSID.OnClick,function()
                 if WhatShouldIDoDB.excludedChars[cn] then
                     WhatShouldIDoDB.excludedChars[cn] = nil
                 else
@@ -520,24 +520,24 @@ function BuildSettingsWindow()
                 WSID_refreshRoster()
             end)
             if isCurrent then
-                local yl=row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-                yl:SetPoint(WSID_RIGHT,exBtn,WSID_LEFT,-4,0)
+                local yl=row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+                yl:SetPoint(WSID.RIGHT,exBtn,WSID.LEFT,-4,0)
                 yl:SetTextColor(0.30,0.75,0.30)
                 yl:SetText("(you)")
             else
-                local xBtn=CreateFrame(WSID_BUTTON,nil,row)
+                local xBtn=CreateFrame(WSID.BUTTON,nil,row)
                 xBtn:SetSize(20,24)
-                xBtn:SetPoint(WSID_RIGHT,row,WSID_RIGHT,0,0)
-                local xL2=xBtn:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
+                xBtn:SetPoint(WSID.RIGHT,row,WSID.RIGHT,0,0)
+                local xL2=xBtn:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
                 xL2:SetAllPoints()
-                xL2:SetJustifyH(WSID_CENTER)
+                xL2:SetJustifyH(WSID.CENTER)
                 xL2:SetText("|cffcc3333x|r")
-                xBtn:SetScript(WSID_OnClick,function()
+                xBtn:SetScript(WSID.OnClick,function()
                     RemoveCharFromRoster(cn)
                     WSID_refreshRoster()
                 end)
-                xBtn:SetScript(WSID_OnEnter,function() xL2:SetText("|cffff5555x|r") end)
-                xBtn:SetScript(WSID_OnLeave,function() xL2:SetText("|cffcc3333x|r") end)
+                xBtn:SetScript(WSID.OnEnter,function() xL2:SetText("|cffff5555x|r") end)
+                xBtn:SetScript(WSID.OnLeave,function() xL2:SetText("|cffcc3333x|r") end)
             end
             table.insert(rostRows,row)
         end
@@ -545,10 +545,10 @@ function BuildSettingsWindow()
         rostReset()
     end
 
-    local clearBtn=MakeBtn(rostPanel,"Clear All Others",WSID_SET_CW,BTN_H)
-    clearBtn:SetPoint(WSID_TOPLEFT,rostBG,WSID_BOTTOMLEFT,0,-10)
-    clearBtn:SetScript(WSID_OnClick,function()
-        local cur=UnitName(WSID_IDENTITY)
+    local clearBtn=MakeBtn(rostPanel,"Clear All Others",WSID.SET_CW,BTN_H)
+    clearBtn:SetPoint(WSID.TOPLEFT,rostBG,WSID.BOTTOMLEFT,0,-10)
+    clearBtn:SetScript(WSID.OnClick,function()
+        local cur=UnitName(WSID.IDENTITY)
         local kept={}
         for _,ch in ipairs(WhatShouldIDoDB.seenChars) do
             if ch.name==cur then table.insert(kept,ch) end
@@ -563,10 +563,10 @@ function BuildSettingsWindow()
     -- IMPORT / EXPORT PANEL
     --------------------------------------------------------------------
 
-    local ioNoteBg = ioPanel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    ioNoteBg:SetPoint(WSID_TOPLEFT, ioPanel, WSID_TOPLEFT, WSID_SET_PAD, -WSID_SET_PAD)
-    ioNoteBg:SetPoint(WSID_RIGHT,   ioPanel, WSID_RIGHT,  -WSID_SET_PAD, 0)
-    ioNoteBg:SetJustifyH(WSID_LEFT)
+    local ioNoteBg = ioPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    ioNoteBg:SetPoint(WSID.TOPLEFT, ioPanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
+    ioNoteBg:SetPoint(WSID.RIGHT,   ioPanel, WSID.RIGHT,  -WSID.SET_PAD, 0)
+    ioNoteBg:SetJustifyH(WSID.LEFT)
     ioNoteBg:SetWordWrap(true)
     ioNoteBg:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     ioNoteBg:SetText("|cffd5a742For multi-account players:|r Export your roster on one account, then import it on another. This lets the Leveling wheel see characters from all your accounts in one place.")
@@ -606,13 +606,13 @@ function BuildSettingsWindow()
     end
 
     -- EXPORT section
-    local expHdr = MakeHeader(ioPanel, "Export Roster", WSID_SET_CW)
-    expHdr:SetPoint(WSID_TOPLEFT, ioNoteBg, WSID_BOTTOMLEFT, -4, -10)
+    local expHdr = MakeHeader(ioPanel, "Export Roster", WSID.SET_CW)
+    expHdr:SetPoint(WSID.TOPLEFT, ioNoteBg, WSID.BOTTOMLEFT, -4, -10)
 
-    local expBoxBg = CreateFrame(WSID_FRAME, nil, ioPanel, WSID_BACKDROP_TEMPLATE)
-    expBoxBg:SetSize(WSID_SET_CW, 54)
-    expBoxBg:SetPoint(WSID_TOPLEFT, expHdr, WSID_BOTTOMLEFT, 0, -6)
-    expBoxBg:SetBackdrop({bgFile=WSID_BG_FILE,edgeFile=WSID_BG_FILE,edgeSize=1})
+    local expBoxBg = CreateFrame(WSID.FRAME, nil, ioPanel, WSID.BACKDROP_TEMPLATE)
+    expBoxBg:SetSize(WSID.SET_CW, 54)
+    expBoxBg:SetPoint(WSID.TOPLEFT, expHdr, WSID.BOTTOMLEFT, 0, -6)
+    expBoxBg:SetBackdrop({bgFile=WSID.BG_FILE,edgeFile=WSID.BG_FILE,edgeSize=1})
     expBoxBg:SetBackdropColor(0.06,0.04,0.10,1)
     expBoxBg:SetBackdropBorderColor(0.25,0.20,0.35,1)
 
@@ -664,11 +664,11 @@ function BuildSettingsWindow()
 
     -- ScrollFrame inside expBoxBg so the multiline EditBox scrolls
     local expScroll = CreateFrame("ScrollFrame", nil, expBoxBg, "UIPanelScrollFrameTemplate")
-    expScroll:SetPoint(WSID_TOPLEFT,     expBoxBg, WSID_TOPLEFT,     4,  -4)
-    expScroll:SetPoint(WSID_BOTTOMRIGHT, expBoxBg, WSID_BOTTOMRIGHT, -24,  4)
+    expScroll:SetPoint(WSID.TOPLEFT,     expBoxBg, WSID.TOPLEFT,     4,  -4)
+    expScroll:SetPoint(WSID.BOTTOMRIGHT, expBoxBg, WSID.BOTTOMRIGHT, -24,  4)
 
-    local expBox = CreateFrame(WSID_EDIT_BOX, "WhatShouldIDoExportBox", expScroll, "InputBoxTemplate")
-    expBox:SetWidth(expScroll:GetWidth() or (WSID_SET_CW - 28))
+    local expBox = CreateFrame(WSID.EDIT_BOX, "WhatShouldIDoExportBox", expScroll, "InputBoxTemplate")
+    expBox:SetWidth(expScroll:GetWidth() or (WSID.SET_CW - 28))
     expBox:SetHeight(54)
     expBox:SetFontObject(GameFontNormalSmall)
     expBox:SetTextColor(0.85, 0.85, 0.85)
@@ -676,29 +676,29 @@ function BuildSettingsWindow()
     expBox:SetAutoFocus(false)
     expBox:SetMaxLetters(0)
     expBox:SetText("-- click Export to generate --")
-    expBox._last = WSID_EMPTY_STRING
+    expBox._last = WSID.EMPTY_STRING
     expScroll:SetScrollChild(expBox)
     -- Hide InputBoxTemplate border textures
     if expBox.Left   then expBox.Left:SetAlpha(0) end
     if expBox.Middle then expBox.Middle:SetAlpha(0) end
     if expBox.Right  then expBox.Right:SetAlpha(0) end
     -- Sync scroll when text changes
-    expBox:SetScript(WSID_OnTextChanged, function(self)
+    expBox:SetScript(WSID.OnTextChanged, function(self)
         expScroll:UpdateScrollChildRect()
     end)
     -- Block typing but allow select/copy
-    expBox:SetScript(WSID_OnChar,            function(s) s:SetText(s._last or WSID_EMPTY_STRING) end)
-    expBox:SetScript(WSID_OnEscapePressed,   function(s) s:ClearFocus() end)
-    expBox:SetScript(WSID_OnEnterPressed,    function(s) s:ClearFocus() end)
-    expBox:SetScript(WSID_OnEditFocusGained, function(s) s:HighlightText() end)
+    expBox:SetScript(WSID.OnChar,            function(s) s:SetText(s._last or WSID.EMPTY_STRING) end)
+    expBox:SetScript(WSID.OnEscapePressed,   function(s) s:ClearFocus() end)
+    expBox:SetScript(WSID.OnEnterPressed,    function(s) s:ClearFocus() end)
+    expBox:SetScript(WSID.OnEditFocusGained, function(s) s:HighlightText() end)
 
-    local expGenBtn = MakeBtn(ioPanel, "Export", WSID_SET_CW, 24)
-    expGenBtn:SetPoint(WSID_TOPLEFT, expBoxBg, WSID_BOTTOMLEFT, 0, -4)
+    local expGenBtn = MakeBtn(ioPanel, "Export", WSID.SET_CW, 24)
+    expGenBtn:SetPoint(WSID.TOPLEFT, expBoxBg, WSID.BOTTOMLEFT, 0, -4)
 
-    expGenBtn:SetScript(WSID_OnClick, function()
+    expGenBtn:SetScript(WSID.OnClick, function()
         local str = BuildExportStr()
         if not str then
-            expBox._last = WSID_EMPTY_STRING
+            expBox._last = WSID.EMPTY_STRING
             expBox:SetText("No characters in roster.")
             return
         end
@@ -708,49 +708,49 @@ function BuildSettingsWindow()
         expBox:SetFocus()
     end)
 
-    local ioRule = ioPanel:CreateTexture(nil,WSID_ARTWORK)
+    local ioRule = ioPanel:CreateTexture(nil,WSID.ARTWORK)
     ioRule:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     ioRule:SetHeight(1)
-    ioRule:SetPoint(WSID_TOPLEFT,  expGenBtn, WSID_BOTTOMLEFT,  0, -10)
-    ioRule:SetPoint(WSID_TOPRIGHT, expGenBtn, WSID_BOTTOMRIGHT, 0, -10)
+    ioRule:SetPoint(WSID.TOPLEFT,  expGenBtn, WSID.BOTTOMLEFT,  0, -10)
+    ioRule:SetPoint(WSID.TOPRIGHT, expGenBtn, WSID.BOTTOMRIGHT, 0, -10)
 
     -- IMPORT
-    local impHdr = MakeHeader(ioPanel, "Import Roster", WSID_SET_CW)
-    impHdr:SetPoint(WSID_TOPLEFT, ioRule, WSID_BOTTOMLEFT, 0, -8)
+    local impHdr = MakeHeader(ioPanel, "Import Roster", WSID.SET_CW)
+    impHdr:SetPoint(WSID.TOPLEFT, ioRule, WSID.BOTTOMLEFT, 0, -8)
 
-    local impBoxBg = CreateFrame(WSID_FRAME, nil, ioPanel, WSID_BACKDROP_TEMPLATE)
-    impBoxBg:SetSize(WSID_SET_CW, 26)
-    impBoxBg:SetPoint(WSID_TOPLEFT, impHdr, WSID_BOTTOMLEFT, 0, -6)
-    impBoxBg:SetBackdrop({bgFile=WSID_BG_FILE,edgeFile=WSID_BG_FILE,edgeSize=1})
+    local impBoxBg = CreateFrame(WSID.FRAME, nil, ioPanel, WSID.BACKDROP_TEMPLATE)
+    impBoxBg:SetSize(WSID.SET_CW, 26)
+    impBoxBg:SetPoint(WSID.TOPLEFT, impHdr, WSID.BOTTOMLEFT, 0, -6)
+    impBoxBg:SetBackdrop({bgFile=WSID.BG_FILE,edgeFile=WSID.BG_FILE,edgeSize=1})
     impBoxBg:SetBackdropColor(0.03,0.02,0.06,1)
     impBoxBg:SetBackdropBorderColor(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
 
-    local impBox = CreateFrame(WSID_EDIT_BOX, "WhatShouldIDoImportBox", impBoxBg)
-    impBox:SetPoint(WSID_TOPLEFT,     impBoxBg, WSID_TOPLEFT,     6, -4)
-    impBox:SetPoint(WSID_BOTTOMRIGHT, impBoxBg, WSID_BOTTOMRIGHT, -6,  4)
+    local impBox = CreateFrame(WSID.EDIT_BOX, "WhatShouldIDoImportBox", impBoxBg)
+    impBox:SetPoint(WSID.TOPLEFT,     impBoxBg, WSID.TOPLEFT,     6, -4)
+    impBox:SetPoint(WSID.BOTTOMRIGHT, impBoxBg, WSID.BOTTOMRIGHT, -6,  4)
     impBox:SetFontObject(ChatFontNormal)
     impBox:SetTextColor(1, 1, 1)
     impBox:SetAutoFocus(false)
-    impBox:SetScript(WSID_OnEscapePressed, function(s) s:ClearFocus() end)
-    impBox:SetScript(WSID_OnEditFocusGained, function()
+    impBox:SetScript(WSID.OnEscapePressed, function(s) s:ClearFocus() end)
+    impBox:SetScript(WSID.OnEditFocusGained, function()
         impBoxBg:SetBackdropBorderColor(COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3],1)
     end)
-    impBox:SetScript(WSID_OnEditFocusLost, function()
+    impBox:SetScript(WSID.OnEditFocusLost, function()
         impBoxBg:SetBackdropBorderColor(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     end)
 
-    local impBtn = MakeBtn(ioPanel, "Import Roster", WSID_SET_CW, 24)
-    impBtn:SetPoint(WSID_TOPLEFT, impBoxBg, WSID_BOTTOMLEFT, 0, -4)
+    local impBtn = MakeBtn(ioPanel, "Import Roster", WSID.SET_CW, 24)
+    impBtn:SetPoint(WSID.TOPLEFT, impBoxBg, WSID.BOTTOMLEFT, 0, -4)
 
-    local impStatus = ioPanel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    impStatus:SetPoint(WSID_TOPLEFT, impBtn, WSID_BOTTOMLEFT, 4, -6)
+    local impStatus = ioPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    impStatus:SetPoint(WSID.TOPLEFT, impBtn, WSID.BOTTOMLEFT, 4, -6)
     impStatus:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     impStatus:SetText(" ")
-    impStatus:SetWidth(WSID_SET_CW)
+    impStatus:SetWidth(WSID.SET_CW)
 
     WSID_DoImport = function(importStr)
-        importStr = strtrim(importStr or WSID_EMPTY_STRING)
-        if importStr == WSID_EMPTY_STRING then
+        importStr = strtrim(importStr or WSID.EMPTY_STRING)
+        if importStr == WSID.EMPTY_STRING then
             impStatus:SetText("Paste an export string first.")
             impStatus:SetTextColor(0.8,0.3,0.3)
             return
@@ -781,7 +781,7 @@ function BuildSettingsWindow()
         if not WhatShouldIDoDB.excludedChars then WhatShouldIDoDB.excludedChars = {} end
         for entry in str:gmatch("[^|]+") do
             local name,cls,level,race,faction,excl = entry:match("^([^:]+):([^:]+):([^:]+):([^:]+):([^:]+):?([01]?)$")
-            if name and name ~= WSID_EMPTY_STRING then
+            if name and name ~= WSID.EMPTY_STRING then
                 if compressed then
                     cls     = DecodeClass(cls) or NormalizeClass(cls)
                     race    = RACE_DEC[race]    or race
@@ -814,15 +814,15 @@ function BuildSettingsWindow()
         end
         BuildRoster()
         if WSID_refreshRoster then WSID_refreshRoster() end
-        impBox:SetText(WSID_EMPTY_STRING)
+        impBox:SetText(WSID.EMPTY_STRING)
         impStatus:SetTextColor(0.3,0.8,0.3)
         impStatus:SetText(string.format("Done! %d added, %d levels updated, %d excluded.", imported, updated, excluded))
     end
 
-    impBtn:SetScript(WSID_OnClick, function()
+    impBtn:SetScript(WSID.OnClick, function()
         WSID_DoImport(impBox:GetText())
     end)
-    impBox:SetScript(WSID_OnEnterPressed, function(s)
+    impBox:SetScript(WSID.OnEnterPressed, function(s)
         WSID_DoImport(s:GetText())
         s:ClearFocus()
     end)
@@ -831,27 +831,27 @@ function BuildSettingsWindow()
     -- COLORS PANEL
     --------------------------------------------------------------------
 
-    local colScrollBG, colScrollContent, _ = MakeScrollBox(colorsPanel, WSID_SET_CW, WSID_SET_H - 30 - WSID_SET_PAD * 2)
-    colScrollBG:SetPoint(WSID_TOPLEFT, colorsPanel, WSID_TOPLEFT, WSID_SET_PAD, -WSID_SET_PAD)
+    local colScrollBG, colScrollContent, _ = MakeScrollBox(colorsPanel, WSID.SET_CW, WSID.SET_H - 30 - WSID.SET_PAD * 2)
+    colScrollBG:SetPoint(WSID.TOPLEFT, colorsPanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
 
     -- COLOR THEME
-    local colHdr = MakeHeader(colScrollContent, "Color Theme", WSID_SET_CW - 4)
-    colHdr:SetPoint(WSID_TOPLEFT, colScrollContent, WSID_TOPLEFT, 0, -4)
+    local colHdr = MakeHeader(colScrollContent, "Color Theme", WSID.SET_CW - 4)
+    colHdr:SetPoint(WSID.TOPLEFT, colScrollContent, WSID.TOPLEFT, 0, -4)
 
-    local colDesc = colScrollContent:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    colDesc:SetPoint(WSID_TOPLEFT, colHdr, WSID_BOTTOMLEFT, 4, -6)
+    local colDesc = colScrollContent:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    colDesc:SetPoint(WSID.TOPLEFT, colHdr, WSID.BOTTOMLEFT, 4, -6)
     colDesc:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     colDesc:SetText("Select a theme. A UI reload is required to fully apply the new colors.")
-    colDesc:SetWidth(WSID_SET_CW - 8)
+    colDesc:SetWidth(WSID.SET_CW - 8)
 
-    local themeSep = colScrollContent:CreateTexture(nil,WSID_ARTWORK)
+    local themeSep = colScrollContent:CreateTexture(nil,WSID.ARTWORK)
     themeSep:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     themeSep:SetHeight(1)
-    themeSep:SetPoint(WSID_TOPLEFT,  colDesc, WSID_BOTTOMLEFT,  0, -10)
-    themeSep:SetPoint(WSID_TOPRIGHT, colDesc, WSID_BOTTOMRIGHT, 0, -10)
+    themeSep:SetPoint(WSID.TOPLEFT,  colDesc, WSID.BOTTOMLEFT,  0, -10)
+    themeSep:SetPoint(WSID.TOPRIGHT, colDesc, WSID.BOTTOMRIGHT, 0, -10)
 
-    local themeHdr = colScrollContent:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    themeHdr:SetPoint(WSID_TOPLEFT, themeSep, WSID_BOTTOMLEFT, 0, -8)
+    local themeHdr = colScrollContent:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    themeHdr:SetPoint(WSID.TOPLEFT, themeSep, WSID.BOTTOMLEFT, 0, -8)
     themeHdr:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     themeHdr:SetText("Preset Themes:")
 
@@ -899,22 +899,22 @@ function BuildSettingsWindow()
 
     local prevRow = themeHdr
     for _, td in ipairs(THEME_DEFS) do
-        local row = CreateFrame(WSID_FRAME, nil, colScrollContent)
-        row:SetSize(WSID_SET_CW - 4, 28)
-        row:SetPoint(WSID_TOPLEFT, prevRow, WSID_BOTTOMLEFT, 0, -6)
+        local row = CreateFrame(WSID.FRAME, nil, colScrollContent)
+        row:SetSize(WSID.SET_CW - 4, 28)
+        row:SetPoint(WSID.TOPLEFT, prevRow, WSID.BOTTOMLEFT, 0, -6)
 
         local btn = MakeBtn(row, td.label, 140, 26)
-        btn:SetPoint(WSID_TOPLEFT, row, WSID_TOPLEFT, 0, 0)
+        btn:SetPoint(WSID.TOPLEFT, row, WSID.TOPLEFT, 0, 0)
         local tname = td.name
         local tlabel = td.label
         btn._theme = tname
-        btn:SetScript(WSID_OnClick, function()
+        btn:SetScript(WSID.OnClick, function()
             ConfirmAndReload(tname, tlabel)
         end)
         table.insert(themeBtns, btn)
 
-        local dlbl = row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-        dlbl:SetPoint(WSID_LEFT, btn, WSID_RIGHT, 10, 0)
+        local dlbl = row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+        dlbl:SetPoint(WSID.LEFT, btn, WSID.RIGHT, 10, 0)
         dlbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
         dlbl:SetText(td.desc)
         prevRow = row
@@ -923,14 +923,14 @@ function BuildSettingsWindow()
     UpdateThemeBtns()
 
     -- Custom section
-    local customSep = colScrollContent:CreateTexture(nil,WSID_ARTWORK)
+    local customSep = colScrollContent:CreateTexture(nil,WSID.ARTWORK)
     customSep:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     customSep:SetHeight(1)
-    customSep:SetPoint(WSID_TOPLEFT,  prevRow, WSID_BOTTOMLEFT,  0, -12)
-    customSep:SetPoint(WSID_TOPRIGHT, prevRow, WSID_BOTTOMRIGHT, 0, -12)
+    customSep:SetPoint(WSID.TOPLEFT,  prevRow, WSID.BOTTOMLEFT,  0, -12)
+    customSep:SetPoint(WSID.TOPRIGHT, prevRow, WSID.BOTTOMRIGHT, 0, -12)
 
-    local customHdr = colScrollContent:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    customHdr:SetPoint(WSID_TOPLEFT, customSep, WSID_BOTTOMLEFT, 0, -8)
+    local customHdr = colScrollContent:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    customHdr:SetPoint(WSID.TOPLEFT, customSep, WSID.BOTTOMLEFT, 0, -8)
     customHdr:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     customHdr:SetText("Custom Colors -- click Edit to pick a color. Hit Apply when done.")
 
@@ -975,36 +975,36 @@ function BuildSettingsWindow()
 
     local prevCustom = customHdr
     for _, ck in ipairs(CUSTOM_KEYS) do
-        local row = CreateFrame(WSID_FRAME, nil, colScrollContent)
-        row:SetSize(WSID_SET_CW - 4, 26)
-        row:SetPoint(WSID_TOPLEFT, prevCustom, WSID_BOTTOMLEFT, 0, -6)
+        local row = CreateFrame(WSID.FRAME, nil, colScrollContent)
+        row:SetSize(WSID.SET_CW - 4, 26)
+        row:SetPoint(WSID.TOPLEFT, prevCustom, WSID.BOTTOMLEFT, 0, -6)
 
-        local swatch = CreateFrame(WSID_BUTTON, nil, row, WSID_BACKDROP_TEMPLATE)
+        local swatch = CreateFrame(WSID.BUTTON, nil, row, WSID.BACKDROP_TEMPLATE)
         swatch:SetSize(22, 22)
-        swatch:SetPoint(WSID_TOPLEFT, row, WSID_TOPLEFT, 0, -2)
-        swatch:SetBackdrop({bgFile=WSID_BG_FILE,edgeFile=WSID_BG_FILE,edgeSize=1})
+        swatch:SetPoint(WSID.TOPLEFT, row, WSID.TOPLEFT, 0, -2)
+        swatch:SetBackdrop({bgFile=WSID.BG_FILE,edgeFile=WSID.BG_FILE,edgeSize=1})
         local cv = COLOR_TABLE[ck.key]
         swatch:SetBackdropColor(cv[1],cv[2],cv[3],1)
         swatch:SetBackdropBorderColor(0.4,0.4,0.4,1)
         table.insert(swatchRefs, {swatch=swatch, key=ck.key})
 
-        local rlbl = row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-        rlbl:SetPoint(WSID_LEFT, swatch, WSID_RIGHT, 8, 0)
+        local rlbl = row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+        rlbl:SetPoint(WSID.LEFT, swatch, WSID.RIGHT, 8, 0)
         rlbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
         rlbl:SetText(ck.label)
 
         local editBtn = MakeBtn(row, "Edit", 50, 22)
-        editBtn:SetPoint(WSID_LEFT, rlbl, WSID_RIGHT, 10, 0)
+        editBtn:SetPoint(WSID.LEFT, rlbl, WSID.RIGHT, 10, 0)
         local k = ck.key
-        editBtn:SetScript(WSID_OnClick, function() OpenColorPicker(k, swatch) end)
+        editBtn:SetScript(WSID.OnClick, function() OpenColorPicker(k, swatch) end)
 
         prevCustom = row
     end
 
     -- Apply Custom button with confirmation
     local applyCustomBtn = MakeBtn(colScrollContent, "Apply Custom Theme", 220, 30)
-    applyCustomBtn:SetPoint(WSID_TOPLEFT, prevCustom, WSID_BOTTOMLEFT, 0, -12)
-    applyCustomBtn:SetScript(WSID_OnClick, function()
+    applyCustomBtn:SetPoint(WSID.TOPLEFT, prevCustom, WSID.BOTTOMLEFT, 0, -12)
+    applyCustomBtn:SetScript(WSID.OnClick, function()
         StaticPopupDialogs["WSID_CONFIRM_CUSTOM"] = {
             text = "Apply your custom color theme?\n\nThe UI will reload to apply the new colors.",
             button1 = "Yes, Apply",
@@ -1031,51 +1031,51 @@ function BuildSettingsWindow()
     -- EXPANSIONS PANEL
     --------------------------------------------------------------------
 
-    local expExclHdr = MakeHeader(expExclPanel, "Raid & Dungeon Expansions", WSID_SET_CW)
-    expExclHdr:SetPoint(WSID_TOPLEFT, expExclPanel, WSID_TOPLEFT, WSID_SET_PAD, -WSID_SET_PAD)
+    local expExclHdr = MakeHeader(expExclPanel, "Raid & Dungeon Expansions", WSID.SET_CW)
+    expExclHdr:SetPoint(WSID.TOPLEFT, expExclPanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
 
-    local expExclDesc = expExclPanel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    expExclDesc:SetPoint(WSID_TOPLEFT, expExclHdr, WSID_BOTTOMLEFT, 4, -6)
+    local expExclDesc = expExclPanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    expExclDesc:SetPoint(WSID.TOPLEFT, expExclHdr, WSID.BOTTOMLEFT, 4, -6)
     expExclDesc:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     expExclDesc:SetText("Uncheck an expansion to exclude it from the Raids & Dungeons spinner.")
-    expExclDesc:SetWidth(WSID_SET_CW - 8)
+    expExclDesc:SetWidth(WSID.SET_CW - 8)
 
-    local expExclScrollBG, expExclContent, _ = MakeScrollBox(expExclPanel, WSID_SET_CW, WSID_SET_H - 160)
-    expExclScrollBG:SetPoint(WSID_TOPLEFT, expExclDesc, WSID_BOTTOMLEFT, -4, -8)
+    local expExclScrollBG, expExclContent, _ = MakeScrollBox(expExclPanel, WSID.SET_CW, WSID.SET_H - 160)
+    expExclScrollBG:SetPoint(WSID.TOPLEFT, expExclDesc, WSID.BOTTOMLEFT, -4, -8)
 
     local ORDER = WSID_EXPANSIONS
 
     local ROW_H = 28
 
-    local COL_W = math.floor(WSID_SET_CW / 2) - 2
+    local COL_W = math.floor(WSID.SET_CW / 2) - 2
 
     local function MakeExpRow(i, exp)
         local col = (i-1) % 2        -- 0 = left, 1 = right
         local rowIdx = math.floor((i-1) / 2)
         local even = (rowIdx%2==0)
-        local row = CreateFrame(WSID_BUTTON, nil, expExclContent, WSID_BACKDROP_TEMPLATE)
+        local row = CreateFrame(WSID.BUTTON, nil, expExclContent, WSID.BACKDROP_TEMPLATE)
         row:SetSize(COL_W, ROW_H)
-        row:SetPoint(WSID_TOPLEFT, expExclContent, WSID_TOPLEFT, col*(COL_W+4), -rowIdx*ROW_H)
-        row:SetBackdrop({bgFile=WSID_BG_FILE})
+        row:SetPoint(WSID.TOPLEFT, expExclContent, WSID.TOPLEFT, col*(COL_W+4), -rowIdx*ROW_H)
+        row:SetBackdrop({bgFile=WSID.BG_FILE})
         row:SetBackdropColor(even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],
                              even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],
                              even and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3], 1)
 
         -- Custom checkbox box
-        local box = CreateFrame(WSID_FRAME, nil, row, WSID_BACKDROP_TEMPLATE)
+        local box = CreateFrame(WSID.FRAME, nil, row, WSID.BACKDROP_TEMPLATE)
         box:SetSize(14, 14)
-        box:SetPoint(WSID_LEFT, row, WSID_LEFT, 10, 0)
-        box:SetBackdrop({bgFile=WSID_BG_FILE,edgeFile=WSID_BG_FILE,edgeSize=1})
+        box:SetPoint(WSID.LEFT, row, WSID.LEFT, 10, 0)
+        box:SetBackdrop({bgFile=WSID.BG_FILE,edgeFile=WSID.BG_FILE,edgeSize=1})
 
         -- Checkmark texture
-        local check = box:CreateTexture(nil, WSID_OVERLAY)
+        local check = box:CreateTexture(nil, WSID.OVERLAY)
         check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
         check:SetSize(16, 16)
-        check:SetPoint(WSID_CENTER, box, WSID_CENTER, 0, 0)
+        check:SetPoint(WSID.CENTER, box, WSID.CENTER, 0, 0)
 
         -- Label
-        local lbl = row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-        lbl:SetPoint(WSID_LEFT, box, WSID_RIGHT, 8, 0)
+        local lbl = row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+        lbl:SetPoint(WSID.LEFT, box, WSID.RIGHT, 8, 0)
 
         local expName = exp
         local checked = not (WhatShouldIDoDB.excludedExpansions and WhatShouldIDoDB.excludedExpansions[expName])
@@ -1105,7 +1105,7 @@ function BuildSettingsWindow()
         lbl:SetText(expName)
         SetState(checked)
 
-        row:SetScript(WSID_OnClick, function()
+        row:SetScript(WSID.OnClick, function()
             if not WhatShouldIDoDB.excludedExpansions then WhatShouldIDoDB.excludedExpansions = {} end
             checked = not checked
             if checked then
@@ -1115,12 +1115,12 @@ function BuildSettingsWindow()
             end
             SetState(checked)
         end)
-        row:SetScript(WSID_OnEnter, function()
+        row:SetScript(WSID.OnEnter, function()
             row:SetBackdropColor(COLOR_TABLE.row_hover[1],COLOR_TABLE.row_hover[2],COLOR_TABLE.row_hover[3],1)
         end)
         local re,rg,rb = even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1], even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2], even and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3]
         row:SetBackdropColor(re,rg,rb,1)
-        row:SetScript(WSID_OnLeave, function() row:SetBackdropColor(re,rg,rb,1) end)
+        row:SetScript(WSID.OnLeave, function() row:SetBackdropColor(re,rg,rb,1) end)
 
         return row, SetState
     end
@@ -1133,16 +1133,16 @@ function BuildSettingsWindow()
     expExclContent:SetHeight(math.ceil(#ORDER / 2) * ROW_H)
 
     -- Enable All / Disable All buttons
-    local expEnableAllBtn = MakeBtn(expExclPanel, "Enable All", math.floor(WSID_SET_CW/2) - 3, 24)
-    expEnableAllBtn:SetPoint(WSID_BOTTOMLEFT, expExclPanel, WSID_BOTTOMLEFT, WSID_SET_PAD, WSID_SET_PAD)
-    expEnableAllBtn:SetScript(WSID_OnClick, function()
+    local expEnableAllBtn = MakeBtn(expExclPanel, "Enable All", math.floor(WSID.SET_CW/2) - 3, 24)
+    expEnableAllBtn:SetPoint(WSID.BOTTOMLEFT, expExclPanel, WSID.BOTTOMLEFT, WSID.SET_PAD, WSID.SET_PAD)
+    expEnableAllBtn:SetScript(WSID.OnClick, function()
         if WhatShouldIDoDB.excludedExpansions then wipe(WhatShouldIDoDB.excludedExpansions) end
         for _, setState in pairs(expRows) do setState(true) end
     end)
 
-    local expDisableAllBtn = MakeBtn(expExclPanel, "Disable All", math.floor(WSID_SET_CW/2) - 3, 24)
-    expDisableAllBtn:SetPoint(WSID_BOTTOMRIGHT, expExclPanel, WSID_BOTTOMRIGHT, -WSID_SET_PAD, WSID_SET_PAD)
-    expDisableAllBtn:SetScript(WSID_OnClick, function()
+    local expDisableAllBtn = MakeBtn(expExclPanel, "Disable All", math.floor(WSID.SET_CW/2) - 3, 24)
+    expDisableAllBtn:SetPoint(WSID.BOTTOMRIGHT, expExclPanel, WSID.BOTTOMRIGHT, -WSID.SET_PAD, WSID.SET_PAD)
+    expDisableAllBtn:SetScript(WSID.OnClick, function()
         if not WhatShouldIDoDB.excludedExpansions then WhatShouldIDoDB.excludedExpansions = {} end
         for _, exp in ipairs(ORDER) do
             WhatShouldIDoDB.excludedExpansions[exp] = true
@@ -1154,14 +1154,14 @@ function BuildSettingsWindow()
     -- UI SCALE PANEL
     --------------------------------------------------------------------
 
-    local scaleHdr = MakeHeader(scalePanel, "UI Scale", WSID_SET_CW)
-    scaleHdr:SetPoint(WSID_TOPLEFT, scalePanel, WSID_TOPLEFT, WSID_SET_PAD, -WSID_SET_PAD)
+    local scaleHdr = MakeHeader(scalePanel, "UI Scale", WSID.SET_CW)
+    scaleHdr:SetPoint(WSID.TOPLEFT, scalePanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
 
-    local scaleDesc = scalePanel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    scaleDesc:SetPoint(WSID_TOPLEFT, scaleHdr, WSID_BOTTOMLEFT, 4, -8)
+    local scaleDesc = scalePanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    scaleDesc:SetPoint(WSID.TOPLEFT, scaleHdr, WSID.BOTTOMLEFT, 4, -8)
     scaleDesc:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     scaleDesc:SetText("Scale the addon windows and all text. Changes apply instantly.")
-    scaleDesc:SetWidth(WSID_SET_CW - 8)
+    scaleDesc:SetWidth(WSID.SET_CW - 8)
 
     local scaleOptions = {
         {label="50%",  val=0.50}, {label="60%",  val=0.60}, {label="70%",  val=0.70},
@@ -1172,24 +1172,24 @@ function BuildSettingsWindow()
         {label="200%", val=2.00},
     }
 
-    local scaleLbl = scalePanel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    scaleLbl:SetPoint(WSID_TOPLEFT, scaleDesc, WSID_BOTTOMLEFT, 0, -12)
+    local scaleLbl = scalePanel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    scaleLbl:SetPoint(WSID.TOPLEFT, scaleDesc, WSID.BOTTOMLEFT, 0, -12)
     scaleLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     scaleLbl:SetText("Scale:")
 
-    local scaleBox = CreateFrame(WSID_BUTTON, nil, scalePanel, WSID_BACKDROP_TEMPLATE)
+    local scaleBox = CreateFrame(WSID.BUTTON, nil, scalePanel, WSID.BACKDROP_TEMPLATE)
     scaleBox:SetSize(100, 26)
-    scaleBox:SetPoint(WSID_LEFT, scaleLbl, WSID_RIGHT, 8, 0)
+    scaleBox:SetPoint(WSID.LEFT, scaleLbl, WSID.RIGHT, 8, 0)
     BgBorder(scaleBox, COLOR_TABLE.result_bg[1],COLOR_TABLE.result_bg[2],COLOR_TABLE.result_bg[3], COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3])
-    local scaleBoxLbl = scaleBox:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    scaleBoxLbl:SetPoint(WSID_LEFT, scaleBox, WSID_LEFT, 8, 0)
+    local scaleBoxLbl = scaleBox:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    scaleBoxLbl:SetPoint(WSID.LEFT, scaleBox, WSID.LEFT, 8, 0)
     scaleBoxLbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
     local curScale = WhatShouldIDoDB.uiScale or 1.0
     scaleBoxLbl:SetText(string.format("%.0f%%", curScale * 100))
 
-    local scaleDropdown = CreateFrame(WSID_FRAME, nil, scalePanel, WSID_BACKDROP_TEMPLATE)
+    local scaleDropdown = CreateFrame(WSID.FRAME, nil, scalePanel, WSID.BACKDROP_TEMPLATE)
     scaleDropdown:SetSize(100, #scaleOptions * 22)
-    scaleDropdown:SetPoint(WSID_TOPLEFT, scaleBox, WSID_BOTTOMLEFT, 0, -2)
+    scaleDropdown:SetPoint(WSID.TOPLEFT, scaleBox, WSID.BOTTOMLEFT, 0, -2)
     scaleDropdown:SetFrameStrata("TOOLTIP")
     BgBorder(scaleDropdown, COLOR_TABLE.bg[1],COLOR_TABLE.bg[2],COLOR_TABLE.bg[3], COLOR_TABLE.win_border[1],COLOR_TABLE.win_border[2],COLOR_TABLE.win_border[3])
     scaleDropdown:Hide()
@@ -1203,17 +1203,17 @@ function BuildSettingsWindow()
     end
 
     for i, opt in ipairs(scaleOptions) do
-        local row = CreateFrame(WSID_BUTTON, nil, scaleDropdown)
+        local row = CreateFrame(WSID.BUTTON, nil, scaleDropdown)
         row:SetSize(100, 22)
-        row:SetPoint(WSID_TOPLEFT, scaleDropdown, WSID_TOPLEFT, 0, -(i-1)*22)
-        local rb = row:CreateTexture(nil,WSID_BACKGROUND)
+        row:SetPoint(WSID.TOPLEFT, scaleDropdown, WSID.TOPLEFT, 0, -(i-1)*22)
+        local rb = row:CreateTexture(nil,WSID.BACKGROUND)
         rb:SetAllPoints()
         local isEven = (i%2==0)
         rb:SetColorTexture(isEven and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],
                            isEven and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],
                            isEven and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3], 1)
-        local rl = row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-        rl:SetPoint(WSID_LEFT, row, WSID_LEFT, 10, 0)
+        local rl = row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+        rl:SetPoint(WSID.LEFT, row, WSID.LEFT, 10, 0)
         if opt.val == 1.0 then
             rl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
         else
@@ -1221,22 +1221,22 @@ function BuildSettingsWindow()
         end
         rl:SetText(opt.label)
         local ov, ol = opt.val, opt.label
-        row:SetScript(WSID_OnClick,  function() ApplyScale(ov, ol) end)
-        row:SetScript(WSID_OnEnter, function() rb:SetColorTexture(COLOR_TABLE.row_hover[1],COLOR_TABLE.row_hover[2],COLOR_TABLE.row_hover[3],1) end)
-        row:SetScript(WSID_OnLeave, function()
+        row:SetScript(WSID.OnClick,  function() ApplyScale(ov, ol) end)
+        row:SetScript(WSID.OnEnter, function() rb:SetColorTexture(COLOR_TABLE.row_hover[1],COLOR_TABLE.row_hover[2],COLOR_TABLE.row_hover[3],1) end)
+        row:SetScript(WSID.OnLeave, function()
             rb:SetColorTexture(isEven and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],
                                isEven and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],
                                isEven and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3], 1)
         end)
     end
 
-    scaleBox:SetScript(WSID_OnClick, function()
+    scaleBox:SetScript(WSID.OnClick, function()
         if scaleDropdown:IsShown() then scaleDropdown:Hide() else scaleDropdown:Show() end
     end)
 
     local scaleResetBtn = MakeBtn(scalePanel, "Reset to 100%", 120, 26)
-    scaleResetBtn:SetPoint(WSID_TOPLEFT, scaleLbl, WSID_BOTTOMLEFT, 0, -14)
-    scaleResetBtn:SetScript(WSID_OnClick, function()
+    scaleResetBtn:SetPoint(WSID.TOPLEFT, scaleLbl, WSID.BOTTOMLEFT, 0, -14)
+    scaleResetBtn:SetScript(WSID.OnClick, function()
         ApplyScale(1.0, "100%")
     end)
 
@@ -1244,28 +1244,28 @@ function BuildSettingsWindow()
     -- CHANGELOG PANEL
     --------------------------------------------------------------------
 
-    local clScrollBG, clScrollContent, _ = MakeScrollBox(changelogPanel, WSID_SET_CW, WSID_SET_H - 50)
-    clScrollBG:SetPoint(WSID_TOPLEFT, changelogPanel, WSID_TOPLEFT, WSID_SET_PAD, -WSID_SET_PAD)
+    local clScrollBG, clScrollContent, _ = MakeScrollBox(changelogPanel, WSID.SET_CW, WSID.SET_H - 50)
+    clScrollBG:SetPoint(WSID.TOPLEFT, changelogPanel, WSID.TOPLEFT, WSID.SET_PAD, -WSID.SET_PAD)
 
     local yOff = -6
     for _, block in ipairs(WSID_CHANGELOG) do
         -- Version header
-        local vHdr = MakeHeader(clScrollContent, "v"..block.version, WSID_SET_CW - 4)
-        vHdr:SetPoint(WSID_TOPLEFT, clScrollContent, WSID_TOPLEFT, 0, yOff)
+        local vHdr = MakeHeader(clScrollContent, "v"..block.version, WSID.SET_CW - 4)
+        vHdr:SetPoint(WSID.TOPLEFT, clScrollContent, WSID.TOPLEFT, 0, yOff)
         yOff = yOff - 34
 
         for _, entry in ipairs(block.entries) do
             local isNew = entry.type == "new"
             -- Tag label
-            local tag = clScrollContent:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-            tag:SetPoint(WSID_TOPLEFT, clScrollContent, WSID_TOPLEFT, 8, yOff)
+            local tag = clScrollContent:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+            tag:SetPoint(WSID.TOPLEFT, clScrollContent, WSID.TOPLEFT, 8, yOff)
             tag:SetText(isNew and "|cff44cc44[New]|r" or "|cffcc4444[Fix]|r")
 
             -- Entry text
-            local txt = clScrollContent:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-            txt:SetPoint(WSID_TOPLEFT, clScrollContent, WSID_TOPLEFT, 52, yOff)
-            txt:SetPoint(WSID_RIGHT,   clScrollContent, WSID_RIGHT,  -8, 0)
-            txt:SetJustifyH(WSID_LEFT)
+            local txt = clScrollContent:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+            txt:SetPoint(WSID.TOPLEFT, clScrollContent, WSID.TOPLEFT, 52, yOff)
+            txt:SetPoint(WSID.RIGHT,   clScrollContent, WSID.RIGHT,  -8, 0)
+            txt:SetJustifyH(WSID.LEFT)
             txt:SetWordWrap(true)
             txt:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
             txt:SetText(entry.text)
@@ -1280,7 +1280,7 @@ function BuildSettingsWindow()
 
     clScrollContent:SetHeight(math.abs(yOff) + 20)
 
-    f:SetScript(WSID_OnShow,function() SetNavActive("activities") end)
+    f:SetScript(WSID.OnShow,function() SetNavActive("activities") end)
     SetNavActive("activities")
     return f
 end

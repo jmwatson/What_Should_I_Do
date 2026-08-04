@@ -9,12 +9,12 @@ local roster = {}
 
 local function BuildRoster()
     roster = {}
-    local name    = UnitName(WSID_IDENTITY)
-    local cls, _  = UnitClass(WSID_IDENTITY)
+    local name    = UnitName(WSID.IDENTITY)
+    local cls, _  = UnitClass(WSID.IDENTITY)
     cls = NormalizeClass(cls)
-    local level   = UnitLevel(WSID_IDENTITY)
-    local race    = UnitRace(WSID_IDENTITY)
-    local faction = UnitFactionGroup(WSID_IDENTITY)
+    local level   = UnitLevel(WSID.IDENTITY)
+    local race    = UnitRace(WSID.IDENTITY)
+    local faction = UnitFactionGroup(WSID.IDENTITY)
     local found   = false
     for _, s in ipairs(WhatShouldIDoDB.seenChars) do
         if s.name == name then
@@ -71,11 +71,11 @@ local settingsFrame
 -- INIT
 ------------------------------------------------------------------------
 
-local initFrame=CreateFrame(WSID_FRAME)
-initFrame:RegisterEvent(WSID_ADDON_LOADED)
-initFrame:RegisterEvent(WSID_PLAYER_LOGIN)
-initFrame:SetScript(WSID_OnEvent,function(self,event,arg1)
-    if event==WSID_ADDON_LOADED and arg1==WSID_ADDON_NAME then
+local initFrame=CreateFrame(WSID.FRAME)
+initFrame:RegisterEvent(WSID.ADDON_LOADED)
+initFrame:RegisterEvent(WSID.PLAYER_LOGIN)
+initFrame:SetScript(WSID.OnEvent,function(self,event,arg1)
+    if event==WSID.ADDON_LOADED and arg1==WSID.ADDON_NAME then
         InitDB()
         -- Apply saved theme (must run after InitDB sets defaults and after ApplyTheme is defined)
         if WhatShouldIDoDB.colorTheme == CUSTOM and next(WhatShouldIDoDB.customColors) then
@@ -83,10 +83,10 @@ initFrame:SetScript(WSID_OnEvent,function(self,event,arg1)
         else
             ApplyTheme(WhatShouldIDoDB.colorTheme or DEFAULT)
         end
-        MainFrame     = BuildMainFrame()
-        settingsFrame = BuildSettingsWindow()
-        RegisterMinimapButton()
-    elseif event==WSID_PLAYER_LOGIN then
+        MainFrame     = WSID.BuildMainFrame()
+        settingsFrame = WSID.BuildSettingsWindow()
+        WSID.RegisterMinimapButton()
+    elseif event==WSID.PLAYER_LOGIN then
         if WhatShouldIDoDB then BuildRoster() end
     end
 end)

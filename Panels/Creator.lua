@@ -4,26 +4,26 @@
 function BuildCreatorPanel(contentArea)
     local panel = MakePanel(contentArea)
     local hdr = MakeHeader(panel, "Character Creator")
-    hdr:SetPoint(WSID_TOPLEFT, panel, WSID_TOPLEFT, WSID_PAD, -WSID_PAD)
+    hdr:SetPoint(WSID.TOPLEFT, panel, WSID.TOPLEFT, WSID.PAD, -WSID.PAD)
 
-    local desc = MakeLabel(panel, "Spin a random valid Race + Class combo for a new character.", hdr, WSID_BOTTOMLEFT, 4, -8)
+    local desc = MakeLabel(panel, "Spin a random valid Race + Class combo for a new character.", hdr, WSID.BOTTOMLEFT, 4, -8)
 
     local raceBox, raceLabel = MakeResult(panel, nil, 52, "RACE")
-    raceBox:SetPoint(WSID_TOPLEFT, desc, WSID_BOTTOMLEFT, -4, -12)
+    raceBox:SetPoint(WSID.TOPLEFT, desc, WSID.BOTTOMLEFT, -4, -12)
     raceLabel:SetText("Race")
 
     local classBox, classLabel = MakeResult(panel, nil, 52, "CLASS")
-    classBox:SetPoint(WSID_TOPLEFT, raceBox, WSID_BOTTOMLEFT, 0, -10)
+    classBox:SetPoint(WSID.TOPLEFT, raceBox, WSID.BOTTOMLEFT, 0, -10)
     classLabel:SetText("Class")
 
-    local infoLbl = panel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    infoLbl:SetPoint(WSID_TOPLEFT, classBox, WSID_BOTTOMLEFT, 4, -8)
+    local infoLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    infoLbl:SetPoint(WSID.TOPLEFT, classBox, WSID.BOTTOMLEFT, 4, -8)
     infoLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     infoLbl:SetText(" ")
 
     -- Faction filter
-    local filterLbl = panel:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    filterLbl:SetPoint(WSID_TOPLEFT, infoLbl, WSID_BOTTOMLEFT, 0, -8)
+    local filterLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    filterLbl:SetPoint(WSID.TOPLEFT, infoLbl, WSID.BOTTOMLEFT, 0, -8)
     filterLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     filterLbl:SetText("Faction:")
 
@@ -31,7 +31,7 @@ function BuildCreatorPanel(contentArea)
     local filterBtns = {}
     for i, opt in ipairs({"Any",ALLIANCE,HORDE}) do
         local fb = MakeBtn(panel, opt, 84, 26)
-        fb:SetPoint(WSID_LEFT, filterLbl, WSID_RIGHT, 6+(i-1)*88, 0)
+        fb:SetPoint(WSID.LEFT, filterLbl, WSID.RIGHT, 6+(i-1)*88, 0)
         local fo = opt
         local function Activate(b)
             b:SetBackdropColor(COLOR_TABLE.nav_active[1],COLOR_TABLE.nav_active[2],COLOR_TABLE.nav_active[3])
@@ -43,7 +43,7 @@ function BuildCreatorPanel(contentArea)
             b:SetBackdropBorderColor(COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3],1)
             b._lbl:SetTextColor(COLOR_TABLE.btn_text[1],COLOR_TABLE.btn_text[2],COLOR_TABLE.btn_text[3])
         end
-        fb:SetScript(WSID_OnClick, function()
+        fb:SetScript(WSID.OnClick, function()
             factionFilter=fo
             for _,b in ipairs(filterBtns) do Deactivate(b) end
             Activate(fb)
@@ -60,20 +60,20 @@ function BuildCreatorPanel(contentArea)
     filterBtns[1]._lbl:SetTextColor(1,1,1)
 
     local spinRaceBtn = MakeBtn(panel, "Spin Race", nil, 30)
-    spinRaceBtn:SetPoint(WSID_TOP, filterLbl, WSID_BOTTOM, 0, -10)
-    spinRaceBtn:SetPoint(WSID_LEFT,    panel, WSID_LEFT,  WSID_PAD, 0)
-    spinRaceBtn:SetPoint(WSID_RIGHT,   panel, WSID_CENTER, -3, 0)
+    spinRaceBtn:SetPoint(WSID.TOP, filterLbl, WSID.BOTTOM, 0, -10)
+    spinRaceBtn:SetPoint(WSID.LEFT,    panel, WSID.LEFT,  WSID.PAD, 0)
+    spinRaceBtn:SetPoint(WSID.RIGHT,   panel, WSID.CENTER, -3, 0)
 
     local spinClassBtn = MakeBtn(panel, "Spin Class", nil, 30)
-    spinClassBtn:SetPoint(WSID_TOP, filterLbl, WSID_BOTTOM, 0, -10)
-    spinClassBtn:SetPoint(WSID_LEFT,    panel, WSID_CENTER, 3, 0)
-    spinClassBtn:SetPoint(WSID_RIGHT,   panel, WSID_RIGHT, -WSID_PAD, 0)
+    spinClassBtn:SetPoint(WSID.TOP, filterLbl, WSID.BOTTOM, 0, -10)
+    spinClassBtn:SetPoint(WSID.LEFT,    panel, WSID.CENTER, 3, 0)
+    spinClassBtn:SetPoint(WSID.RIGHT,   panel, WSID.RIGHT, -WSID.PAD, 0)
     spinClassBtn:SetEnabled(false)
 
     local spinBothBtn = MakeBtn(panel, "Spin Both", nil, 30)
-    spinBothBtn:SetPoint(WSID_TOP, spinRaceBtn, WSID_BOTTOM, 0, -6)
-    spinBothBtn:SetPoint(WSID_LEFT,    panel, WSID_LEFT,  WSID_PAD, 0)
-    spinBothBtn:SetPoint(WSID_RIGHT,   panel, WSID_RIGHT, -WSID_PAD, 0)
+    spinBothBtn:SetPoint(WSID.TOP, spinRaceBtn, WSID.BOTTOM, 0, -6)
+    spinBothBtn:SetPoint(WSID.LEFT,    panel, WSID.LEFT,  WSID.PAD, 0)
+    spinBothBtn:SetPoint(WSID.RIGHT,   panel, WSID.RIGHT, -WSID.PAD, 0)
 
     local pickedRace = nil
 
@@ -172,9 +172,9 @@ function BuildCreatorPanel(contentArea)
         end)
     end
 
-    spinRaceBtn:SetScript(WSID_OnClick, SpinRaceBtnClick)
-    spinClassBtn:SetScript(WSID_OnClick, SpinClassBtnClick)
-    spinBothBtn:SetScript(WSID_OnClick, SpinBothBtnClick)
+    spinRaceBtn:SetScript(WSID.OnClick, SpinRaceBtnClick)
+    spinClassBtn:SetScript(WSID.OnClick, SpinClassBtnClick)
+    spinBothBtn:SetScript(WSID.OnClick, SpinBothBtnClick)
 
     return panel
 end

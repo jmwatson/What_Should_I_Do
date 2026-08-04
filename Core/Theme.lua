@@ -166,10 +166,10 @@ ApplyTheme(DEFAULT)
 -- RENDERING HELPERS
 ------------------------------------------------------------------------
 
-local FLAT = {bgFile=WSID_BG_FILE, edgeFile=WSID_BG_FILE, edgeSize=1}
+local FLAT = {bgFile=WSID.BG_FILE, edgeFile=WSID.BG_FILE, edgeSize=1}
 
 function Tx(f, r, g, b, a)
-    local t = f:CreateTexture(nil, WSID_BACKGROUND)
+    local t = f:CreateTexture(nil, WSID.BACKGROUND)
     t:SetAllPoints()
     t:SetColorTexture(r, g, b, a or 1)
     return t
@@ -186,39 +186,39 @@ end
 ------------------------------------------------------------------------
 
 function MakeScrollBox(parent, w, h)
-    local bg = CreateFrame(WSID_FRAME, nil, parent, WSID_BACKDROP_TEMPLATE)
+    local bg = CreateFrame(WSID.FRAME, nil, parent, WSID.BACKDROP_TEMPLATE)
     bg:SetHeight(h)
     if w then bg:SetWidth(w) else
-        bg:SetPoint(WSID_LEFT,  parent, WSID_LEFT,  WSID_PAD, 0)
-        bg:SetPoint(WSID_RIGHT, parent, WSID_RIGHT, -WSID_PAD, 0)
+        bg:SetPoint(WSID.LEFT,  parent, WSID.LEFT,  WSID.PAD, 0)
+        bg:SetPoint(WSID.RIGHT, parent, WSID.RIGHT, -WSID.PAD, 0)
     end
     BgBorder(bg, COLOR_TABLE.row_even[1],COLOR_TABLE.row_even[2],COLOR_TABLE.row_even[3],
                  COLOR_TABLE.divider[1], COLOR_TABLE.divider[2], COLOR_TABLE.divider[3])
-    local clip = CreateFrame(WSID_FRAME, nil, bg)
-    clip:SetPoint(WSID_TOPLEFT,     bg, WSID_TOPLEFT,     1, -1)
-    clip:SetPoint(WSID_BOTTOMRIGHT, bg, WSID_BOTTOMRIGHT, -1, 1)
+    local clip = CreateFrame(WSID.FRAME, nil, bg)
+    clip:SetPoint(WSID.TOPLEFT,     bg, WSID.TOPLEFT,     1, -1)
+    clip:SetPoint(WSID.BOTTOMRIGHT, bg, WSID.BOTTOMRIGHT, -1, 1)
     clip:SetClipsChildren(true)
-    local content = CreateFrame(WSID_FRAME, nil, clip)
+    local content = CreateFrame(WSID.FRAME, nil, clip)
     if w then
         content:SetWidth(w-2)
     else
         -- Stretch content to clip width dynamically
-        content:SetPoint(WSID_LEFT,  clip, WSID_LEFT,  0, 0)
-        content:SetPoint(WSID_RIGHT, clip, WSID_RIGHT, 0, 0)
+        content:SetPoint(WSID.LEFT,  clip, WSID.LEFT,  0, 0)
+        content:SetPoint(WSID.RIGHT, clip, WSID.RIGHT, 0, 0)
     end
     content:SetHeight(h)
-    content:SetPoint(WSID_TOPLEFT, clip, WSID_TOPLEFT, 0, 0)
+    content:SetPoint(WSID.TOPLEFT, clip, WSID.TOPLEFT, 0, 0)
     local scrollOff = 0
     local function Clamp(v,lo,hi) return math.max(lo,math.min(hi,v)) end
     local function Scroll(d)
         scrollOff = Clamp(scrollOff - d*22*2, 0, math.max(0, content:GetHeight()-clip:GetHeight()))
-        content:SetPoint(WSID_TOPLEFT, clip, WSID_TOPLEFT, 0, scrollOff)
+        content:SetPoint(WSID.TOPLEFT, clip, WSID.TOPLEFT, 0, scrollOff)
     end
     bg:EnableMouseWheel(true)
-    bg:SetScript(WSID_OnMouseWheel, function(_,d) Scroll(d) end)
+    bg:SetScript(WSID.OnMouseWheel, function(_,d) Scroll(d) end)
     local function ResetScroll()
         scrollOff=0
-        content:SetPoint(WSID_TOPLEFT, clip, WSID_TOPLEFT, 0, 0)
+        content:SetPoint(WSID.TOPLEFT, clip, WSID.TOPLEFT, 0, 0)
     end
     return bg, content, ResetScroll
 end
@@ -228,52 +228,52 @@ end
 ------------------------------------------------------------------------
 
 function MakeResult(parent, w, h, tagText)
-    local f = CreateFrame(WSID_FRAME, nil, parent, WSID_BACKDROP_TEMPLATE)
+    local f = CreateFrame(WSID.FRAME, nil, parent, WSID.BACKDROP_TEMPLATE)
     f:SetHeight(h or 52)
     -- If w is a number use fixed size; if nil stretch to parent
     if w then f:SetWidth(w) else
         -- caller sets TOPLEFT; we add LEFT+RIGHT for stretch
-        f:SetPoint(WSID_LEFT,  parent, WSID_LEFT,  WSID_PAD, 0)
-        f:SetPoint(WSID_RIGHT, parent, WSID_RIGHT, -WSID_PAD, 0)
+        f:SetPoint(WSID.LEFT,  parent, WSID.LEFT,  WSID.PAD, 0)
+        f:SetPoint(WSID.RIGHT, parent, WSID.RIGHT, -WSID.PAD, 0)
     end
     BgBorder(f, COLOR_TABLE.result_bg[1],COLOR_TABLE.result_bg[2],COLOR_TABLE.result_bg[3],
                 COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3])
     if tagText then
-        local tag = f:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-        tag:SetPoint(WSID_TOPLEFT, f, WSID_TOPLEFT, 10, -6)
+        local tag = f:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+        tag:SetPoint(WSID.TOPLEFT, f, WSID.TOPLEFT, 10, -6)
         tag:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
         tag:SetText(tagText)
     end
-    local lbl = f:CreateFontString(nil,WSID_OVERLAY)
-    lbl:SetFont(WSID_GAME_FONT, 17, WSID_EMPTY_STRING)
-    lbl:SetPoint(WSID_CENTER, f, WSID_CENTER, 0, tagText and -4 or 0)
-    lbl:SetPoint(WSID_LEFT,  f, WSID_LEFT,  10, 0)
-    lbl:SetPoint(WSID_RIGHT, f, WSID_RIGHT, -10, 0)
-    lbl:SetJustifyH(WSID_CENTER)
+    local lbl = f:CreateFontString(nil,WSID.OVERLAY)
+    lbl:SetFont(WSID.GAME_FONT, 17, WSID.EMPTY_STRING)
+    lbl:SetPoint(WSID.CENTER, f, WSID.CENTER, 0, tagText and -4 or 0)
+    lbl:SetPoint(WSID.LEFT,  f, WSID.LEFT,  10, 0)
+    lbl:SetPoint(WSID.RIGHT, f, WSID.RIGHT, -10, 0)
+    lbl:SetJustifyH(WSID.CENTER)
     lbl:SetWordWrap(false)
-    lbl:SetText(WSID_DASH_DASH)
+    lbl:SetText(WSID.DASH_DASH)
     lbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     return f, lbl
 end
 
 function MakeBtn(parent, text, w, h)
-    local b = CreateFrame(WSID_BUTTON, nil, parent, WSID_BACKDROP_TEMPLATE)
+    local b = CreateFrame(WSID.BUTTON, nil, parent, WSID.BACKDROP_TEMPLATE)
     b:SetHeight(h or 30)
     if w then b:SetWidth(w) end
     -- RIGHT anchor set by caller when w is nil
     BgBorder(b, COLOR_TABLE.btn_bg[1],COLOR_TABLE.btn_bg[2],COLOR_TABLE.btn_bg[3], COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3])
-    local lbl = b:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
+    local lbl = b:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     lbl:SetAllPoints()
-    lbl:SetJustifyH(WSID_CENTER)
+    lbl:SetJustifyH(WSID.CENTER)
     lbl:SetText(text)
     lbl:SetTextColor(COLOR_TABLE.btn_text[1],COLOR_TABLE.btn_text[2],COLOR_TABLE.btn_text[3])
-    b:SetScript(WSID_OnEnter, function(s)
+    b:SetScript(WSID.OnEnter, function(s)
         if s:IsEnabled() then
             s:SetBackdropColor(COLOR_TABLE.btn_hover[1],COLOR_TABLE.btn_hover[2],COLOR_TABLE.btn_hover[3])
             s:SetBackdropBorderColor(0.70,0.42,1.00,1)
         end
     end)
-    b:SetScript(WSID_OnLeave, function(s)
+    b:SetScript(WSID.OnLeave, function(s)
         if s:IsEnabled() then
             s:SetBackdropColor(COLOR_TABLE.btn_bg[1],COLOR_TABLE.btn_bg[2],COLOR_TABLE.btn_bg[3])
             s:SetBackdropBorderColor(COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3],1)
@@ -298,34 +298,34 @@ function MakeBtn(parent, text, w, h)
 end
 
 function MakeHeader(parent, text, w)
-    local f = CreateFrame(WSID_FRAME, nil, parent, WSID_BACKDROP_TEMPLATE)
+    local f = CreateFrame(WSID.FRAME, nil, parent, WSID.BACKDROP_TEMPLATE)
     f:SetHeight(28)
     if w then f:SetWidth(w) else
-        f:SetPoint(WSID_LEFT,  parent, WSID_LEFT,  WSID_PAD, 0)
-        f:SetPoint(WSID_RIGHT, parent, WSID_RIGHT, -WSID_PAD, 0)
+        f:SetPoint(WSID.LEFT,  parent, WSID.LEFT,  WSID.PAD, 0)
+        f:SetPoint(WSID.RIGHT, parent, WSID.RIGHT, -WSID.PAD, 0)
     end
     BgBorder(f, COLOR_TABLE.header_bg[1],COLOR_TABLE.header_bg[2],COLOR_TABLE.header_bg[3], COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3])
-    local stripe = f:CreateTexture(nil,WSID_ARTWORK)
+    local stripe = f:CreateTexture(nil,WSID.ARTWORK)
     stripe:SetColorTexture(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
     stripe:SetSize(3,28)
-    stripe:SetPoint(WSID_LEFT,f,WSID_LEFT,0,0)
-    local lbl = f:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL)
-    lbl:SetPoint(WSID_LEFT,f,WSID_LEFT,12,0)
+    stripe:SetPoint(WSID.LEFT,f,WSID.LEFT,0,0)
+    local lbl = f:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL)
+    lbl:SetPoint(WSID.LEFT,f,WSID.LEFT,12,0)
     lbl:SetText(text)
     lbl:SetTextColor(COLOR_TABLE.header_txt[1],COLOR_TABLE.header_txt[2],COLOR_TABLE.header_txt[3])
     return f
 end
 
 function MakeLabel(parent, text, anchorFrame, anchorPoint, ox, oy)
-    local fs = parent:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-    fs:SetPoint(WSID_TOPLEFT, anchorFrame, anchorPoint or WSID_BOTTOMLEFT, ox or 0, oy or -6)
+    local fs = parent:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+    fs:SetPoint(WSID.TOPLEFT, anchorFrame, anchorPoint or WSID.BOTTOMLEFT, ox or 0, oy or -6)
     fs:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
     fs:SetText(text)
     return fs
 end
 
 function MakePanel(parent)
-    local p = CreateFrame(WSID_FRAME, nil, parent)
+    local p = CreateFrame(WSID.FRAME, nil, parent)
     p:SetAllPoints(parent)
     p:Hide()
     return p

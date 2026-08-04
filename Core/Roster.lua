@@ -6,11 +6,11 @@ WSID_Roster = {}
 
 function BuildRoster()
     WSID_Roster = {}
-    local name    = UnitName(WSID_IDENTITY)
-    local cls, _  = UnitClass(WSID_IDENTITY)
-    local level   = UnitLevel(WSID_IDENTITY)
-    local race    = UnitRace(WSID_IDENTITY)
-    local faction = UnitFactionGroup(WSID_IDENTITY)
+    local name    = UnitName(WSID.IDENTITY)
+    local cls, _  = UnitClass(WSID.IDENTITY)
+    local level   = UnitLevel(WSID.IDENTITY)
+    local race    = UnitRace(WSID.IDENTITY)
+    local faction = UnitFactionGroup(WSID.IDENTITY)
     local found   = false
     cls = NormalizeClass(cls)
     for _, s in ipairs(WhatShouldIDoDB.seenChars) do

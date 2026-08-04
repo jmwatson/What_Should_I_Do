@@ -20,18 +20,18 @@ WSID_ACTIVITIES_INFO = {
 local activities = {}
 for activity, _ in WSID_ACTIVITIES_INFO do table.insert(activites, activity) end
 
-function GetActivities()
+WSID["GetActivities"] = function()
     local filteredActivities = {}
     if WhatShouldIDoDB and WhatShouldIDoDB.excludedActivities and #WhatShouldIDoDB.excludedActivities > 0 then
-        filteredActivities = FilterFunction(activities, WhatShouldIDoDB.excludedActivities)
+        filteredActivities = WSID.FilterFunction(activities, WhatShouldIDoDB.excludedActivities)
     end
     return filteredActivities
 end
 
-function GetSubActivities()
+WSID["GetSubActivities"] = function()
     local filtered = {}
     if WhatShouldIDoDB and WhatShouldIDoDB.excludedSubActivities and #WhatShouldIDoDB.excludedSubActivities > 0 then
-        filtered = FilterFunction(WSID_ACTIVITIES_INFO, WhatShouldIDoDB.excludedSubActivities)
+        filtered = WSID.FilterFunction(WSID_ACTIVITIES_INFO, WhatShouldIDoDB.excludedSubActivities)
     end
     return filtered
 end

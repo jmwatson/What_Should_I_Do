@@ -77,7 +77,7 @@ function GetRaceShortNames()
 end
 
 function EncodeRace(race)
-    if not race or not WSID_RACE_INFO[race] then return WSID_UNKNOWN end
+    if not race or not WSID_RACE_INFO[race] then return WSID.UNKNOWN end
     return WSID_RACE_INFO[race].short_name
 end
 

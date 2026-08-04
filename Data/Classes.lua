@@ -57,12 +57,12 @@ function GetClassColor(class)
 end
 
 function EncodeClass(class)
-    if not class or not WSID_CLASS_INFO[class] then return WSID_UNKNOWN end
+    if not class or not WSID_CLASS_INFO[class] then return WSID.UNKNOWN end
     return WSID_CLASS_INFO[class].short_name
 end
 
 function DecodeClass(class_short_name)
-    local class = WSID_UNKNOWN
+    local class = WSID.UNKNOWN
     if class_short_name then
         for _, class_info in ipairs(WSID_CLASS_INFO) do
             if class_info.short_name == class_short_name then

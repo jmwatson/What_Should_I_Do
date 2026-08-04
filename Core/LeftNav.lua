@@ -2,18 +2,18 @@
 -- Left navigation bar builder
 -- Author: I_AM_T3X | v1.0.0
 
-function BuildLeftNav(parent, topDefs, bottomDefs, onSelect)
+WSID["BuildLeftNav"] = function(parent, topDefs, bottomDefs, onSelect)
     local ROW_H = 38
-    local navBg = CreateFrame(WSID_FRAME, nil, parent)
-    navBg:SetPoint(WSID_TOPLEFT,    parent,WSID_TOPLEFT,    0,-30)
-    navBg:SetPoint(WSID_BOTTOMLEFT, parent,WSID_BOTTOMLEFT, 0,  0)
-    navBg:SetWidth(WSID_NAV_W)
+    local navBg = CreateFrame(WSID.FRAME, nil, parent)
+    navBg:SetPoint(WSID.TOPLEFT,    parent,WSID.TOPLEFT,    0,-30)
+    navBg:SetPoint(WSID.BOTTOMLEFT, parent,WSID.BOTTOMLEFT, 0,  0)
+    navBg:SetWidth(WSID.NAV_W)
     Tx(navBg, COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
-    local divR = navBg:CreateTexture(nil,WSID_ARTWORK)
+    local divR = navBg:CreateTexture(nil,WSID.ARTWORK)
     divR:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
     divR:SetWidth(1)
-    divR:SetPoint(WSID_TOPRIGHT,navBg,WSID_TOPRIGHT,0,0)
-    divR:SetPoint(WSID_BOTTOMRIGHT,navBg,WSID_BOTTOMRIGHT,0,0)
+    divR:SetPoint(WSID.TOPRIGHT,navBg,WSID.TOPRIGHT,0,0)
+    divR:SetPoint(WSID.BOTTOMRIGHT,navBg,WSID.BOTTOMRIGHT,0,0)
 
     local btns   = {}
     local active = nil
@@ -33,57 +33,57 @@ function BuildLeftNav(parent, topDefs, bottomDefs, onSelect)
     end
 
     local function AddRow(def, anchorFrm, anchorPt, anchorOff)
-        local row = CreateFrame(WSID_BUTTON, nil, navBg)
-        row:SetSize(WSID_NAV_W, ROW_H)
-        row:SetPoint(WSID_TOPLEFT, anchorFrm, anchorPt, 0, anchorOff or 0)
-        local bg     = row:CreateTexture(nil,WSID_BACKGROUND) ; bg:SetAllPoints() ; bg:SetColorTexture(0,0,0,0)
-        local stripe = row:CreateTexture(nil,WSID_ARTWORK)
+        local row = CreateFrame(WSID.BUTTON, nil, navBg)
+        row:SetSize(WSID.NAV_W, ROW_H)
+        row:SetPoint(WSID.TOPLEFT, anchorFrm, anchorPt, 0, anchorOff or 0)
+        local bg     = row:CreateTexture(nil,WSID.BACKGROUND) ; bg:SetAllPoints() ; bg:SetColorTexture(0,0,0,0)
+        local stripe = row:CreateTexture(nil,WSID.ARTWORK)
         stripe:SetColorTexture(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
-        stripe:SetSize(3,ROW_H) ; stripe:SetPoint(WSID_LEFT,row,WSID_LEFT,0,0) ; stripe:Hide()
-        local lbl = row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-        lbl:SetPoint(WSID_LEFT,row,WSID_LEFT,16,0) ; lbl:SetText(def.label)
+        stripe:SetSize(3,ROW_H) ; stripe:SetPoint(WSID.LEFT,row,WSID.LEFT,0,0) ; stripe:Hide()
+        local lbl = row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+        lbl:SetPoint(WSID.LEFT,row,WSID.LEFT,16,0) ; lbl:SetText(def.label)
         lbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
         local name = def.name
-        row:SetScript(WSID_OnClick,  function() SetActive(name) end)
-        row:SetScript(WSID_OnEnter,  function()
+        row:SetScript(WSID.OnClick,  function() SetActive(name) end)
+        row:SetScript(WSID.OnEnter,  function()
             if active~=name then bg:SetColorTexture(COLOR_TABLE.nav_hover[1],COLOR_TABLE.nav_hover[2],COLOR_TABLE.nav_hover[3],1)
                                  lbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3]) end end)
-        row:SetScript(WSID_OnLeave,  function()
+        row:SetScript(WSID.OnLeave,  function()
             if active~=name then bg:SetColorTexture(0,0,0,0)
                                  lbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3]) end end)
         btns[name] = {bg=bg,stripe=stripe,lbl=lbl}
         return row
     end
 
-    local prev = navBg ; local pp = WSID_TOPLEFT
+    local prev = navBg ; local pp = WSID.TOPLEFT
     for _, def in ipairs(topDefs) do
         local row = AddRow(def, prev, pp, 0)
-        prev = row ; pp = WSID_BOTTOMLEFT
+        prev = row ; pp = WSID.BOTTOMLEFT
     end
 
     -- divider above bottom items
-    local bdiv = navBg:CreateTexture(nil,WSID_ARTWORK)
+    local bdiv = navBg:CreateTexture(nil,WSID.ARTWORK)
     bdiv:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1) ; bdiv:SetHeight(1)
-    bdiv:SetPoint(WSID_BOTTOMLEFT,  navBg,WSID_BOTTOMLEFT,  0, #bottomDefs*ROW_H)
-    bdiv:SetPoint(WSID_BOTTOMRIGHT, navBg,WSID_BOTTOMRIGHT, 0, #bottomDefs*ROW_H)
+    bdiv:SetPoint(WSID.BOTTOMLEFT,  navBg,WSID.BOTTOMLEFT,  0, #bottomDefs*ROW_H)
+    bdiv:SetPoint(WSID.BOTTOMRIGHT, navBg,WSID.BOTTOMRIGHT, 0, #bottomDefs*ROW_H)
 
     for i, def in ipairs(bottomDefs) do
-        local row = CreateFrame(WSID_BUTTON, nil, navBg)
-        row:SetSize(WSID_NAV_W, ROW_H)
-        row:SetPoint(WSID_BOTTOMLEFT, navBg,WSID_BOTTOMLEFT, 0, (#bottomDefs-i)*ROW_H)
-        local bg     = row:CreateTexture(nil,WSID_BACKGROUND) ; bg:SetAllPoints() ; bg:SetColorTexture(0,0,0,0)
-        local stripe = row:CreateTexture(nil,WSID_ARTWORK)
+        local row = CreateFrame(WSID.BUTTON, nil, navBg)
+        row:SetSize(WSID.NAV_W, ROW_H)
+        row:SetPoint(WSID.BOTTOMLEFT, navBg,WSID.BOTTOMLEFT, 0, (#bottomDefs-i)*ROW_H)
+        local bg     = row:CreateTexture(nil,WSID.BACKGROUND) ; bg:SetAllPoints() ; bg:SetColorTexture(0,0,0,0)
+        local stripe = row:CreateTexture(nil,WSID.ARTWORK)
         stripe:SetColorTexture(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
-        stripe:SetSize(3,ROW_H) ; stripe:SetPoint(WSID_LEFT,row,WSID_LEFT,0,0) ; stripe:Hide()
-        local lbl = row:CreateFontString(nil,WSID_OVERLAY,WSID_NORMAL_SMALL)
-        lbl:SetPoint(WSID_LEFT,row,WSID_LEFT,16,0) ; lbl:SetText(def.label)
+        stripe:SetSize(3,ROW_H) ; stripe:SetPoint(WSID.LEFT,row,WSID.LEFT,0,0) ; stripe:Hide()
+        local lbl = row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
+        lbl:SetPoint(WSID.LEFT,row,WSID.LEFT,16,0) ; lbl:SetText(def.label)
         lbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
         local name = def.name
-        row:SetScript(WSID_OnClick,  function() SetActive(name) end)
-        row:SetScript(WSID_OnEnter,  function()
+        row:SetScript(WSID.OnClick,  function() SetActive(name) end)
+        row:SetScript(WSID.OnEnter,  function()
             if active~=name then bg:SetColorTexture(COLOR_TABLE.nav_hover[1],COLOR_TABLE.nav_hover[2],COLOR_TABLE.nav_hover[3],1)
                                  lbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3]) end end)
-        row:SetScript(WSID_OnLeave,  function()
+        row:SetScript(WSID.OnLeave,  function()
             if active~=name then bg:SetColorTexture(0,0,0,0)
                                  lbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3]) end end)
         btns[name] = {bg=bg,stripe=stripe,lbl=lbl}
@@ -97,8 +97,8 @@ end
 -- TAB 1: ACTIVITY
 ------------------------------------------------------------------------
 -- Layout (total content height needed = 490px available):
---   WSID_PAD(16) + hdr(28) + gap(10) + desc(14) + gap(12)
+--   WSID.PAD(16) + hdr(28) + gap(10) + desc(14) + gap(12)
 --   + catBox(52) + gap(10) + subBox(52) + gap(14)
---   + btnRow(30) + gap(6) + bothBtn(30) + WSID_PAD(16) = 290px  (lots of breathing room)
+--   + btnRow(30) + gap(6) + bothBtn(30) + WSID.PAD(16) = 290px  (lots of breathing room)
 
 
