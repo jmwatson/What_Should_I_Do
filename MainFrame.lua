@@ -9,7 +9,7 @@ local MainPanels = {}
 WSID["BuildMainFrame"] = function()
     local f=CreateFrame(WSID.FRAME,WSID.FRAME,UIParent,WSID.BACKDROP_TEMPLATE)
     f:SetSize(WSID.WIN_W,WSID.WIN_H)
-    f:SetPoint(WSID.WSID.CENTER)
+    f:SetPoint(WSID.CENTER)
     f:SetMovable(true)
     f:EnableMouse(true)
     f:RegisterForDrag(WSID.LEFT_BUTTON)
