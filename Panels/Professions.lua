@@ -26,7 +26,7 @@ WSID.BuildProfessionPanel = function(contentArea)
     spinBtn:SetPoint(WSID.RIGHT, panel, WSID.RIGHT, -WSID.PAD, 0)
 
     -- Exclude farming professions checkbox
-    local FARMING = WSID_FARM_PROFESSIONS
+    local FARMING = WSID.FARM_PROFESSIONS
 
     local farmBox = CreateFrame(WSID.FRAME, nil, panel, WSID.BACKDROP_TEMPLATE)
     farmBox:SetSize(14, 14)
@@ -45,11 +45,11 @@ WSID.BuildProfessionPanel = function(contentArea)
     local function SetFarmState(on)
         if not WhatShouldIDoDB then return end
         WhatShouldIDoDB.excludeFarming = on
-        local ac1,ac2,ac3   = COLOR_TABLE.accent      and COLOR_TABLE.accent[1]      or 0.84, COLOR_TABLE.accent      and COLOR_TABLE.accent[2]      or 0.67, COLOR_TABLE.accent      and COLOR_TABLE.accent[3]      or 0.20
-        local rb1,rb2,rb3   = COLOR_TABLE.result_bg   and COLOR_TABLE.result_bg[1]   or 0.06, COLOR_TABLE.result_bg   and COLOR_TABLE.result_bg[2]   or 0.04, COLOR_TABLE.result_bg   and COLOR_TABLE.result_bg[3]   or 0.10
-        local di1,di2,di3   = COLOR_TABLE.divider     and COLOR_TABLE.divider[1]     or 0.25, COLOR_TABLE.divider     and COLOR_TABLE.divider[2]     or 0.20, COLOR_TABLE.divider     and COLOR_TABLE.divider[3]     or 0.35
-        local br1,br2,br3   = COLOR_TABLE.bright_text and COLOR_TABLE.bright_text[1] or 1.00, COLOR_TABLE.bright_text and COLOR_TABLE.bright_text[2] or 0.90, COLOR_TABLE.bright_text and COLOR_TABLE.bright_text[3] or 0.40
-        local dm1,dm2,dm3   = COLOR_TABLE.dim_text    and COLOR_TABLE.dim_text[1]    or 0.50, COLOR_TABLE.dim_text    and COLOR_TABLE.dim_text[2]    or 0.45, COLOR_TABLE.dim_text    and COLOR_TABLE.dim_text[3]    or 0.55
+        local ac1,ac2,ac3   = WhatShouldIDoDB.COLOR_TABLE.accent      and WhatShouldIDoDB.COLOR_TABLE.accent[1]      or 0.84, WhatShouldIDoDB.COLOR_TABLE.accent      and WhatShouldIDoDB.COLOR_TABLE.accent[2]      or 0.67, WhatShouldIDoDB.COLOR_TABLE.accent      and WhatShouldIDoDB.COLOR_TABLE.accent[3]      or 0.20
+        local rb1,rb2,rb3   = WhatShouldIDoDB.COLOR_TABLE.result_bg   and WhatShouldIDoDB.COLOR_TABLE.result_bg[1]   or 0.06, WhatShouldIDoDB.COLOR_TABLE.result_bg   and WhatShouldIDoDB.COLOR_TABLE.result_bg[2]   or 0.04, WhatShouldIDoDB.COLOR_TABLE.result_bg   and WhatShouldIDoDB.COLOR_TABLE.result_bg[3]   or 0.10
+        local di1,di2,di3   = WhatShouldIDoDB.COLOR_TABLE.divider     and WhatShouldIDoDB.COLOR_TABLE.divider[1]     or 0.25, WhatShouldIDoDB.COLOR_TABLE.divider     and WhatShouldIDoDB.COLOR_TABLE.divider[2]     or 0.20, WhatShouldIDoDB.COLOR_TABLE.divider     and WhatShouldIDoDB.COLOR_TABLE.divider[3]     or 0.35
+        local br1,br2,br3   = WhatShouldIDoDB.COLOR_TABLE.bright_text and WhatShouldIDoDB.COLOR_TABLE.bright_text[1] or 1.00, WhatShouldIDoDB.COLOR_TABLE.bright_text and WhatShouldIDoDB.COLOR_TABLE.bright_text[2] or 0.90, WhatShouldIDoDB.COLOR_TABLE.bright_text and WhatShouldIDoDB.COLOR_TABLE.bright_text[3] or 0.40
+        local dm1,dm2,dm3   = WhatShouldIDoDB.COLOR_TABLE.dim_text    and WhatShouldIDoDB.COLOR_TABLE.dim_text[1]    or 0.50, WhatShouldIDoDB.COLOR_TABLE.dim_text    and WhatShouldIDoDB.COLOR_TABLE.dim_text[2]    or 0.45, WhatShouldIDoDB.COLOR_TABLE.dim_text    and WhatShouldIDoDB.COLOR_TABLE.dim_text[3]    or 0.55
         if on then
             farmBox:SetBackdropColor(rb1,rb2,rb3,1)
             farmBox:SetBackdropBorderColor(ac1,ac2,ac3,1)
@@ -84,8 +84,8 @@ WSID.BuildProfessionPanel = function(contentArea)
         if spinning then return end
         local excludeFarming = WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming
         local pool = {}
-        for _, p in ipairs(WSID_PROFESSIONS) do
-            if p ~= FISHING and p ~= COOKING then
+        for _, p in ipairs(WSID.PROFESSIONS) do
+            if p ~= WSID.FISHING and p ~= WSID.COOKING then
                 if not (excludeFarming and FARMING[p]) then
                     table.insert(pool, p)
                 end
@@ -102,16 +102,16 @@ WSID.BuildProfessionPanel = function(contentArea)
         for _, p in ipairs(pool) do if p ~= winner1 then table.insert(pool2, p) end end
         local winner2 = pool2[math.random(#pool2)]
 
-        prof1Label:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
-        prof2Label:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+        prof1Label:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
+        prof2Label:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
 
         -- Chain: spin 1 then spin 2
         WSID.StartSlot(prof1Label, pool, function(_)
             prof1Label:SetText(winner1)
-            prof1Label:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
+            prof1Label:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
             WSID.StartSlot(prof2Label, pool2, function(_)
                 prof2Label:SetText(winner2)
-                prof2Label:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
+                prof2Label:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
                 spinning = false
                 spinBtn:SetEnabled(true)
             end)

@@ -11,7 +11,7 @@ WSID.BuildLevelingPanel = function(contentArea)
     -- Auto-pick character toggle
     local autoPickLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     autoPickLbl:SetPoint(WSID.TOPLEFT, desc, WSID.BOTTOMLEFT, 0, -8)
-    autoPickLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
+    autoPickLbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
     autoPickLbl:SetText("Auto-pick a character after class spin:")
 
     local autoPick = false
@@ -21,14 +21,14 @@ WSID.BuildLevelingPanel = function(contentArea)
         autoPick = not autoPick
         if autoPick then
             autoPickBtn._lbl:SetText("On")
-            autoPickBtn:SetBackdropColor(COLOR_TABLE.nav_active[1],COLOR_TABLE.nav_active[2],COLOR_TABLE.nav_active[3])
-            autoPickBtn:SetBackdropBorderColor(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
+            autoPickBtn:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.nav_active[1],WhatShouldIDoDB.COLOR_TABLE.nav_active[2],WhatShouldIDoDB.COLOR_TABLE.nav_active[3])
+            autoPickBtn:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.nav_border[1],WhatShouldIDoDB.COLOR_TABLE.nav_border[2],WhatShouldIDoDB.COLOR_TABLE.nav_border[3],1)
             autoPickBtn._lbl:SetTextColor(1,1,1)
         else
             autoPickBtn._lbl:SetText("Off")
-            autoPickBtn:SetBackdropColor(COLOR_TABLE.btn_bg[1],COLOR_TABLE.btn_bg[2],COLOR_TABLE.btn_bg[3])
-            autoPickBtn:SetBackdropBorderColor(COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3],1)
-            autoPickBtn._lbl:SetTextColor(COLOR_TABLE.btn_text[1],COLOR_TABLE.btn_text[2],COLOR_TABLE.btn_text[3])
+            autoPickBtn:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.btn_bg[1],WhatShouldIDoDB.COLOR_TABLE.btn_bg[2],WhatShouldIDoDB.COLOR_TABLE.btn_bg[3])
+            autoPickBtn:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.btn_bdr[1],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[2],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[3],1)
+            autoPickBtn._lbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.btn_text[1],WhatShouldIDoDB.COLOR_TABLE.btn_text[2],WhatShouldIDoDB.COLOR_TABLE.btn_text[3])
         end
     end)
 
@@ -64,14 +64,19 @@ WSID.BuildLevelingPanel = function(contentArea)
 
     local noteLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     noteLbl:SetPoint(WSID.TOPLEFT, spinExpBtn, WSID.BOTTOMLEFT, 0, -10)
-    noteLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
+    noteLbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
     noteLbl:SetText("Roster fills automatically as you log into each character.")
 
-    local pickedClass=nil ; local selectedChar=nil ; local charRows={}
+    local pickedClass=nil
+    local selectedChar=nil
+    local charRows={}
 
     local function ClearList()
         for _,r in ipairs(charRows) do r:Hide() end
-        charRows={} ; selectedChar=nil ; listContent:SetHeight(110) ; listReset()
+        charRows={}
+        selectedChar=nil
+        listContent:SetHeight(110)
+        listReset()
     end
 
     local function PopulateList(class)
@@ -88,7 +93,9 @@ WSID.BuildLevelingPanel = function(contentArea)
             none:SetPoint(WSID.TOPLEFT,listContent,WSID.TOPLEFT,8,-8)
             none:SetTextColor(0.65,0.30,0.30)
             none:SetText("No "..class.."s available for leveling.  (Max level characters are excluded.)")
-            table.insert(charRows, none) ; listContent:SetHeight(30) ; return
+            table.insert(charRows, none)
+            listContent:SetHeight(30)
+            return
         end
         for i,ch in ipairs(matches) do
             local even=(i%2==0)
@@ -97,13 +104,15 @@ WSID.BuildLevelingPanel = function(contentArea)
             row:SetPoint(WSID.TOP,   listContent, WSID.TOP,   0, -(i-1)*24)
             row:SetPoint(WSID.LEFT,  listContent, WSID.LEFT,  0, 0)
             row:SetPoint(WSID.RIGHT, listContent, WSID.RIGHT, 0, 0)
-            local rowBg=row:CreateTexture(nil,WSID.BACKGROUND) ; rowBg:SetAllPoints()
-            rowBg:SetColorTexture(even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],
-                                  even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],
-                                  even and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3],1)
+            local rowBg=row:CreateTexture(nil,WSID.BACKGROUND)
+            rowBg:SetAllPoints()
+            rowBg:SetColorTexture(even and WhatShouldIDoDB.COLOR_TABLE.row_even[1] or WhatShouldIDoDB.COLOR_TABLE.row_odd[1],
+                                  even and WhatShouldIDoDB.COLOR_TABLE.row_even[2] or WhatShouldIDoDB.COLOR_TABLE.row_odd[2],
+                                  even and WhatShouldIDoDB.COLOR_TABLE.row_even[3] or WhatShouldIDoDB.COLOR_TABLE.row_odd[3],1)
             local cc=WSID.CLASS_INFO[ch.class] or {r=0.8,g=0.8,b=0.8}
             local fs=row:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
-            fs:SetPoint(WSID.LEFT,row,WSID.LEFT,10,0) ; fs:SetJustifyH(WSID.LEFT)
+            fs:SetPoint(WSID.LEFT,row,WSID.LEFT,10,0)
+            fs:SetJustifyH(WSID.LEFT)
             fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s|r  |cffffcc00Lv %d|r%s",
                 cc.r*255,cc.g*255,cc.b*255,ch.name,ch.race or WSID.EMPTY_STRING,ch.level or 0,
                 ch.current and "  |cff55cc55(you)|r" or WSID.EMPTY_STRING))
@@ -113,39 +122,46 @@ WSID.BuildLevelingPanel = function(contentArea)
                 for _,r in ipairs(charRows) do
                     if r._bg then
                         local re=r._even
-                        r._bg:SetColorTexture(re and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],
-                                              re and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],
-                                              re and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3],1)
+                        r._bg:SetColorTexture(re and WhatShouldIDoDB.COLOR_TABLE.row_even[1] or WhatShouldIDoDB.COLOR_TABLE.row_odd[1],
+                                              re and WhatShouldIDoDB.COLOR_TABLE.row_even[2] or WhatShouldIDoDB.COLOR_TABLE.row_odd[2],
+                                              re and WhatShouldIDoDB.COLOR_TABLE.row_even[3] or WhatShouldIDoDB.COLOR_TABLE.row_odd[3],1)
                     end
                 end
-                rowBg:SetColorTexture(COLOR_TABLE.row_select[1],COLOR_TABLE.row_select[2],COLOR_TABLE.row_select[3],1)
+                rowBg:SetColorTexture(WhatShouldIDoDB.COLOR_TABLE.row_select[1],WhatShouldIDoDB.COLOR_TABLE.row_select[2],WhatShouldIDoDB.COLOR_TABLE.row_select[3],1)
             end)
             row:SetScript(WSID.OnEnter, function()
-                if selectedChar~=charData then rowBg:SetColorTexture(COLOR_TABLE.row_hover[1],COLOR_TABLE.row_hover[2],COLOR_TABLE.row_hover[3],1) end end)
+                if selectedChar~=charData then rowBg:SetColorTexture(WhatShouldIDoDB.COLOR_TABLE.row_hover[1],WhatShouldIDoDB.COLOR_TABLE.row_hover[2],WhatShouldIDoDB.COLOR_TABLE.row_hover[3],1) end end)
             row:SetScript(WSID.OnLeave, function()
                 if selectedChar~=charData then
-                    rowBg:SetColorTexture(even and COLOR_TABLE.row_even[1] or COLOR_TABLE.row_odd[1],
-                                         even and COLOR_TABLE.row_even[2] or COLOR_TABLE.row_odd[2],
-                                         even and COLOR_TABLE.row_even[3] or COLOR_TABLE.row_odd[3],1)
+                    rowBg:SetColorTexture(even and WhatShouldIDoDB.COLOR_TABLE.row_even[1] or WhatShouldIDoDB.COLOR_TABLE.row_odd[1],
+                                         even and WhatShouldIDoDB.COLOR_TABLE.row_even[2] or WhatShouldIDoDB.COLOR_TABLE.row_odd[2],
+                                         even and WhatShouldIDoDB.COLOR_TABLE.row_even[3] or WhatShouldIDoDB.COLOR_TABLE.row_odd[3],1)
                 end end)
-            row._bg=rowBg ; row._even=even ; row._charData=ch
+            row._bg=rowBg
+            row._even=even
+            row._charData=ch
             table.insert(charRows, row)
         end
         listContent:SetHeight(math.max(24,#matches*24+2))
     end
 
     local function DoSpinClass(onDone)
-        local pool={} ; for _, clsInfo in ipairs(WSID.CLASS_INFO) do table.insert(pool, clsInfo.name) end
-        WSID.StopSlot() ; pickedClass=nil ; selectedChar=nil
-        classLabel:SetText("Class") ; classLabel:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
-        expLabel:SetText("Expansion") ; expLabel:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
-        spinExpBtn:SetEnabled(false) ; ClearList()
-        classLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+        local pool={}
+        for _, clsInfo in ipairs(WSID.CLASS_INFO) do table.insert(pool, clsInfo.name) end
+        WSID.StopSlot()
+        selectedChar=nil
+        classLabel:SetText("Class")
+        classLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
+        expLabel:SetText("Expansion")
+        expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
+        spinExpBtn:SetEnabled(false)
+        ClearList()
+        classLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
         WSID.StartSlot(classLabel, pool, function(winner)
-            pickedClass=winner
             local cc=WSID.CLASS_INFO[winner]
             if cc then classLabel:SetTextColor(cc.r,cc.g,cc.b) end
-            PopulateList(winner) ; spinExpBtn:SetEnabled(true)
+            PopulateList(winner)
+            spinExpBtn:SetEnabled(true)
 
             -- Auto-pick: spin a random eligible character from the list
             if autoPick and #charRows > 0 then
@@ -162,9 +178,9 @@ WSID.BuildLevelingPanel = function(contentArea)
                         pick:GetScript(WSID.OnClick)(pick)
                         -- Flash the selected row so user sees it
                         if pick._bg then
-                            pick._bg:SetColorTexture(COLOR_TABLE.spin_text[1]*0.6,COLOR_TABLE.spin_text[2]*0.6,COLOR_TABLE.spin_text[3]*0.6,1)
+                            pick._bg:SetColorTexture(WhatShouldIDoDB.COLOR_TABLE.spin_text[1]*0.6,WhatShouldIDoDB.COLOR_TABLE.spin_text[2]*0.6,WhatShouldIDoDB.COLOR_TABLE.spin_text[3]*0.6,1)
                             C_Timer.After(0.15, function()
-                                pick._bg:SetColorTexture(COLOR_TABLE.row_select[1],COLOR_TABLE.row_select[2],COLOR_TABLE.row_select[3],1)
+                                pick._bg:SetColorTexture(WhatShouldIDoDB.COLOR_TABLE.row_select[1],WhatShouldIDoDB.COLOR_TABLE.row_select[2],WhatShouldIDoDB.COLOR_TABLE.row_select[3],1)
                             end)
                         end
                     end)
@@ -176,56 +192,70 @@ WSID.BuildLevelingPanel = function(contentArea)
     end
 
     spinClassBtn:SetScript(WSID.OnClick, function()
-        spinClassBtn:SetEnabled(false) ; spinAllBtn:SetEnabled(false)
-        DoSpinClass(function(_) spinClassBtn:SetEnabled(true) ; spinAllBtn:SetEnabled(true) end)
+        spinClassBtn:SetEnabled(false)
+        spinAllBtn:SetEnabled(false)
+        DoSpinClass(function(_) spinClassBtn:SetEnabled(true)
+            spinAllBtn:SetEnabled(true) end)
     end)
 
     spinExpBtn:SetScript(WSID.OnClick, function()
         if not selectedChar then
-            UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r Select a character first.",1,0.8,0.2) ; return
+            UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r Select a character first.",1,0.8,0.2)
+            return
         end
         local pool = WSID.GetExpansionPool(selectedChar.level or 1)
         if #pool == 1 then
             expLabel:SetText(pool[1])
-            expLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
+            expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
             return
         end
-        WSID.StopSlot() ; spinExpBtn:SetEnabled(false)
-        expLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+        WSID.StopSlot()
+        spinExpBtn:SetEnabled(false)
+        expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
         WSID.StartSlot(expLabel, pool, function(_)
-            expLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3]) ; spinExpBtn:SetEnabled(true)
+            expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
+            spinExpBtn:SetEnabled(true)
         end)
     end)
 
     spinAllBtn:SetScript(WSID.OnClick, function()
-        spinClassBtn:SetEnabled(false) ; spinAllBtn:SetEnabled(false) ; spinExpBtn:SetEnabled(false)
+        spinClassBtn:SetEnabled(false)
+        spinAllBtn:SetEnabled(false)
+        spinExpBtn:SetEnabled(false)
         DoSpinClass(function(winner)
             local autoChar=nil
             for _,ch in ipairs(WSID_Roster) do
                 local excluded = WhatShouldIDoDB.excludedChars and WhatShouldIDoDB.excludedChars[ch.name]
                 if ch.class==winner and (ch.level or 0) < 90 and not excluded then
-                    autoChar=ch ; break
+                    autoChar=ch
+                    break
                 end
             end
             if autoChar then
                 selectedChar=autoChar
                 if charRows[1] and charRows[1]._bg then
-                    charRows[1]._bg:SetColorTexture(COLOR_TABLE.row_select[1],COLOR_TABLE.row_select[2],COLOR_TABLE.row_select[3],1)
+                    charRows[1]._bg:SetColorTexture(WhatShouldIDoDB.COLOR_TABLE.row_select[1],WhatShouldIDoDB.COLOR_TABLE.row_select[2],WhatShouldIDoDB.COLOR_TABLE.row_select[3],1)
                 end
                 local pool=WSID.GetExpansionPool(autoChar.level or 1)
                 if #pool==1 then
                     expLabel:SetText(pool[1])
-                    expLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
-                    spinClassBtn:SetEnabled(true) ; spinExpBtn:SetEnabled(true) ; spinAllBtn:SetEnabled(true)
+                    expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
+                    spinClassBtn:SetEnabled(true)
+                    spinExpBtn:SetEnabled(true)
+                    spinAllBtn:SetEnabled(true)
                 else
-                    expLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+                    expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
                     WSID.StartSlot(expLabel, pool, function(_)
-                        expLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
-                        spinClassBtn:SetEnabled(true) ; spinExpBtn:SetEnabled(true) ; spinAllBtn:SetEnabled(true)
+                        expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
+                        spinClassBtn:SetEnabled(true)
+                        spinExpBtn:SetEnabled(true)
+                        spinAllBtn:SetEnabled(true)
                     end)
                 end
             else
-                spinClassBtn:SetEnabled(true) ; spinExpBtn:SetEnabled(true) ; spinAllBtn:SetEnabled(true)
+                spinClassBtn:SetEnabled(true)
+                spinExpBtn:SetEnabled(true)
+                spinAllBtn:SetEnabled(true)
             end
         end)
     end)

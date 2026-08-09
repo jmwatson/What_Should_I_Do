@@ -83,7 +83,7 @@ initFrame:SetScript(WSID.OnEvent,function(self,event,arg1)
         else
             ApplyTheme(WhatShouldIDoDB.colorTheme or WSID.DEFAULT_THEME)
         end
-        MainFrame     = WSID.BuildMainFrame()
+        WhatShouldIDoDB.MainFrame     = WSID.BuildMainFrame()
         settingsFrame = WSID.BuildSettingsWindow()
         WSID.RegisterMinimapButton()
     elseif event==WSID.PLAYER_LOGIN then
@@ -108,10 +108,10 @@ SlashCmdList["SPINWHEELS"]=function(msg)
         end
         return
     end
-    if MainFrame then
-        if MainFrame:IsShown() then MainFrame:Hide()
+    if WhatShouldIDoDB.MainFrame then
+        if WhatShouldIDoDB.MainFrame:IsShown() then WhatShouldIDoDB.MainFrame:Hide()
             if settingsFrame then settingsFrame:Hide() end
         else BuildRoster()
-            MainFrame:Show() end
+            WhatShouldIDoDB.MainFrame:Show() end
     end
 end

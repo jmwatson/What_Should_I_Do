@@ -18,31 +18,33 @@ WSID.BuildCreatorPanel = function(contentArea)
 
     local infoLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     infoLbl:SetPoint(WSID.TOPLEFT, classBox, WSID.BOTTOMLEFT, 4, -8)
-    infoLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
+    infoLbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
     infoLbl:SetText(" ")
 
     -- Faction filter
     local filterLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     filterLbl:SetPoint(WSID.TOPLEFT, infoLbl, WSID.BOTTOMLEFT, 0, -8)
-    filterLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
+    filterLbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
     filterLbl:SetText("Faction:")
 
     local factionFilter = "Any"
     local filterBtns = {}
-    for i, opt in ipairs({"Any",ALLIANCE,HORDE}) do
+    
+    local function Activate(b)
+        b:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.nav_active[1],WhatShouldIDoDB.COLOR_TABLE.nav_active[2],WhatShouldIDoDB.COLOR_TABLE.nav_active[3])
+        b:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.nav_border[1],WhatShouldIDoDB.COLOR_TABLE.nav_border[2],WhatShouldIDoDB.COLOR_TABLE.nav_border[3],1)
+        b._lbl:SetTextColor(1,1,1)
+    end
+    local function Deactivate(b)
+        b:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.btn_bg[1],WhatShouldIDoDB.COLOR_TABLE.btn_bg[2],WhatShouldIDoDB.COLOR_TABLE.btn_bg[3])
+        b:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.btn_bdr[1],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[2],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[3],1)
+        b._lbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.btn_text[1],WhatShouldIDoDB.COLOR_TABLE.btn_text[2],WhatShouldIDoDB.COLOR_TABLE.btn_text[3])
+    end
+
+    for i, opt in ipairs({"Any",WSID.ALLIANCE,WSID.HORDE}) do
         local fb = WSID.MakeBtn(panel, opt, 84, 26)
         fb:SetPoint(WSID.LEFT, filterLbl, WSID.RIGHT, 6+(i-1)*88, 0)
         local fo = opt
-        local function Activate(b)
-            b:SetBackdropColor(COLOR_TABLE.nav_active[1],COLOR_TABLE.nav_active[2],COLOR_TABLE.nav_active[3])
-            b:SetBackdropBorderColor(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
-            b._lbl:SetTextColor(1,1,1)
-        end
-        local function Deactivate(b)
-            b:SetBackdropColor(COLOR_TABLE.btn_bg[1],COLOR_TABLE.btn_bg[2],COLOR_TABLE.btn_bg[3])
-            b:SetBackdropBorderColor(COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3],1)
-            b._lbl:SetTextColor(COLOR_TABLE.btn_text[1],COLOR_TABLE.btn_text[2],COLOR_TABLE.btn_text[3])
-        end
         fb:SetScript(WSID.OnClick, function()
             factionFilter=fo
             for _,b in ipairs(filterBtns) do Deactivate(b) end
@@ -50,13 +52,9 @@ WSID.BuildCreatorPanel = function(contentArea)
         end)
         table.insert(filterBtns, fb)
     end
-    Activate = function(b)
-        b:SetBackdropColor(COLOR_TABLE.nav_active[1],COLOR_TABLE.nav_active[2],COLOR_TABLE.nav_active[3])
-        b:SetBackdropBorderColor(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
-        b._lbl:SetTextColor(1,1,1)
-    end
-    filterBtns[1]:SetBackdropColor(COLOR_TABLE.nav_active[1],COLOR_TABLE.nav_active[2],COLOR_TABLE.nav_active[3])
-    filterBtns[1]:SetBackdropBorderColor(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
+
+    filterBtns[1]:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.nav_active[1],WhatShouldIDoDB.COLOR_TABLE.nav_active[2],WhatShouldIDoDB.COLOR_TABLE.nav_active[3])
+    filterBtns[1]:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.nav_border[1],WhatShouldIDoDB.COLOR_TABLE.nav_border[2],WhatShouldIDoDB.COLOR_TABLE.nav_border[3],1)
     filterBtns[1]._lbl:SetTextColor(1,1,1)
 
     local spinRaceBtn = WSID.MakeBtn(panel, "Spin Race", nil, 30)
@@ -79,8 +77,8 @@ WSID.BuildCreatorPanel = function(contentArea)
 
     local function GetRaceNames()
         local names={}
-        for _, race in ipairs(WSID_RACE_INFO) do
-            if race and (factionFilter=="Any" or race.faction==factionFilter or race.faction==NEUTRAL) then
+        for _, race in ipairs(WSID.RACE_INFO) do
+            if race and (factionFilter=="Any" or race.faction==factionFilter or race.faction==WSID.NEUTRAL) then
                 table.insert(names, race.name)
             end
         end
@@ -88,11 +86,11 @@ WSID.BuildCreatorPanel = function(contentArea)
     end
 
     local function AfterRace(winner)
-        pickedRace = WSID_RACE_INFO[winner]
-        raceLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
+        pickedRace = WSID.RACE_INFO[winner]
+        raceLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
         if pickedRace then
-            local fc = pickedRace.faction==ALLIANCE and "|cff4499ff"
-                    or pickedRace.faction==HORDE    and "|cffff4444" or "|cffaaaaaa"
+            local fc = pickedRace.faction==WSID.ALLIANCE and "|cff4499ff"
+                    or pickedRace.faction==WSID.HORDE    and "|cffff4444" or "|cffaaaaaa"
             infoLbl:SetText(pickedRace.rtype.."  --  "..fc..pickedRace.faction.."|r")
         end
         spinRaceBtn:SetEnabled(true)
@@ -109,9 +107,9 @@ WSID.BuildCreatorPanel = function(contentArea)
             spinClassBtn:SetEnabled(false)
             pickedRace=nil
             classLabel:SetText("Class")
-            classLabel:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
+            classLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
             infoLbl:SetText(" ")
-            raceLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+            raceLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
             WSID.StartSlot(raceLabel, names, AfterRace)
         end
     end
@@ -122,13 +120,13 @@ WSID.BuildCreatorPanel = function(contentArea)
             if classes then
                 WSID.StopSlot()
                 spinClassBtn:SetEnabled(false)
-                classLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+                classLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
                 WSID.StartSlot(classLabel, classes, function(w)
                     local cc=WSID.CLASS_INFO[w]
                     if cc then
                         classLabel:SetTextColor(cc.r,cc.g,cc.b)
                     else
-                        classLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
+                        classLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
                     end
                     spinClassBtn:SetEnabled(true)
                 end)
@@ -145,9 +143,9 @@ WSID.BuildCreatorPanel = function(contentArea)
         spinBothBtn:SetEnabled(false)
         pickedRace=nil
         classLabel:SetText("Class")
-        classLabel:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
+        classLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
         infoLbl:SetText(" ")
-        raceLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+        raceLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
         WSID.StartSlot(raceLabel, names, function(winner)
             AfterRace(winner)
             spinRaceBtn:SetEnabled(false)
@@ -157,13 +155,13 @@ WSID.BuildCreatorPanel = function(contentArea)
             if #classes==0 then spinRaceBtn:SetEnabled(true)
                 spinBothBtn:SetEnabled(true)
                 return end
-            classLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+            classLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
             WSID.StartSlot(classLabel, classes, function(cls)
                 local cc=WSID.CLASS_INFO[cls]
                 if cc then
                     classLabel:SetTextColor(cc.r,cc.g,cc.b)
                 else
-                    classLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
+                    classLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
                 end
                 spinRaceBtn:SetEnabled(true)
                 spinClassBtn:SetEnabled(true)

@@ -2,7 +2,7 @@
 -- Main window, left nav, minimap button, init, slash commands
 -- Author: I_AM_T3X | v1.0.0
 
-MainFrame = nil
+WhatShouldIDoDB.MainFrame = nil
 local MainPanels = {}
 -- WSID.FRAME = "WhatShouldIDoFrame"
 
@@ -17,38 +17,38 @@ WSID["BuildMainFrame"] = function()
     f:SetScript(WSID.OnDragStop,f.StopMovingOrSizing)
     f:SetFrameStrata(WSID.DIALOG)
     f:SetBackdrop({bgFile=WSID.BG_FILE,edgeFile=WSID.BG_FILE,edgeSize=1})
-    f:SetBackdropColor(COLOR_TABLE.bg[1],COLOR_TABLE.bg[2],COLOR_TABLE.bg[3],1)
-    f:SetBackdropBorderColor(COLOR_TABLE.win_border[1],COLOR_TABLE.win_border[2],COLOR_TABLE.win_border[3],1)
+    f:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.bg[1],WhatShouldIDoDB.COLOR_TABLE.bg[2],WhatShouldIDoDB.COLOR_TABLE.bg[3],1)
+    f:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.win_border[1],WhatShouldIDoDB.COLOR_TABLE.win_border[2],WhatShouldIDoDB.COLOR_TABLE.win_border[3],1)
 
     -- Title bar
     local tb=CreateFrame(WSID.FRAME,nil,f)
     tb:SetHeight(30)
     tb:SetPoint(WSID.TOPLEFT,f,WSID.TOPLEFT,0,0)
     tb:SetPoint(WSID.TOPRIGHT,f,WSID.TOPRIGHT,0,0)
-    WSID.Tx(tb,COLOR_TABLE.sidebar[1],COLOR_TABLE.sidebar[2],COLOR_TABLE.sidebar[3])
+    WSID.Tx(tb,WhatShouldIDoDB.COLOR_TABLE.sidebar[1],WhatShouldIDoDB.COLOR_TABLE.sidebar[2],WhatShouldIDoDB.COLOR_TABLE.sidebar[3])
     local tbb=tb:CreateTexture(nil,WSID.ARTWORK)
-    tbb:SetColorTexture(COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3],1)
+    tbb:SetColorTexture(WhatShouldIDoDB.COLOR_TABLE.divider[1],WhatShouldIDoDB.COLOR_TABLE.divider[2],WhatShouldIDoDB.COLOR_TABLE.divider[3],1)
     tbb:SetHeight(1)
     tbb:SetPoint(WSID.BOTTOMLEFT,tb,WSID.BOTTOMLEFT,0,0)
     tbb:SetPoint(WSID.BOTTOMRIGHT,tb,WSID.BOTTOMRIGHT,0,0)
     local titleLbl=tb:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_LARGE)
     titleLbl:SetPoint(WSID.CENTER,tb,WSID.CENTER,0,0)
     titleLbl:SetText(WSID.STRING)
-    titleLbl:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+    titleLbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
     local closeBtn=CreateFrame(WSID.BUTTON,nil,f,WSID.UI_PANEL_CLOSE_BUTTON)
     closeBtn:SetPoint(WSID.TOPRIGHT,f,WSID.TOPRIGHT,-2,-2)
     closeBtn:SetFrameStrata(f:GetFrameStrata())
     closeBtn:SetFrameLevel(f:GetFrameLevel() + 1)
     closeBtn:SetScript(WSID.OnClick,function()
         f:Hide()
-        if SettingsFrame then SettingsFrame:Hide() end
+        if WhatShouldIDoDB.SettingsFrame then WhatShouldIDoDB.SettingsFrame:Hide() end
     end)
 
     -- Content area
     local contentArea=CreateFrame(WSID.FRAME,nil,f)
     contentArea:SetPoint(WSID.TOPLEFT,f,WSID.TOPLEFT,WSID.NAV_W,-30)
     contentArea:SetPoint(WSID.BOTTOMRIGHT,f,WSID.BOTTOMRIGHT,0,0)
-    WSID.Tx(contentArea,COLOR_TABLE.bg[1]+0.005,COLOR_TABLE.bg[2]+0.005,COLOR_TABLE.bg[3]+0.01)
+    WSID.Tx(contentArea,WhatShouldIDoDB.COLOR_TABLE.bg[1]+0.005,WhatShouldIDoDB.COLOR_TABLE.bg[2]+0.005,WhatShouldIDoDB.COLOR_TABLE.bg[3]+0.01)
 
     local actPanel  = WSID.BuildActivityPanel(contentArea)
     local crePanel  = WSID.BuildCreatorPanel(contentArea)
@@ -76,8 +76,8 @@ WSID["BuildMainFrame"] = function()
         },
         function(name)
             if name==settings_nav then
-                if SettingsFrame then
-                    if SettingsFrame:IsShown() then SettingsFrame:Hide() else SettingsFrame:Show() end
+                if WhatShouldIDoDB.SettingsFrame then
+                    if WhatShouldIDoDB.SettingsFrame:IsShown() then WhatShouldIDoDB.SettingsFrame:Hide() else WhatShouldIDoDB.SettingsFrame:Show() end
                 end
                 return
             end
@@ -102,15 +102,15 @@ WSID["RegisterMinimapButton"] = function()
         type="launcher", icon="Interface\\Icons\\INV_Misc_QuestionMark", label=WSID.STRING,
         OnClick=function(_,btn)
             if btn==WSID.LEFT_BUTTON then
-                if MainFrame:IsShown() then
-                    MainFrame:Hide()
-                    if SettingsFrame then SettingsFrame:Hide() end
+                if WhatShouldIDoDB.MainFrame:IsShown() then
+                    WhatShouldIDoDB.MainFrame:Hide()
+                    if WhatShouldIDoDB.SettingsFrame then WhatShouldIDoDB.SettingsFrame:Hide() end
                 else
                     WSID.BuildRoster()
-                    MainFrame:Show()
+                    WhatShouldIDoDB.MainFrame:Show()
                 end
             elseif btn==WSID.RIGHT_BUTTON then
-                if SettingsFrame:IsShown() then SettingsFrame:Hide() else SettingsFrame:Show() end
+                if WhatShouldIDoDB.SettingsFrame:IsShown() then WhatShouldIDoDB.SettingsFrame:Hide() else WhatShouldIDoDB.SettingsFrame:Show() end
             end
         end,
         OnTooltipShow=function(tt)
@@ -142,16 +142,16 @@ initFrame:SetScript(WSID.OnEvent,function(self,event,arg1)
         -- Define StaticPopup dialogs at init time so they're registered before use
         StaticPopupDialogs["WSID_CONFIRM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_THEME"] or {}
         StaticPopupDialogs["WSID_CONFIRM_WSID.CUSTOM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_WSID.CUSTOM_THEME"] or {}
-        MainFrame     = WSID.BuildMainFrame()
-        SettingsFrame = WSID.BuildSettingsWindow()
+        WhatShouldIDoDB.MainFrame     = WSID.BuildMainFrame()
+        WhatShouldIDoDB.SettingsFrame = WSID.BuildSettingsWindow()
         WSID.RegisterMinimapButton()
         -- ESC closes the windows
         tinsert(UISpecialFrames, WSID.FRAME)
         tinsert(UISpecialFrames, "WhatShouldIDoSettings")
         -- Apply saved UI scale
         local scale = WhatShouldIDoDB.uiScale or 1.0
-        MainFrame:SetScale(scale)
-        SettingsFrame:SetScale(scale)
+        WhatShouldIDoDB.MainFrame:SetScale(scale)
+        WhatShouldIDoDB.SettingsFrame:SetScale(scale)
     elseif event==WSID.PLAYER_LOGIN then
         if WhatShouldIDoDB then WSID.BuildRoster() end
     end
@@ -168,17 +168,17 @@ SlashCmdList["WSID"]=function(msg)
         return
     end
     if msgL=="settings" then
-        if SettingsFrame then
-            if SettingsFrame:IsShown() then SettingsFrame:Hide() else SettingsFrame:Show() end
+        if WhatShouldIDoDB.SettingsFrame then
+            if WhatShouldIDoDB.SettingsFrame:IsShown() then WhatShouldIDoDB.SettingsFrame:Hide() else WhatShouldIDoDB.SettingsFrame:Show() end
         end
         return
     end
-    if MainFrame then
-        if MainFrame:IsShown() then
-            MainFrame:Hide()
-            if SettingsFrame then SettingsFrame:Hide() end
+    if WhatShouldIDoDB.MainFrame then
+        if WhatShouldIDoDB.MainFrame:IsShown() then
+            WhatShouldIDoDB.MainFrame:Hide()
+            if WhatShouldIDoDB.SettingsFrame then WhatShouldIDoDB.SettingsFrame:Hide() end
         else WSID.BuildRoster()
-            MainFrame:Show()
+            WhatShouldIDoDB.MainFrame:Show()
         end
     end
 end

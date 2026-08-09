@@ -146,7 +146,7 @@ WSID.THEMES = {
 }
 
 -- C is the live color table, starts as Default
-COLOR_TABLE = {}
+WhatShouldIDoDB.COLOR_TABLE = {}
 
 WSID.ApplyTheme = function(themeName, customColors)
     local src = WSID.THEMES[themeName]
@@ -155,9 +155,9 @@ WSID.ApplyTheme = function(themeName, customColors)
     end
     if not src then src = WSID.THEMES.Default end
     for k, v in pairs(src) do
-        COLOR_TABLE[k] = {v[1], v[2], v[3]}
+        WhatShouldIDoDB.COLOR_TABLE[k] = {v[1], v[2], v[3]}
     end
-    return COLOR_TABLE
+    return WhatShouldIDoDB.COLOR_TABLE
 end
 
 WSID.ApplyTheme(WSID.DEFAULT_THEME)
@@ -192,8 +192,8 @@ WSID.MakeScrollBox = function(parent, w, h)
         bg:SetPoint(WSID.LEFT,  parent, WSID.LEFT,  WSID.PAD, 0)
         bg:SetPoint(WSID.RIGHT, parent, WSID.RIGHT, -WSID.PAD, 0)
     end
-    WSID.BgBorder(bg, COLOR_TABLE.row_even[1],COLOR_TABLE.row_even[2],COLOR_TABLE.row_even[3],
-                 COLOR_TABLE.divider[1], COLOR_TABLE.divider[2], COLOR_TABLE.divider[3])
+    WSID.BgBorder(bg, WhatShouldIDoDB.COLOR_TABLE.row_even[1],WhatShouldIDoDB.COLOR_TABLE.row_even[2],WhatShouldIDoDB.COLOR_TABLE.row_even[3],
+                 WhatShouldIDoDB.COLOR_TABLE.divider[1], WhatShouldIDoDB.COLOR_TABLE.divider[2], WhatShouldIDoDB.COLOR_TABLE.divider[3])
     local clip = CreateFrame(WSID.FRAME, nil, bg)
     clip:SetPoint(WSID.TOPLEFT,     bg, WSID.TOPLEFT,     1, -1)
     clip:SetPoint(WSID.BOTTOMRIGHT, bg, WSID.BOTTOMRIGHT, -1, 1)
@@ -236,12 +236,12 @@ WSID.MakeResult = function(parent, w, h, tagText)
         f:SetPoint(WSID.LEFT,  parent, WSID.LEFT,  WSID.PAD, 0)
         f:SetPoint(WSID.RIGHT, parent, WSID.RIGHT, -WSID.PAD, 0)
     end
-    WSID.BgBorder(f, COLOR_TABLE.result_bg[1],COLOR_TABLE.result_bg[2],COLOR_TABLE.result_bg[3],
-                COLOR_TABLE.result_bdr[1],COLOR_TABLE.result_bdr[2],COLOR_TABLE.result_bdr[3])
+    WSID.BgBorder(f, WhatShouldIDoDB.COLOR_TABLE.result_bg[1],WhatShouldIDoDB.COLOR_TABLE.result_bg[2],WhatShouldIDoDB.COLOR_TABLE.result_bg[3],
+                WhatShouldIDoDB.COLOR_TABLE.result_bdr[1],WhatShouldIDoDB.COLOR_TABLE.result_bdr[2],WhatShouldIDoDB.COLOR_TABLE.result_bdr[3])
     if tagText then
         local tag = f:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
         tag:SetPoint(WSID.TOPLEFT, f, WSID.TOPLEFT, 10, -6)
-        tag:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
+        tag:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
         tag:SetText(tagText)
     end
     local lbl = f:CreateFontString(nil,WSID.OVERLAY)
@@ -252,7 +252,7 @@ WSID.MakeResult = function(parent, w, h, tagText)
     lbl:SetJustifyH(WSID.CENTER)
     lbl:SetWordWrap(false)
     lbl:SetText(WSID.DASH_DASH)
-    lbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
+    lbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
     return f, lbl
 end
 
@@ -261,22 +261,22 @@ WSID.MakeBtn = function(parent, text, w, h)
     b:SetHeight(h or 30)
     if w then b:SetWidth(w) end
     -- RIGHT anchor set by caller when w is nil
-    WSID.BgBorder(b, COLOR_TABLE.btn_bg[1],COLOR_TABLE.btn_bg[2],COLOR_TABLE.btn_bg[3], COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3])
+    WSID.BgBorder(b, WhatShouldIDoDB.COLOR_TABLE.btn_bg[1],WhatShouldIDoDB.COLOR_TABLE.btn_bg[2],WhatShouldIDoDB.COLOR_TABLE.btn_bg[3], WhatShouldIDoDB.COLOR_TABLE.btn_bdr[1],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[2],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[3])
     local lbl = b:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     lbl:SetAllPoints()
     lbl:SetJustifyH(WSID.CENTER)
     lbl:SetText(text)
-    lbl:SetTextColor(COLOR_TABLE.btn_text[1],COLOR_TABLE.btn_text[2],COLOR_TABLE.btn_text[3])
+    lbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.btn_text[1],WhatShouldIDoDB.COLOR_TABLE.btn_text[2],WhatShouldIDoDB.COLOR_TABLE.btn_text[3])
     b:SetScript(WSID.OnEnter, function(s)
         if s:IsEnabled() then
-            s:SetBackdropColor(COLOR_TABLE.btn_hover[1],COLOR_TABLE.btn_hover[2],COLOR_TABLE.btn_hover[3])
+            s:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.btn_hover[1],WhatShouldIDoDB.COLOR_TABLE.btn_hover[2],WhatShouldIDoDB.COLOR_TABLE.btn_hover[3])
             s:SetBackdropBorderColor(0.70,0.42,1.00,1)
         end
     end)
     b:SetScript(WSID.OnLeave, function(s)
         if s:IsEnabled() then
-            s:SetBackdropColor(COLOR_TABLE.btn_bg[1],COLOR_TABLE.btn_bg[2],COLOR_TABLE.btn_bg[3])
-            s:SetBackdropBorderColor(COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3],1)
+            s:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.btn_bg[1],WhatShouldIDoDB.COLOR_TABLE.btn_bg[2],WhatShouldIDoDB.COLOR_TABLE.btn_bg[3])
+            s:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.btn_bdr[1],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[2],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[3],1)
         end
     end)
     b._lbl = lbl
@@ -284,13 +284,13 @@ WSID.MakeBtn = function(parent, text, w, h)
     b.SetEnabled = function(self, v)
         origSetEnabled(self, v)
         if v then
-            self:SetBackdropColor(COLOR_TABLE.btn_bg[1],COLOR_TABLE.btn_bg[2],COLOR_TABLE.btn_bg[3])
-            self:SetBackdropBorderColor(COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3],1)
-            lbl:SetTextColor(COLOR_TABLE.btn_text[1],COLOR_TABLE.btn_text[2],COLOR_TABLE.btn_text[3])
+            self:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.btn_bg[1],WhatShouldIDoDB.COLOR_TABLE.btn_bg[2],WhatShouldIDoDB.COLOR_TABLE.btn_bg[3])
+            self:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.btn_bdr[1],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[2],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[3],1)
+            lbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.btn_text[1],WhatShouldIDoDB.COLOR_TABLE.btn_text[2],WhatShouldIDoDB.COLOR_TABLE.btn_text[3])
         else
-            self:SetBackdropColor(COLOR_TABLE.btn_dis[1],COLOR_TABLE.btn_dis[2],COLOR_TABLE.btn_dis[3])
-            self:SetBackdropBorderColor(COLOR_TABLE.btn_dis[1]+0.10,COLOR_TABLE.btn_dis[2]+0.10,COLOR_TABLE.btn_dis[3]+0.10,1)
-            lbl:SetTextColor(COLOR_TABLE.dim_text[1]*0.6, COLOR_TABLE.dim_text[2]*0.6, COLOR_TABLE.dim_text[3]*0.6)
+            self:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.btn_dis[1],WhatShouldIDoDB.COLOR_TABLE.btn_dis[2],WhatShouldIDoDB.COLOR_TABLE.btn_dis[3])
+            self:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.btn_dis[1]+0.10,WhatShouldIDoDB.COLOR_TABLE.btn_dis[2]+0.10,WhatShouldIDoDB.COLOR_TABLE.btn_dis[3]+0.10,1)
+            lbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1]*0.6, WhatShouldIDoDB.COLOR_TABLE.dim_text[2]*0.6, WhatShouldIDoDB.COLOR_TABLE.dim_text[3]*0.6)
         end
     end
     b:SetEnabled(true)
@@ -304,22 +304,22 @@ WSID.MakeHeader = function(parent, text, w)
         f:SetPoint(WSID.LEFT,  parent, WSID.LEFT,  WSID.PAD, 0)
         f:SetPoint(WSID.RIGHT, parent, WSID.RIGHT, -WSID.PAD, 0)
     end
-    WSID.BgBorder(f, COLOR_TABLE.header_bg[1],COLOR_TABLE.header_bg[2],COLOR_TABLE.header_bg[3], COLOR_TABLE.divider[1],COLOR_TABLE.divider[2],COLOR_TABLE.divider[3])
+    WSID.BgBorder(f, WhatShouldIDoDB.COLOR_TABLE.header_bg[1],WhatShouldIDoDB.COLOR_TABLE.header_bg[2],WhatShouldIDoDB.COLOR_TABLE.header_bg[3], WhatShouldIDoDB.COLOR_TABLE.divider[1],WhatShouldIDoDB.COLOR_TABLE.divider[2],WhatShouldIDoDB.COLOR_TABLE.divider[3])
     local stripe = f:CreateTexture(nil,WSID.ARTWORK)
-    stripe:SetColorTexture(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
+    stripe:SetColorTexture(WhatShouldIDoDB.COLOR_TABLE.nav_border[1],WhatShouldIDoDB.COLOR_TABLE.nav_border[2],WhatShouldIDoDB.COLOR_TABLE.nav_border[3],1)
     stripe:SetSize(3,28)
     stripe:SetPoint(WSID.LEFT,f,WSID.LEFT,0,0)
     local lbl = f:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL)
     lbl:SetPoint(WSID.LEFT,f,WSID.LEFT,12,0)
     lbl:SetText(text)
-    lbl:SetTextColor(COLOR_TABLE.header_txt[1],COLOR_TABLE.header_txt[2],COLOR_TABLE.header_txt[3])
+    lbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.header_txt[1],WhatShouldIDoDB.COLOR_TABLE.header_txt[2],WhatShouldIDoDB.COLOR_TABLE.header_txt[3])
     return f
 end
 
 WSID.MakeLabel = function(parent, text, anchorFrame, anchorPoint, ox, oy)
     local fs = parent:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     fs:SetPoint(WSID.TOPLEFT, anchorFrame, anchorPoint or WSID.BOTTOMLEFT, ox or 0, oy or -6)
-    fs:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
+    fs:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
     fs:SetText(text)
     return fs
 end

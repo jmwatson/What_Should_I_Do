@@ -11,7 +11,7 @@ WSID.BuildRaidDungeonPanel = function(contentArea)
     -- Mode toggle: Raids or Dungeons
     local modeLbl = panel:CreateFontString(nil,WSID.OVERLAY,WSID.NORMAL_SMALL)
     modeLbl:SetPoint(WSID.TOPLEFT, desc, WSID.BOTTOMLEFT, 0, -10)
-    modeLbl:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
+    modeLbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
     modeLbl:SetText("Mode:")
 
     local mode = "Raids"
@@ -23,19 +23,19 @@ WSID.BuildRaidDungeonPanel = function(contentArea)
         mb:SetScript(WSID.OnClick, function()
             mode = mv
             for _, b in ipairs(modeBtns) do
-                b:SetBackdropColor(COLOR_TABLE.btn_bg[1],COLOR_TABLE.btn_bg[2],COLOR_TABLE.btn_bg[3])
-                b:SetBackdropBorderColor(COLOR_TABLE.btn_bdr[1],COLOR_TABLE.btn_bdr[2],COLOR_TABLE.btn_bdr[3],1)
-                b._lbl:SetTextColor(COLOR_TABLE.btn_text[1],COLOR_TABLE.btn_text[2],COLOR_TABLE.btn_text[3])
+                b:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.btn_bg[1],WhatShouldIDoDB.COLOR_TABLE.btn_bg[2],WhatShouldIDoDB.COLOR_TABLE.btn_bg[3])
+                b:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.btn_bdr[1],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[2],WhatShouldIDoDB.COLOR_TABLE.btn_bdr[3],1)
+                b._lbl:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.btn_text[1],WhatShouldIDoDB.COLOR_TABLE.btn_text[2],WhatShouldIDoDB.COLOR_TABLE.btn_text[3])
             end
-            mb:SetBackdropColor(COLOR_TABLE.nav_active[1],COLOR_TABLE.nav_active[2],COLOR_TABLE.nav_active[3])
-            mb:SetBackdropBorderColor(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
+            mb:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.nav_active[1],WhatShouldIDoDB.COLOR_TABLE.nav_active[2],WhatShouldIDoDB.COLOR_TABLE.nav_active[3])
+            mb:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.nav_border[1],WhatShouldIDoDB.COLOR_TABLE.nav_border[2],WhatShouldIDoDB.COLOR_TABLE.nav_border[3],1)
             mb._lbl:SetTextColor(1,1,1)
         end)
         table.insert(modeBtns, mb)
     end
     -- Default: Raids active
-    modeBtns[1]:SetBackdropColor(COLOR_TABLE.nav_active[1],COLOR_TABLE.nav_active[2],COLOR_TABLE.nav_active[3])
-    modeBtns[1]:SetBackdropBorderColor(COLOR_TABLE.nav_border[1],COLOR_TABLE.nav_border[2],COLOR_TABLE.nav_border[3],1)
+    modeBtns[1]:SetBackdropColor(WhatShouldIDoDB.COLOR_TABLE.nav_active[1],WhatShouldIDoDB.COLOR_TABLE.nav_active[2],WhatShouldIDoDB.COLOR_TABLE.nav_active[3])
+    modeBtns[1]:SetBackdropBorderColor(WhatShouldIDoDB.COLOR_TABLE.nav_border[1],WhatShouldIDoDB.COLOR_TABLE.nav_border[2],WhatShouldIDoDB.COLOR_TABLE.nav_border[3],1)
     modeBtns[1]._lbl:SetTextColor(1,1,1)
 
     -- Expansion result
@@ -94,14 +94,19 @@ WSID.BuildRaidDungeonPanel = function(contentArea)
         local pool = GetExpansionList()
         if #pool == 0 then return end
         WSID.StopSlot()
-        spinExpBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false)
-        spinInstBtn:SetEnabled(false) ; pickedExp = nil
-        instLabel:SetText(WSID.DASH_DASH) ; instLabel:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
-        expLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+        spinExpBtn:SetEnabled(false)
+        spinBothBtn:SetEnabled(false)
+        spinInstBtn:SetEnabled(false)
+        pickedExp = nil
+        instLabel:SetText(WSID.DASH_DASH)
+        instLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
+        expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
         WSID.StartSlot(expLabel, pool, function(winner)
             pickedExp = winner
-            expLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
-            spinExpBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinInstBtn:SetEnabled(true)
+            expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
+            spinExpBtn:SetEnabled(true)
+            spinBothBtn:SetEnabled(true)
+            spinInstBtn:SetEnabled(true)
         end)
     end)
 
@@ -109,10 +114,11 @@ WSID.BuildRaidDungeonPanel = function(contentArea)
         if not pickedExp then return end
         local pool = GetInstanceList(pickedExp)
         if #pool == 0 then instLabel:SetText("None found") return end
-        WSID.StopSlot() ; spinInstBtn:SetEnabled(false)
-        instLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+        WSID.StopSlot()
+        spinInstBtn:SetEnabled(false)
+        instLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
         WSID.StartSlot(instLabel, pool, function(_)
-            instLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
+            instLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
             spinInstBtn:SetEnabled(true)
         end)
     end)
@@ -121,21 +127,28 @@ WSID.BuildRaidDungeonPanel = function(contentArea)
         local pool = GetExpansionList()
         if #pool == 0 then return end
         WSID.StopSlot()
-        spinExpBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false) ; spinInstBtn:SetEnabled(false)
+        spinExpBtn:SetEnabled(false)
+        spinBothBtn:SetEnabled(false)
+        spinInstBtn:SetEnabled(false)
         pickedExp = nil
-        instLabel:SetText(WSID.DASH_DASH) ; instLabel:SetTextColor(COLOR_TABLE.dim_text[1],COLOR_TABLE.dim_text[2],COLOR_TABLE.dim_text[3])
-        expLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+        instLabel:SetText(WSID.DASH_DASH)
+        instLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.dim_text[1],WhatShouldIDoDB.COLOR_TABLE.dim_text[2],WhatShouldIDoDB.COLOR_TABLE.dim_text[3])
+        expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
         WSID.StartSlot(expLabel, pool, function(winner)
             pickedExp = winner
-            expLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
+            expLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
             local instPool = GetInstanceList(winner)
             if #instPool == 0 then
-                spinExpBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; return
+                spinExpBtn:SetEnabled(true)
+                spinBothBtn:SetEnabled(true)
+                return
             end
-            instLabel:SetTextColor(COLOR_TABLE.bright_text[1],COLOR_TABLE.bright_text[2],COLOR_TABLE.bright_text[3])
+            instLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.bright_text[1],WhatShouldIDoDB.COLOR_TABLE.bright_text[2],WhatShouldIDoDB.COLOR_TABLE.bright_text[3])
             WSID.StartSlot(instLabel, instPool, function(_)
-                instLabel:SetTextColor(COLOR_TABLE.spin_text[1],COLOR_TABLE.spin_text[2],COLOR_TABLE.spin_text[3])
-                spinExpBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinInstBtn:SetEnabled(true)
+                instLabel:SetTextColor(WhatShouldIDoDB.COLOR_TABLE.spin_text[1],WhatShouldIDoDB.COLOR_TABLE.spin_text[2],WhatShouldIDoDB.COLOR_TABLE.spin_text[3])
+                spinExpBtn:SetEnabled(true)
+                spinBothBtn:SetEnabled(true)
+                spinInstBtn:SetEnabled(true)
             end)
         end)
     end)
