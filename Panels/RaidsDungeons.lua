@@ -69,7 +69,7 @@ WSID.BuildRaidDungeonPanel = function(contentArea)
 
     local function GetExpansionList()
         local pool = {}
-        local src = mode == "Raids" and WSID_RAIDS_BY_EXPANSION or WSID_DUNGEONS_BY_EXPANSION
+        local src = mode == "Raids" and WSID.RAIDS_BY_EXPANSION or WSID.DUNGEONS_BY_EXPANSION
         local excluded = WhatShouldIDoDB and WhatShouldIDoDB.excludedExpansions or {}
         for exp, instances in pairs(src) do
             if exp and #instances > 0 and not excluded[exp] then
@@ -78,15 +78,15 @@ WSID.BuildRaidDungeonPanel = function(contentArea)
         end
         -- Sort chronologically using the central index map
         table.sort(pool, function(a,b)
-            local ai = WSID_EXPANSION_INDEX[a] or 99
-            local bi = WSID_EXPANSION_INDEX[b] or 99
+            local ai = WSID.EXPANSION_INDEX[a] or 99
+            local bi = WSID.EXPANSION_INDEX[b] or 99
             return ai < bi
         end)
         return pool
     end
 
     local function GetInstanceList(exp)
-        local src = mode == "Raids" and WSID_RAIDS_BY_EXPANSION or WSID_DUNGEONS_BY_EXPANSION
+        local src = mode == "Raids" and WSID.RAIDS_BY_EXPANSION or WSID.DUNGEONS_BY_EXPANSION
         return src[exp] or {}
     end
 

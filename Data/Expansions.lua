@@ -3,27 +3,27 @@
 -- Author: I_AM_T3X | v1.0.0
 
 WSID.EXPANSIONS = {
-    CLASSIC,
-    TBC,
-    WRATH,
-    CATA,
-    MISTS,
-    WOD,
-    LEGION,
-    BFA,
-    SL,
-    DF,
-    TWW,
-    MIDNIGHT,
+    WSID.CLASSIC.NAME,
+    WSID.TBC.NAME,
+    WSID.WRATH.NAME,
+    WSID.CATA.NAME,
+    WSID.MISTS.NAME,
+    WSID.WOD.NAME,
+    WSID.LEGION.NAME,
+    WSID.BFA.NAME,
+    WSID.SL.NAME,
+    WSID.DF.NAME,
+    WSID.TWW.NAME,
+    WSID.MIDNIGHT.NAME,
 }
 
 WSID.GetExpansionPool = function(level)
     -- Should probably find a better way to make this generic,
     -- but for now it being hardcoded to the last 2 expansions is fine.
     if level >= 80 then
-        return {MIDNIGHT}
+        return {WSID.MIDNIGHT.NAME}
     elseif level >= 70 then
-        return {TWW}
+        return {WSID.TWW.NAME}
     elseif level >= 10 then
         -- Trim last 2 expansions from the list
         local new_len = #WSID.EXPANSIONS - 2
@@ -34,5 +34,5 @@ WSID.GetExpansionPool = function(level)
 end
 
 -- Helper: map expansion name -> chronological index
-WSID_EXPANSION_INDEX = {}
-for i, name in ipairs(WSID.EXPANSIONS) do WSID_EXPANSION_INDEX[name] = i end
+WSID.EXPANSION_INDEX = {}
+for i, name in ipairs(WSID.EXPANSIONS) do WSID.EXPANSION_INDEX[name] = i end
