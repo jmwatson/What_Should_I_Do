@@ -18,33 +18,35 @@ local activitiesInfo = {
 };
 
 -- Local array so we don't recalculate each time we want the filtered activities.
-do
-    local activities = {};
-    for k, _ in pairs(activitiesInfo) do
-        table.insert(activities, k);
-    end
-
-    local function GetActivities()
-        local filtered = activities or {};
-        if #DB.excludedActivities > 0 then
-            filtered = addon.Filter(filtered, DB.excludedActivities);
-        end
-        return filtered;
-    end
-    addon.GetActivities = GetActivities;
+local activities = {};
+for k, _ in pairs(activitiesInfo) do
+    table.insert(activities, k);
 end
+
+table.sort(activities);
+
+local function GetAllActivities()
+    return activities;
+end
+addon.GetAllActivities = GetAllActivities;
+
+local function GetActivities()
+    return addon.Filter(activities, DB.excludedActivities);
+end
+addon.GetActivities = GetActivities;
 
 local function ResetActivities()
     DB.excludedActivities = {};
 end
 addon.ResetActivities = ResetActivities;
 
+local function GetAllSubActivities(activity)
+    return activitiesInfo[activity] or {};
+end
+addon.GetAllSubActivities = GetAllSubActivities;
+
 local function GetSubActivities(activity)
-    local filtered = activitiesInfo[activity] or {};
-    if #DB.excludedSubActivities > 0 then
-        filtered = addon.Filter(filtered, DB.excludedSubActivities);
-    end
-    return filtered;
+    return addon.Filter(GetAllSubActivities(activity), DB.excludedSubActivities);
 end
 addon.GetSubActivities = GetSubActivities;
 

@@ -95,28 +95,6 @@ local function ResetSize()
     UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r UI scale reset to 100%%.", 1, 0.85, 0.2);
 end
 
-local function OnEditFocusGained(s)
-    s:SetBackdropBorderColor(CT.result_bdr[1],CT.result_bdr[2],CT.result_bdr[3],1);
-end
-
-local function OnEditFocusLost(s)
-    s:SetBackdropBorderColor(CT.divider[1],CT.divider[2],CT.divider[3],1);
-end
-
-local function BtnOnEnter(xL)
-    local function _BtnOnEnter()
-        xL:SetText("|cffff5555x|r");
-    end
-    return _BtnOnEnter;
-end
-
-local function BtnOnLeave(xL)
-    local function _BtnOnLeave()
-        xL:SetText("|cffcc3333x|r");
-    end
-    return _BtnOnLeave;
-end
-
 ----------------
 --- Builders ---
 ----------------
@@ -274,234 +252,172 @@ local function BuildResetSizeButton(parent)
     frame:SetScript(addon.OnClick, ResetSize);
 end
 
-local function BuildActivitiesList(activitiesPanel, background, addButton, BTN_H, GAP)
-    local list = CreateFrame(addon.EDIT_BOX, nil, activitiesPanel, addon.BACKDROP_TEMPLATE);
-    list:SetHeight(BTN_H);
-    list:SetPoint(addon.TOPLEFT, background, addon.BOTTOMLEFT, 0, -GAP);
-    list:SetPoint(addon.TOPRIGHT, addButton, addon.TOPLEFT, -6, 0);
-    list:SetBackdrop({bgFile = addon.BG_FILE, edgeFile = addon.BG_FILE, edgeSize = 1});
-    list:SetBackdropColor(0.04, 0.03, 0.08, 1);
-    list:SetBackdropBorderColor(CT.divider[1], CT.divider[2], CT.divider[3], 1);
-    list:SetFont(addon.GAME_FONT, 11, addon.EMPTY_STRING);
-    list:SetTextColor(CT.bright_text[1], CT.bright_text[2], CT.bright_text[3]);
-    list:SetTextInsets(6, 6, 2, 2);
-    list:SetAutoFocus(false);
-    list:SetMaxLetters(64);
-    list:SetScript(addon.OnEditFocusGained, OnEditFocusGained);
-    list:SetScript(addon.OnEditFocusLost, OnEditFocusLost);
-
-    return list;
-end
-
 local function BuildActivitiesPanel(activitiesPanel, BTN_H, SCRL_H, GAP)
     -- Left column: Categories
-    local catHdr = addon.MakeHeader(activitiesPanel, "Categories", addon.SET_COL)
-    catHdr:SetPoint(addon.TOPLEFT, activitiesPanel, addon.TOPLEFT, addon.SET_PAD, -addon.SET_PAD)
-
-    local catCount=activitiesPanel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-    catCount:SetPoint(addon.RIGHT,catHdr,addon.RIGHT,-6,0)
-    catCount:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3])
-
-    local catBG,catContent,catReset=addon.MakeScrollBox(activitiesPanel,addon.SET_COL,SCRL_H)
-    catBG:SetPoint(addon.TOPLEFT,catHdr,addon.BOTTOMLEFT,0,-4)
-
-    local catAddBtn=addon.MakeBtn(activitiesPanel,"Add",54,BTN_H)
-    catAddBtn:SetPoint(addon.TOPRIGHT,catBG,addon.BOTTOMRIGHT,0,-GAP)
-
-    local catAddBox=BuildActivitiesList(activitiesPanel,catBG,catAddBtn,BTN_H,GAP)
-
-    local catResetBtn=addon.MakeBtn(activitiesPanel,"Reset All Defaults",addon.SET_COL,BTN_H)
-    catResetBtn:SetPoint(addon.TOPLEFT,catBG,addon.BOTTOMLEFT,0,-(GAP+BTN_H+28))
-
+    local activitiesHeader = addon.MakeHeader(activitiesPanel, "Categories", addon.SET_COL);
+    local activitiesCount=activitiesPanel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+    local activitiesBG,catContent,catReset=addon.MakeScrollBox(activitiesPanel,addon.SET_COL,SCRL_H);
+    local resetBtn=addon.MakeBtn(activitiesPanel,"Reset All Defaults",addon.SET_COL,BTN_H);
     -- Right column: Sub-Activities
-    local subHdr=addon.MakeHeader(activitiesPanel,"Sub-Activities",addon.SET_COL)
-    subHdr:SetPoint(addon.TOPLEFT,catHdr,addon.TOPRIGHT,12,0)
-
-    local subCount=activitiesPanel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-    subCount:SetPoint(addon.RIGHT,subHdr,addon.RIGHT,-6,0)
-    subCount:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3])
-
-    local subSelLbl=activitiesPanel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-    subSelLbl:SetPoint(addon.TOPLEFT,subHdr,addon.BOTTOMLEFT,4,-4)
-    subSelLbl:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3])
-    subSelLbl:SetText("(click a category to edit its sub-activities)")
-    subSelLbl:SetWidth(addon.SET_COL)
-
+    local subHeader=addon.MakeHeader(activitiesPanel,"Sub-Activities",addon.SET_COL);
+    local subCount=activitiesPanel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+    local subSelectLabel=activitiesPanel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
     -- Sub scroll must align vertically with cat scroll despite the extra label line
-    -- Anchor subBG to subHdr bottom + fixed 28px (label height) to keep tops aligned
-    local subBG,subContent,subReset=addon.MakeScrollBox(activitiesPanel,addon.SET_COL,SCRL_H)
-    subBG:SetPoint(addon.TOPLEFT,subHdr,addon.BOTTOMLEFT,0,-28)
-
-    local subAddBtn=addon.MakeBtn(activitiesPanel,"Add",54,BTN_H)
-    subAddBtn:SetPoint(addon.TOPRIGHT,subBG,addon.BOTTOMRIGHT,0,-GAP)
-    subAddBtn:SetEnabled(false)
-
-    local subAddBox=BuildActivitiesList(activitiesPanel,subBG,subAddBtn,BTN_H,GAP);
-
+    local subBG,subContent,subReset=addon.MakeScrollBox(activitiesPanel,addon.SET_COL,SCRL_H);
     -- State
-    local selectedCat=nil
-    local catRows={}
-    local subRows={}
-    local catRowBgs={}
+    local selectedActivity=nil;
+    local activitiesRows={};
+    local subRows={};
 
-    local function RefreshSubList()
-        for _,r in ipairs(subRows) do r:Hide() end
-        subRows={}
-        if not selectedCat then
-            subCount:SetText(addon.EMPTY_STRING)
-            subAddBtn:SetEnabled(false)
-            return
+    activitiesHeader:SetPoint(addon.TOPLEFT, activitiesPanel, addon.TOPLEFT, addon.SET_PAD, -addon.SET_PAD);
+    activitiesCount:SetPoint(addon.RIGHT,activitiesHeader,addon.RIGHT,-6,0);
+    activitiesCount:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3]);
+    activitiesBG:SetPoint(addon.TOPLEFT,activitiesHeader,addon.BOTTOMLEFT,0,-4);
+    resetBtn:SetPoint(addon.TOPLEFT,activitiesBG,addon.BOTTOMLEFT,0,-GAP);
+    subHeader:SetPoint(addon.TOPLEFT,activitiesHeader,addon.TOPRIGHT,12,0);
+    subCount:SetPoint(addon.RIGHT,subHeader,addon.RIGHT,-6,0);
+    subCount:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3]);
+    subSelectLabel:SetPoint(addon.TOPLEFT,subHeader,addon.BOTTOMLEFT,4,-4);
+    subSelectLabel:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3]);
+    subSelectLabel:SetText("(click a category to edit its sub-activities)");
+    subSelectLabel:SetWidth(addon.SET_COL);
+    subBG:SetPoint(addon.TOPLEFT,subHeader,addon.BOTTOMLEFT,0,-28);
+
+    local function PaintCheckbox(box, check, lbl, checked)
+        if checked then
+            box:SetBackdropColor(CT.result_bg[1],CT.result_bg[2],CT.result_bg[3],1);
+            box:SetBackdropBorderColor(CT.nav_border[1],CT.nav_border[2],CT.nav_border[3],1);
+            check:SetVertexColor(CT.nav_border[1],CT.nav_border[2],CT.nav_border[3],1);
+            check:Show();
+            lbl:SetTextColor(CT.bright_text[1],CT.bright_text[2],CT.bright_text[3]);
+        else
+            box:SetBackdropColor(0.05,0.03,0.08,1);
+            box:SetBackdropBorderColor(CT.divider[1],CT.divider[2],CT.divider[3],1);
+            check:Hide();
+            lbl:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3]);
         end
-        -- if not DB.subActivities then DB.subActivities={} end
-        if not DB.excludedSubActivities then DB.excludedSubActivities = {} end
-        local subs = addon.GetSubActivities()
-        subCount:SetText("["..#subs.."]")
-        subAddBtn:SetEnabled(true)
-        for i,sub in ipairs(subs) do
-            local even=(i%2==0)
-            local row=CreateFrame(addon.FRAME,nil,subContent)
-            row:SetSize(addon.SET_COL-2,22)
-            row:SetPoint(addon.TOPLEFT,subContent,addon.TOPLEFT,0,-(i-1)*22)
-            local rb=row:CreateTexture(nil,addon.BACKGROUND)
-            rb:SetAllPoints()
-            rb:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],even and CT.row_even[2] or CT.row_odd[2],even and CT.row_even[3] or CT.row_odd[3],1)
-            local fs=row:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-            fs:SetPoint(addon.LEFT,row,addon.LEFT,6,0)
-            fs:SetTextColor(CT.bright_text[1],CT.bright_text[2],CT.bright_text[3])
-            fs:SetJustifyH(addon.LEFT)
-            fs:SetText(sub)
-            fs:SetWidth(addon.SET_COL-28)
-            local xBtn=CreateFrame(addon.BUTTON,nil,row)
-            xBtn:SetSize(20,22)
-            xBtn:SetPoint(addon.RIGHT,row,addon.RIGHT,0,0)
-            local xL=xBtn:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-            xL:SetAllPoints()
-            xL:SetJustifyH(addon.CENTER)
-            xL:SetText("|cffcc3333x|r")
-            local idx=i
-            xBtn:SetScript(addon.OnClick,function()
-                table.remove(DB.subActivities[selectedCat],idx)
-                RefreshSubList()
-            end)
-            xBtn:SetScript(addon.OnEnter, BtnOnEnter(xL));
-            xBtn:SetScript(addon.OnLeave, BtnOnLeave(xL));
-            table.insert(subRows,row)
-        end
-        subContent:SetHeight(math.max(22,#subs*22+2))
-        subReset()
     end
 
-    local function SelectCat(name,rowBg)
-        selectedCat=name
-        for _,rb in ipairs(catRowBgs) do rb:SetColorTexture(CT.row_even[1],CT.row_even[2],CT.row_even[3],1) end
-        rowBg:SetColorTexture(CT.row_select[1],CT.row_select[2],CT.row_select[3],1)
-        subSelLbl:SetTextColor(CT.spin_text[1],CT.spin_text[2],CT.spin_text[3])
-        subSelLbl:SetText(name)
+    local function MakeCheckboxRow(parent, i, name)
+        local even=(i%2==0);
+        local row=CreateFrame(addon.BUTTON,nil,parent,addon.BACKDROP_TEMPLATE);
+        local re,rg,rb = even and CT.row_even[1] or CT.row_odd[1], even and CT.row_even[2] or CT.row_odd[2], even and CT.row_even[3] or CT.row_odd[3];
+        local box=CreateFrame(addon.FRAME,nil,row,addon.BACKDROP_TEMPLATE);
+        local check=box:CreateTexture(nil,addon.OVERLAY);
+        local lbl=row:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+
+        row:SetSize(addon.SET_COL-2,22);
+        row:SetPoint(addon.TOPLEFT,parent,addon.TOPLEFT,0,-(i-1)*22);
+        row:SetBackdrop({bgFile=addon.BG_FILE});
+        row:SetBackdropColor(re,rg,rb,1);
+        box:SetSize(14,14);
+        box:SetPoint(addon.LEFT,row,addon.LEFT,6,0);
+        box:SetBackdrop({bgFile=addon.BG_FILE,edgeFile=addon.BG_FILE,edgeSize=1});
+        check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check");
+        check:SetSize(16,16);
+        check:SetPoint(addon.CENTER,box,addon.CENTER,0,0);
+        lbl:SetPoint(addon.LEFT,box,addon.RIGHT,6,0);
+        lbl:SetJustifyH(addon.LEFT);
+        lbl:SetText(name);
+        lbl:SetWidth(addon.SET_COL-32);
+
+        row._even=even;
+        return row, box, check, lbl, re, rg, rb;
+    end
+
+    local function RefreshSubList()
+        for _,r in ipairs(subRows) do
+            r:Hide();
+        end
+        subRows={};
+        if not selectedActivity then
+            subCount:SetText(addon.EMPTY_STRING);
+            subContent:SetHeight(22);
+            subReset();
+            return;
+        end
+        if not DB.excludedSubActivities then
+            DB.excludedSubActivities = {};
+        end
+        local subs = addon.GetAllSubActivities(selectedActivity);
+        subCount:SetText("["..#subs.."]");
+        for i,sub in ipairs(subs) do
+            local row, box, check, lbl = MakeCheckboxRow(subContent, i, sub);
+            local subName=sub;
+            local checked = not DB.excludedSubActivities[subName];
+            PaintCheckbox(box, check, lbl, checked);
+
+            row:SetScript(addon.OnClick,function()
+                checked = not checked;
+                DB.excludedSubActivities[subName] = checked and nil or true;
+                PaintCheckbox(box, check, lbl, checked);
+            end);
+            row:SetScript(addon.OnEnter,function()
+                row:SetBackdropColor(CT.row_hover[1],CT.row_hover[2],CT.row_hover[3],1);
+            end);
+            row:SetScript(addon.OnLeave,function()
+                local re,rg,rb = row._even and CT.row_even[1] or CT.row_odd[1], row._even and CT.row_even[2] or CT.row_odd[2], row._even and CT.row_even[3] or CT.row_odd[3];
+                row:SetBackdropColor(re,rg,rb,1);
+            end);
+
+            table.insert(subRows,row);
+        end
+        subContent:SetHeight(math.max(22,#subs*22+2));
+        subReset();
+    end
+
+    local function SelectCat(name)
+        selectedActivity=name
+        for _,r in ipairs(activitiesRows) do
+            if r._name==name then
+                r:SetBackdropColor(CT.row_select[1],CT.row_select[2],CT.row_select[3],1)
+            else
+                local re,rg,rb = r._even and CT.row_even[1] or CT.row_odd[1], r._even and CT.row_even[2] or CT.row_odd[2], r._even and CT.row_even[3] or CT.row_odd[3]
+                r:SetBackdropColor(re,rg,rb,1)
+            end
+        end
+        subSelectLabel:SetTextColor(CT.spin_text[1],CT.spin_text[2],CT.spin_text[3])
+        subSelectLabel:SetText(name)
         RefreshSubList()
     end
 
     local function RefreshActivities()
-        for _,r in ipairs(catRows) do r:Hide() end
-        catRows={}
-        catRowBgs={}
-        selectedCat=nil
-        subSelLbl:SetText("(click a category to edit its sub-activities)")
-        subSelLbl:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3])
-        for _,r in ipairs(subRows) do r:Hide() end
-        subRows={}
-        subCount:SetText(addon.EMPTY_STRING)
-        subAddBtn:SetEnabled(false)
-        local acts = addon.GetActivities()
-        catCount:SetText("["..#acts.."]")
+        for _,r in ipairs(activitiesRows) do r:Hide() end
+        activitiesRows={}
+        if not DB.excludedActivities then DB.excludedActivities = {} end
+        local acts = addon.GetAllActivities()
+        activitiesCount:SetText("["..#acts.."]")
         for i,act in ipairs(acts) do
-            local even=(i%2==0)
-            local row=CreateFrame(addon.BUTTON,nil,catContent)
-            row:SetSize(addon.SET_COL-2,22)
-            row:SetPoint(addon.TOPLEFT,catContent,addon.TOPLEFT,0,-(i-1)*22)
-            local rb=row:CreateTexture(nil,addon.BACKGROUND)
-            rb:SetAllPoints()
-            rb:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],even and CT.row_even[2] or CT.row_odd[2],even and CT.row_even[3] or CT.row_odd[3],1)
-            table.insert(catRowBgs,rb)
-            local nl=row:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-            nl:SetPoint(addon.LEFT,row,addon.LEFT,6,0)
-            nl:SetTextColor(CT.bright_text[1],CT.bright_text[2],CT.bright_text[3])
-            nl:SetJustifyH(addon.LEFT)
-            nl:SetText(act)
-            nl:SetWidth(addon.SET_COL-28)
-            local xBtn=CreateFrame(addon.BUTTON,nil,row)
-            xBtn:SetSize(20,22)
-            xBtn:SetPoint(addon.RIGHT,row,addon.RIGHT,0,0)
-            local xL=xBtn:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-            xL:SetAllPoints()
-            xL:SetJustifyH(addon.CENTER)
-            xL:SetText("|cffcc3333x|r")
-            local idx=i
-            xBtn:SetScript(addon.OnClick,function()
-                if selectedCat==addon.GetActivities()[idx] then
-                    selectedCat=nil
-                    subSelLbl:SetText("(click a category to edit its sub-activities)")
-                    subSelLbl:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3])
-                    for _,r in ipairs(subRows) do r:Hide() end
-                    subRows={}
-                    subCount:SetText(addon.EMPTY_STRING)
-                    subAddBtn:SetEnabled(false)
-                end
-                table.remove(addon.GetActivities(),idx)
-                RefreshActivities()
-            end)
-            xBtn:SetScript(addon.OnEnter, BtnOnEnter(xL));
-            xBtn:SetScript(addon.OnLeave, BtnOnLeave(xL));
+            local row, box, check, lbl, re, rg, rb = MakeCheckboxRow(catContent, i, act)
             local actName=act
-            row:SetScript(addon.OnClick,function() SelectCat(actName,rb) end)
-            row:SetScript(addon.OnEnter,function() if selectedCat~=actName then rb:SetColorTexture(CT.row_hover[1],CT.row_hover[2],CT.row_hover[3],1) end end)
-            row:SetScript(addon.OnLeave,function()
-                if selectedCat~=actName then rb:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],even and CT.row_even[2] or CT.row_odd[2],even and CT.row_even[3] or CT.row_odd[3],1) end end)
-            table.insert(catRows,row)
+            row._name=actName
+            local checked = not DB.excludedActivities[actName]
+            PaintCheckbox(box, check, lbl, checked)
+
+            row:SetScript(addon.OnClick,function()
+                checked = not checked
+                DB.excludedActivities[actName] = checked and nil or true
+                PaintCheckbox(box, check, lbl, checked)
+                SelectCat(actName)
+            end)
+            row:SetScript(addon.OnEnter,function() if selectedActivity~=actName then row:SetBackdropColor(CT.row_hover[1],CT.row_hover[2],CT.row_hover[3],1) end end)
+            row:SetScript(addon.OnLeave,function() if selectedActivity~=actName then row:SetBackdropColor(re,rg,rb,1) end end)
+
+            table.insert(activitiesRows,row)
         end
         catContent:SetHeight(math.max(22,#acts*22+2))
         catReset()
     end
     DB.RefreshActivities = RefreshActivities;
 
-    local function DoCatAdd()
-        local txt=strtrim(catAddBox:GetText())
-        if txt~=addon.EMPTY_STRING then
-            table.insert(addon.GetActivities(),txt)
-            catAddBox:SetText(addon.EMPTY_STRING)
-            DB.RefreshActivities()
-        end
-    end
-    catAddBtn:SetScript(addon.OnClick,DoCatAdd)
-    catAddBox:SetScript(addon.OnEnterPressed,DoCatAdd)
-
-    local function DoSubAdd()
-        if selectedCat then
-            local txt=strtrim(subAddBox:GetText())
-            if txt~=addon.EMPTY_STRING then
-                if not DB.subActivities then DB.subActivities={} end
-                if not DB.subActivities[selectedCat] then DB.subActivities[selectedCat]={} end
-                table.insert(DB.subActivities[selectedCat],txt)
-                subAddBox:SetText(addon.EMPTY_STRING)
-                RefreshSubList()
-            end
-        end
-        local txt=strtrim(subAddBox:GetText())
-        if txt~=addon.EMPTY_STRING then
-            if not DB.subActivities then DB.subActivities={} end
-            if not DB.subActivities[selectedCat] then DB.subActivities[selectedCat]={} end
-            table.insert(DB.subActivities[selectedCat],txt)
-            subAddBox:SetText(addon.EMPTY_STRING)
-            RefreshSubList()
-        end
-    end
-
-    subAddBtn:SetScript(addon.OnClick,DoSubAdd)
-    subAddBox:SetScript(addon.OnEnterPressed,DoSubAdd)
-
-    catResetBtn:SetScript(addon.OnClick,function()
+    resetBtn:SetScript(addon.OnClick,function()
         addon.ResetActivities()
         addon.ResetSubActivities()
+        selectedActivity=nil
+        subSelectLabel:SetText("(click a category to edit its sub-activities)")
+        subSelectLabel:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3])
         DB.RefreshActivities()
+        RefreshSubList()
     end)
 end
 
