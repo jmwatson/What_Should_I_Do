@@ -5,6 +5,9 @@
 -- Types: "new", "fix", "change"
 
 WSID_CHANGELOG = {
+    {version="1.2.1", entries={
+        {type="change", text="Patch 12.1 compatibility update."},
+    }},
     {version="1.2.0", entries={
         {type="new",  text="Expansion Exclusions -- New Expansions settings tab lets you exclude specific expansions from the Raids & Dungeons spinner via checkboxes."},
         {type="new",  text="Exclude Farming Professions -- Checkbox on the Profession Picker to exclude Herbalism, Mining, and Skinning from the spin pool."},

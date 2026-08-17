@@ -1,9 +1,9 @@
-## Interface: 120007
+## Interface: 120100, 120007
 ## Title: What Should I Do?
 ## Notes: Spin wheels to help decide what to do in WoW. Features activity, character creator, leveling, name generator, professions, and raids & dungeons spinners.
 ## Author: I_AM_T3X
 ## X-License: GPL-3.0
-## Version: 1.2.0
+## Version: 1.2.1
 ## SavedVariables: WhatShouldIDoDB
 
 # Core (load first — constants, theme, helpers, data must precede panels)
