@@ -1,6 +1,5 @@
--- TBC Expansion data
-
-WSID.TBC = {
+local _, addon = ...;
+addon.TBC = {
     NAME = "The Burning Crusade",
     RAIDS = {
         "Karazhan",
@@ -30,4 +29,4 @@ WSID.TBC = {
         "The Steamvault",
         "The Underbog",
     }
-}
+};

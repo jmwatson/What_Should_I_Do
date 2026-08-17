@@ -1,16 +1,16 @@
--- Core/DB.lua
--- SavedVariables initialization
+local _, addon = ...
 
-WSID.InitDB = function()
-    if not WhatShouldIDoDB then WhatShouldIDoDB = {} end
-    if not WhatShouldIDoDB.colorTheme then WhatShouldIDoDB.colorTheme = WSID.DEFAULT_THEME end
-    if not WhatShouldIDoDB.customColors then WhatShouldIDoDB.customColors = {} end
-    if not WhatShouldIDoDB.excludedActivities then WhatShouldIDoDB.excludedActivities = {} end
-    if not WhatShouldIDoDB.excludedChars then WhatShouldIDoDB.excludedChars = {} end
-    if not WhatShouldIDoDB.excludedExpansions then WhatShouldIDoDB.excludedExpansions = {} end
-    if WhatShouldIDoDB.excludeFarming == nil then WhatShouldIDoDB.excludeFarming = false end
-    if not WhatShouldIDoDB.excludedSubActivities then WhatShouldIDoDB.excludedSubActivities = {} end
-    if not WhatShouldIDoDB.minimap then WhatShouldIDoDB.minimap = {hide=false, minimapPos=45} end
-    if not WhatShouldIDoDB.seenChars then WhatShouldIDoDB.seenChars = {} end
-    if not WhatShouldIDoDB.uiScale then WhatShouldIDoDB.uiScale = 1.0 end
+local function InitDB()
+    WhatShouldIDoDB = WhatShouldIDoDB or {};
+    WhatShouldIDoDB.colorTheme = WhatShouldIDoDB.colorTheme or addon.DEFAULT_THEME;
+    WhatShouldIDoDB.customColors = WhatShouldIDoDB.customColors or {};
+    WhatShouldIDoDB.excludedActivities = WhatShouldIDoDB.excludedActivities or {};
+    WhatShouldIDoDB.excludedChars = WhatShouldIDoDB.excludedChars or {};
+    WhatShouldIDoDB.excludedExpansions = WhatShouldIDoDB.excludedExpansions or {};
+    WhatShouldIDoDB.excludeFarming = WhatShouldIDoDB.excludeFarming or false;
+    WhatShouldIDoDB.excludedSubActivities = WhatShouldIDoDB.excludedSubActivities or {};
+    WhatShouldIDoDB.minimap = WhatShouldIDoDB.minimap or {hide=false, minimapPos=45};
+    WhatShouldIDoDB.seenChars = WhatShouldIDoDB.seenChars or {};
+    WhatShouldIDoDB.uiScale = WhatShouldIDoDB.uiScale or 1.0;
 end
+addon.InitDB = InitDB;

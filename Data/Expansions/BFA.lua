@@ -1,7 +1,5 @@
--- Data/Expansions/BFA.lua
--- Battle for Azeroth expansion data
-
-WSID.BFA = {
+local _, addon = ...;
+addon.BFA = {
     NAME = "Battle for Azeroth",
     RAIDS = {
         "Uldir",
@@ -23,4 +21,4 @@ WSID.BFA = {
         "Tol Dagor",
         "Waycrest Manor",
     }
-}
+};

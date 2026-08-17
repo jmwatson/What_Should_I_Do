@@ -1,7 +1,5 @@
--- Mists/Expansions/Mists.lua
--- Mists of Pandaria expansion data
-
-WSID.MISTS = {
+local _, addon = ...;
+addon.MISTS = {
     NAME = "Mists of Pandaria",
     RAIDS = {
         "Mogu'shan Vaults",
@@ -21,4 +19,4 @@ WSID.MISTS = {
         "Stormstout Brewery",
         "Temple of the Jade Serpent",
     }
-}
+};

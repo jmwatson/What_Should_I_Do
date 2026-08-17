@@ -8,6 +8,7 @@
 
 # Core (load first — constants, theme, helpers, data must precede panels)
 Core\Constants.lua
+Core\DB.lua
 Core\Theme.lua
 Core\SlotMachine.lua
 
@@ -15,18 +16,18 @@ Core\SlotMachine.lua
 Data\Classes.lua
 Data\Races.lua
 Data\Activities.lua
-Data\Expansions\Classic.lua
-Data\Expansions\TBC.lua
-Data\Expansions\Wrath.lua
-Data\Expansions\Cataclysm.lua
-Data\Expansions\Mists.lua
-Data\Expansions\WOD.lua
-Data\Expansions\Legion.lua
 Data\Expansions\BFA.lua
-Data\Expansions\SL.lua
+Data\Expansions\Cataclysm.lua
+Data\Expansions\Classic.lua
 Data\Expansions\DF.lua
-Data\Expansions\TWW.lua
+Data\Expansions\Legion.lua
 Data\Expansions\Midnight.lua
+Data\Expansions\Mists.lua
+Data\Expansions\SL.lua
+Data\Expansions\TBC.lua
+Data\Expansions\TWW.lua
+Data\Expansions\WOD.lua
+Data\Expansions\Wrath.lua
 Data\Expansions.lua
 Data\Professions.lua
 Data\RaidsDungeons.lua
@@ -35,7 +36,6 @@ Data\Names.lua
 
 # Core continued (Roster needs CLASS_COLORS from Data\Races)
 Core\Roster.lua
-Core\DB.lua
 
 # UI primitives
 Core\LeftNav.lua

@@ -1,7 +1,5 @@
--- Data/Expansions/Midnight.lua
--- Midnight expansion data
-
-WSID.MIDNIGHT = {
+local _, addon = ...;
+addon.MIDNIGHT = {
     NAME = "Midnight",
     RAIDS = {
         "The Dreamrift",
@@ -10,6 +8,7 @@ WSID.MIDNIGHT = {
         "Sporefall",
     },
     DUNGEONS = {
+        "Altar of Fangs",
         "Den of Nalorakk",
         "Magisters' Terrace",
         "Maisara Caverns",
@@ -19,4 +18,4 @@ WSID.MIDNIGHT = {
         "Voidscar Arena",
         "Windrunner Spire",
     }
-}
+};

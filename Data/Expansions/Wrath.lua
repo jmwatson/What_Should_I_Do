@@ -1,7 +1,5 @@
--- Data/Expansions/Wrath.lua
--- Wrath of the Lich King expansion data
-
-WSID.WRATH = {
+local _, addon = ...;
+addon.WRATH = {
     NAME = "Wrath of the Lich King",
     RAIDS = {
         "Vault of Archavon",
@@ -32,4 +30,4 @@ WSID.WRATH = {
         "Utgarde Keep",
         "Utgarde Pinnacle",
     }
-}
+};

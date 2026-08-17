@@ -1,7 +1,5 @@
--- Data/Expansions/TWW.lua
--- The War Within expansion data
-
-WSID.TWW = {
+local _, addon = ...;
+addon.TWW = {
     NAME = "The War Within",
     RAIDS = {
         "Nerub-ar Palace",
@@ -20,4 +18,4 @@ WSID.TWW = {
         "The Rookery",
         "The Stonevault",
     }
-}
+};

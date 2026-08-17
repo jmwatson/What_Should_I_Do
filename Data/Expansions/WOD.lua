@@ -1,7 +1,5 @@
--- Data/Expansions/WOD.lua
--- Warlords of Draenor expansion data
-
-WSID.WOD = {
+local _, addon = ...;
+addon.WOD = {
     NAME = "Warlords of Draenor",
     RAIDS = {
         "Highmaul",
@@ -18,4 +16,4 @@ WSID.WOD = {
         "The Everbloom",
         "Upper Blackrock Spire",
     }
-}
+};

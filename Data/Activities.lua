@@ -1,7 +1,7 @@
--- Data/Activities.lua
--- Default activity categories and sub-activities
+local _, addon = ...;
+local DB = addon.DB;
 
-local activities_info = {
+local activitiesInfo = {
     ["PvP"] = {"Random Battleground","Epic Battleground","Arena Skirmish","War Mode","World PvP","Brawl"},
     ["Housing"] = {"Work on House Layout","Gather Decor","Endeavor Tasks","Theme Room","Farm Housing Items","Decorate a Room"},
     ["Open World"] = {"World Quests","Weekly Quests","Reputation Grind","Renown Catch-up","Zone Completion","Public Events","Rituals","Void Assaults","Rare Hunting","Daily Objectives"},
@@ -15,32 +15,40 @@ local activities_info = {
     ["Leveling"] = {"Alt Leveling","Dungeon Spam","Questing","Chromie Time","Follower Dungeons","Prof While Leveling"},
     ["Pet Battles"] = {"Pet Battle Dailies","Level Pets","Capture Pets","Family Battler","Pet Dungeon","Random Pet Team"},
     ["Anything Goes"] = {"Do the Weirdest Thing","Finish Something Half-Done","One Hour Chaos Mode","Pick Something from Your Backlog"},
-}
+};
 
 -- Local array so we don't recalculate each time we want the filtered activities.
-local activities = {}
-for activity, _ in activities_info do table.insert(activities, activity) end
-
-WSID.GetActivities = function()
-    local filteredActivities = {}
-    if WhatShouldIDoDB and WhatShouldIDoDB.excludedActivities and #WhatShouldIDoDB.excludedActivities > 0 then
-        filteredActivities = WSID.FilterFunction(activities, WhatShouldIDoDB.excludedActivities)
+do
+    local activities = {};
+    for k, _ in pairs(activitiesInfo) do
+        table.insert(activities, k);
     end
-    return filteredActivities
-end
 
-WSID.ResetActivities = function()
-    WhatShouldIDoDB.excludedActivities = {}
-end
-
-WSID.GetSubActivities = function(activity)
-    local filtered = {}
-    if WhatShouldIDoDB and WhatShouldIDoDB.excludedSubActivities and #WhatShouldIDoDB.excludedSubActivities > 0 then
-        filtered = WSID.FilterFunction(activities_info[activity] or {}, WhatShouldIDoDB.excludedSubActivities)
+    local function GetActivities()
+        local filtered = activities or {};
+        if #DB.excludedActivities > 0 then
+            filtered = addon.Filter(filtered, DB.excludedActivities);
+        end
+        return filtered;
     end
-    return filtered
+    addon.GetActivities = GetActivities;
 end
 
-WSID.ResetSubActivities = function()
-    WhatShouldIDoDB.excludedSubActivities = {}
+local function ResetActivities()
+    DB.excludedActivities = {};
 end
+addon.ResetActivities = ResetActivities;
+
+local function GetSubActivities(activity)
+    local filtered = activitiesInfo[activity] or {};
+    if #DB.excludedSubActivities > 0 then
+        filtered = addon.Filter(filtered, DB.excludedSubActivities);
+    end
+    return filtered;
+end
+addon.GetSubActivities = GetSubActivities;
+
+local function ResetSubActivities()
+    DB.excludedSubActivities = {};
+end
+addon.ResetSubActivities = ResetSubActivities;

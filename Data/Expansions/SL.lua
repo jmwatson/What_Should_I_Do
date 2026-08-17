@@ -1,7 +1,5 @@
--- Data/Expansions/SL.lua
--- Shadowlands expansion data
-
-WSID.SL = {
+local _, addon = ...;
+addon.SL = {
     NAME = "Shadowlands",
     RAIDS = {
         "Castle Nathria",
@@ -19,4 +17,4 @@ WSID.SL = {
         "The Necrotic Wake",
         "Theater of Pain",
     }
-}
+};

@@ -1,7 +1,5 @@
--- Data/Expansions/DF.lua
--- Dragonflight expansion data
-
-WSID.DF = {
+local _, addon = ...;
+addon.DF = {
     NAME = "Dragonflight",
     RAIDS = {
         "Vault of the Incarnates",
@@ -19,4 +17,4 @@ WSID.DF = {
         "The Nokhud Offensive",
         "Uldaman: Legacy of Tyr",
     }
-}
+};

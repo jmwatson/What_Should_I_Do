@@ -1,6 +1,5 @@
--- Classic Explansion Data
-
-WSID.CLASSIC = {
+local _, addon = ...;
+addon.CLASSIC = {
     NAME = "Classic",
     RAIDS = {
         "Molten Core",
@@ -34,4 +33,4 @@ WSID.CLASSIC = {
         "Wailing Caverns",
         "Zul'Farrak",
     }
-}
+};

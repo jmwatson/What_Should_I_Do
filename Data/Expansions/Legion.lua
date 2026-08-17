@@ -1,7 +1,5 @@
--- Data/Expansions/Legion.lua
--- Legion expansion data
-
-WSID.LEGION = {
+local _, addon = ...;
+addon.LEGION = {
     NAME = "Legion",
     RAIDS = {
         "The Emerald Nightmare",
@@ -25,4 +23,4 @@ WSID.LEGION = {
         "The Arcway",
         "Vault of the Wardens",
     }
-}
+};

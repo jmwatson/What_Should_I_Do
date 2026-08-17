@@ -1,39 +1,37 @@
--- Data/Professions.lua
--- Profession list
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
 
-WSID.ALCHEMY = "Alchemy"
-WSID.BLACKSMITHING = "Blacksmithing"
-WSID.ENCHANTING = "Enchanting"
-WSID.ENGINEERING = "Engineering"
-WSID.HERBALISM = "Herbalism"
-WSID.INSCRIPTION = "Inscription"
-WSID.JEWELCRAFTING = "Jewelcrafting"
-WSID.LEATHERWORKING = "Leatherworking"
-WSID.MINING = "Mining"
-WSID.SKINNING = "Skinning"
-WSID.TAILORING = "Tailoring"
-WSID.FISHING = "Fishing"
-WSID.COOKING = "Cooking"
+addon.ALCHEMY = "Alchemy";
+addon.BLACKSMITHING = "Blacksmithing";
+addon.ENCHANTING = "Enchanting";
+addon.ENGINEERING = "Engineering";
+addon.HERBALISM = "Herbalism";
+addon.INSCRIPTION = "Inscription";
+addon.JEWELCRAFTING = "Jewelcrafting";
+addon.LEATHERWORKING = "Leatherworking";
+addon.MINING = "Mining";
+addon.SKINNING = "Skinning";
+addon.TAILORING = "Tailoring";
+addon.FISHING = "Fishing";
+addon.COOKING = "Cooking";
 
-WSID.PROFESSIONS = {
-    WSID.ALCHEMY,
-    WSID.BLACKSMITHING,
-    WSID.ENCHANTING,
-    WSID.ENGINEERING,
-    WSID.HERBALISM,
-    WSID.INSCRIPTION,
-    WSID.JEWELCRAFTING,
-    WSID.LEATHERWORKING,
-    WSID.MINING,
-    WSID.SKINNING,
-    WSID.TAILORING,
-    WSID.FISHING,
-    WSID.COOKING,
-}
+addon.PROFESSIONS = {
+    addon.ALCHEMY,
+    addon.BLACKSMITHING,
+    addon.ENCHANTING,
+    addon.ENGINEERING,
+    addon.HERBALISM,
+    addon.INSCRIPTION,
+    addon.JEWELCRAFTING,
+    addon.LEATHERWORKING,
+    addon.MINING,
+    addon.SKINNING,
+    addon.TAILORING,
+    addon.FISHING,
+    addon.COOKING,
+};
 
-WSID.FARM_PROFESSIONS = {
-    [WSID.HERBALISM] = true,
-    [WSID.MINING] = true,
-    [WSID.SKINNING] = true,
+addon.FARM_PROFESSIONS = {
+    [addon.HERBALISM] = true,
+    [addon.MINING] = true,
+    [addon.SKINNING] = true,
 }

@@ -1,7 +1,5 @@
--- Data/Expansions/Cataclysm.lua
--- Cataclysm expansion data
-
-WSID.CATA = {
+local _, addon = ...;
+addon.CATA = {
     NAME = "Cataclysm",
     RAIDS = {
         "Baradin Hold",
@@ -27,4 +25,4 @@ WSID.CATA = {
         "Zul'Aman",
         "Zul'Gurub",
     }
-}
+};
