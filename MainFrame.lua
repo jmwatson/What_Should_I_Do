@@ -9,54 +9,47 @@ local CONT_W = WIN_W - NAV_W - PAD * 2;  -- 508
 
 local MainPanels = {};
 
-local function OnAddonLoaded(self, event, arg1)
-    addon.InitDB();
-    -- Apply saved theme (must run after InitDB sets defaults)
-    if DB.colorTheme == addon.CUSTOM_THEME and next(DB.customColors) then
-        addon.ApplyTheme(addon.CUSTOM_THEME, DB.customColors);
-    else
-        addon.ApplyTheme(DB.colorTheme or addon.DEFAULT_THEME);
+local function OnSelect(settings_nav, leveling_nav)
+    local function _OnSelect(name)
+        if name==settings_nav and DB.SettingsFrame and DB.SettingsFrame:IsShown() then
+            DB.SettingsFrame:Hide();
+        elseif name==settings_nav and DB.SettingsFrame then
+            
+            DB.SettingsFrame:Show();
+        elseif name==settings_nav then
+            return;
+        end
+        -- Always refresh roster when switching to leveling so imports show immediately
+        if name==leveling_nav then
+            addon.BuildRoster();
+        end
+        for k,p in pairs(MainPanels) do
+            if k==name then
+                p:Show();
+            else
+                p:Hide();
+            end
+        end
     end
-
-    -- Define StaticPopup dialogs at init time so they're registered before use
-    StaticPopupDialogs["WSID_CONFIRM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_THEME"] or {};
-    StaticPopupDialogs["WSID_CONFIRM_WhatShouldIDoDB.CUSTOM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_WhatShouldIDoDB.CUSTOM_THEME"] or {};
-    DB.MainFrame = addon.BuildMainFrame();
-    DB.SettingsFrame = addon.BuildSettingsWindow();
-    addon.RegisterMinimapButton();
-    -- ESC closes the windows
-    tinsert(UISpecialFrames, addon.FRAME);
-    tinsert(UISpecialFrames, "WhatShouldIDoSettings");
-    -- Apply saved UI scale
-    local scale = DB.uiScale or 1.0;
-    DB.MainFrame:SetScale(scale);
-    DB.SettingsFrame:SetScale(scale);
-end
-
-local function HandleEvent(self, event, arg1)
-    if event == addon.ADDON_LOADED and arg1 == addon.ADDON_NAME then
-        OnAddonLoaded(self, event, arg1);
-    elseif event == addon.PLAYER_LOGIN then
-        addon.BuildRoster();
-    end
+    return _OnSelect;
 end
 
 local function BuildContentArea(parent)
-    local contentArea=CreateFrame(addon.FRAME,nil,parent)
-    local actPanel  = addon.BuildActivityPanel(contentArea)
-    local crePanel  = addon.BuildCreatorPanel(contentArea)
-    local levPanel  = addon.BuildLevelingPanel(contentArea)
-    local namPanel  = addon.BuildNamePanel(contentArea)
-    local profPanel = addon.BuildProfessionPanel(contentArea)
-    local rdPanel   = addon.BuildRaidDungeonPanel(contentArea)
-    local abtPanel  = addon.BuildAboutPanel(contentArea)
-    local leveling_nav = "leveling"
-    local settings_nav = "settings_nav"
-    contentArea:SetPoint(addon.TOPLEFT,parent,addon.TOPLEFT,NAV_W,-30)
-    contentArea:SetPoint(addon.BOTTOMRIGHT,parent,addon.BOTTOMRIGHT,0,0)
-    addon.Tx(contentArea,DB.COLOR_TABLE.bg[1]+0.005,DB.COLOR_TABLE.bg[2]+0.005,DB.COLOR_TABLE.bg[3]+0.01)
+    local contentArea=CreateFrame(addon.FRAME,nil,parent);
+    local actPanel  = addon.BuildActivityPanel(contentArea);
+    local crePanel  = addon.BuildCreatorPanel(contentArea);
+    local levPanel  = addon.BuildLevelingPanel(contentArea);
+    local namPanel  = addon.BuildNamePanel(contentArea);
+    local profPanel = addon.BuildProfessionPanel(contentArea);
+    local rdPanel   = addon.BuildRaidDungeonPanel(contentArea);
+    local abtPanel  = addon.BuildAboutPanel(contentArea);
+    local leveling_nav = "leveling";
+    local settings_nav = "settings_nav";
+    contentArea:SetPoint(addon.TOPLEFT,parent,addon.TOPLEFT,NAV_W,-30);
+    contentArea:SetPoint(addon.BOTTOMRIGHT,parent,addon.BOTTOMRIGHT,0,0);
+    addon.Tx(contentArea,DB.COLOR_TABLE.bg[1]+0.005,DB.COLOR_TABLE.bg[2]+0.005,DB.COLOR_TABLE.bg[3]+0.01);
 
-    MainPanels={activity=actPanel,creator=crePanel,leveling=levPanel,names=namPanel,professions=profPanel,raidsdungeons=rdPanel,about=abtPanel}
+    MainPanels={activity=actPanel,creator=crePanel,leveling=levPanel,names=namPanel,professions=profPanel,raidsdungeons=rdPanel,about=abtPanel};
 
     addon.BuildLeftNav(parent,
         {
@@ -71,18 +64,7 @@ local function BuildContentArea(parent)
             {name=settings_nav,label=addon.SETTINGS_LABEL},
             {name="about",label=addon.ABOUT_LABEL}
         },
-        function(name)
-            if name==settings_nav then
-                if DB.SettingsFrame then
-                    if DB.SettingsFrame:IsShown() then DB.SettingsFrame:Hide() else DB.SettingsFrame:Show() end
-                end
-                return
-            end
-            -- Always refresh WSID_Roster when switching to leveling so imports show immediately
-            if name==leveling_nav then addon.BuildRoster() end
-            for k,p in pairs(MainPanels) do if k==name then p:Show() else p:Hide() end end
-        end
-    )
+        OnSelect(settings_nav, leveling_nav));
 end
 
 local function BuildMainFrame()
@@ -128,7 +110,38 @@ local function BuildMainFrame()
     frame:Hide();
     return frame;
 end
-addon.BuildMainFrame = BuildMainFrame;
+
+local function OnAddonLoaded(self, event, arg1)
+    addon.InitDB();
+    -- Apply saved theme (must run after InitDB sets defaults)
+    if DB.colorTheme == addon.CUSTOM_THEME and next(DB.customColors) then
+        addon.ApplyTheme(addon.CUSTOM_THEME, DB.customColors);
+    else
+        addon.ApplyTheme(DB.colorTheme or addon.DEFAULT_THEME);
+    end
+
+    -- Define StaticPopup dialogs at init time so they're registered before use
+    StaticPopupDialogs["WSID_CONFIRM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_THEME"] or {};
+    StaticPopupDialogs["WSID_CONFIRM_WhatShouldIDoDB.CUSTOM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_WhatShouldIDoDB.CUSTOM_THEME"] or {};
+    DB.MainFrame = BuildMainFrame();
+    DB.SettingsFrame = addon.BuildSettingsWindow();
+    addon.RegisterMinimapButton();
+    -- ESC closes the windows
+    tinsert(UISpecialFrames, addon.FRAME);
+    tinsert(UISpecialFrames, "WhatShouldIDoSettings");
+    -- Apply saved UI scale
+    local scale = DB.uiScale or 1.0;
+    DB.MainFrame:SetScale(scale);
+    DB.SettingsFrame:SetScale(scale);
+end
+
+local function HandleEvent(self, event, arg1)
+    if event == addon.ADDON_LOADED and arg1 == addon.ADDON_NAME then
+        OnAddonLoaded(self, event, arg1);
+    elseif event == addon.PLAYER_LOGIN then
+        addon.BuildRoster();
+    end
+end
 
 ------------------------------------------------------------------------
 -- MINIMAP BUTTON

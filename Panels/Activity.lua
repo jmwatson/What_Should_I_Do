@@ -1,5 +1,6 @@
 local _, addon = ...;
-local CT = addon.DB.COLOR_TABLE;
+local DB = addon.DB;
+local CT = DB.COLOR_TABLE;
 local lastCat = nil;
 
 local function ResetSub(subLabel, spinSubBtn, spinBothBtn)

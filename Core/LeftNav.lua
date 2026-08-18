@@ -1,5 +1,6 @@
 local _, addon = ...;
-local CT = addon.DB.COLOR_TABLE;
+local DB = addon.DB;
+local CT = DB.COLOR_TABLE;
 local NAV_W  = 120;
 local ROW_H = 38;
 local ROW_W = 3;
@@ -38,7 +39,27 @@ local function OnLeave(name, bg, lbl, active)
     return _OnLeave;
 end
 
-local function AddRow(def, SetRowPoint, SetActive)
+local function SetActive(name, btns, OnSelect)
+    local function _SetActive()
+        for k, btn in pairs(btns) do
+            if k == name then
+                btn.bg:SetColorTexture(CT.nav_active[1], CT.nav_active[2], CT.nav_active[3], 1);
+                btn.stripe:Show();
+                btn.lbl:SetTextColor(1, 1, 1);
+            else
+                btn.bg:SetColorTexture(0, 0, 0, 0);
+                btn.stripe:Hide();
+                btn.lbl:SetTextColor(CT.dim_text[1], CT.dim_text[2], CT.dim_text[3]);
+            end
+        end
+        if OnSelect then
+            OnSelect(name);
+        end
+    end
+    return _SetActive;
+end
+
+local function AddRow(navBg, def, SetRowPoint, SetActive)
     local row = CreateFrame(addon.BUTTON, nil, navBg);
     local bg = row:CreateTexture(nil, addon.BACKGROUND);
     local stripe = row:CreateTexture(nil, addon.ARTWORK);
@@ -63,26 +84,6 @@ local function AddRow(def, SetRowPoint, SetActive)
     return row, bg, stripe, lbl;
 end
 
-local function SetActive(name, btns, OnSelect)
-    local function _SetActive()
-        for k, btn in pairs(btns) do
-            if k == name then
-                btn.bg:SetColorTexture(CT.nav_active[1], CT.nav_active[2], CT.nav_active[3], 1);
-                btn.stripe:Show();
-                btn.lbl:SetTextColor(1, 1, 1);
-            else
-                btn.bg:SetColorTexture(0, 0, 0, 0);
-                btn.stripe:Hide();
-                btn.lbl:SetTextColor(CT.dim_text[1], CT.dim_text[2], CT.dim_text[3]);
-            end
-        end
-        if OnSelect then
-            OnSelect(name);
-        end
-    end
-    return _SetActive;
-end
-
 local function BuildLeftNav(parent, topDefs, bottomDefs, OnSelect)
     local navBg = CreateFrame(addon.FRAME, nil, parent);
     local divR = navBg:CreateTexture(nil, addon.ARTWORK);
@@ -100,7 +101,7 @@ local function BuildLeftNav(parent, topDefs, bottomDefs, OnSelect)
     local prev = navBg;
     local pp = addon.TOPLEFT;
     for _, def in ipairs(topDefs) do
-        local row, bg, stripe, lbl = AddRow(def, SetTopRowPoint(prev, pp, 0), SetActive(def.name, btns, OnSelect));
+        local row, bg, stripe, lbl = AddRow(navBg, def, SetTopRowPoint(prev, pp, 0), SetActive(def.name, btns, OnSelect));
         btns[def.name] = {bg=bg, stripe=stripe, lbl=lbl};
         prev = row;
         pp = addon.BOTTOMLEFT;
@@ -114,10 +115,9 @@ local function BuildLeftNav(parent, topDefs, bottomDefs, OnSelect)
     bdiv:SetPoint(addon.BOTTOMRIGHT, navBg, addon.BOTTOMRIGHT, 0, #bottomDefs * ROW_H);
 
     for k, def in ipairs(bottomDefs) do
-        AddRow(def, SetBottomRowPoint(navBg, #bottomDefs, k));
+        AddRow(navBg, def, SetBottomRowPoint(navBg, #bottomDefs, k), SetActive(def.name, btns, OnSelect));
     end
 
-    SetActive(topDefs[1].name);
-    return SetActive;
+    SetActive(topDefs[1].name, btns, OnSelect)();
 end
 addon.BuildLeftNav = BuildLeftNav;

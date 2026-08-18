@@ -197,7 +197,7 @@ function addon.MakeScrollBox(parent, w, h)
     local content = CreateFrame(addon.FRAME, nil, clip);
     local scrollOff = 0;
     
-    local function Scroll(d);
+    local function Scroll(d)
         scrollOff = Clamp(scrollOff - d*22*2, 0, math.max(0, content:GetHeight()-clip:GetHeight()));
         content:SetPoint(addon.TOPLEFT, clip, addon.TOPLEFT, 0, scrollOff);
     end

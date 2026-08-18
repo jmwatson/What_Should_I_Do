@@ -13,7 +13,7 @@ addon.TROLL = "Troll";
 addon.BLOOD_ELF = "Blood Elf";
 addon.GOBLIN = "Goblin";
 addon.PANDAREN = "Pandaren";
-addon.DRACHTHYR = "Dracthyr";
+addon.DRACTHYR = "Dracthyr";
 addon.VOID_ELF = "Void Elf";
 addon.LIGHTFORGED_DRAENEI = "Lightforged Draenei";
 addon.DARK_IRON_DWARF = "Dark Iron Dwarf";
@@ -48,7 +48,7 @@ addon.RACE_INFO = {
     [addon.BLOOD_ELF] = {name=addon.BLOOD_ELF, short_name="BE", faction=addon.HORDE, rtype=addon.CORE_RACE, classes={addon.WARRIOR,addon.HUNTER,addon.MAGE,addon.PRIEST,addon.ROGUE,addon.WARLOCK,addon.MONK,addon.DEATH_KNIGHT,addon.PALADIN,addon.DEMON_HUNTER}},
     [addon.GOBLIN] = {name=addon.GOBLIN, short_name="GO", faction=addon.HORDE, rtype=addon.CORE_RACE, classes={addon.WARRIOR,addon.HUNTER,addon.MAGE,addon.PRIEST,addon.ROGUE,addon.WARLOCK,addon.MONK,addon.DEATH_KNIGHT,addon.SHAMAN}},
     [addon.PANDAREN] = {name=addon.PANDAREN, short_name="PA", faction=addon.NEUTRAL, rtype=addon.CORE_RACE, classes={addon.WARRIOR,addon.HUNTER,addon.MAGE,addon.PRIEST,addon.ROGUE,addon.WARLOCK,addon.MONK,addon.DEATH_KNIGHT,addon.SHAMAN}},
-    [addon.DRACHTHYR] = {name=addon.DRACHTHYR, short_name="DT", faction=addon.NEUTRAL, rtype=addon.CORE_RACE, classes={addon.WARRIOR,addon.HUNTER,addon.MAGE,addon.PRIEST,addon.ROGUE,addon.WARLOCK,addon.EVOKER}},
+    [addon.DRACTHYR] = {name=addon.DRACTHYR, short_name="DT", faction=addon.NEUTRAL, rtype=addon.CORE_RACE, classes={addon.WARRIOR,addon.HUNTER,addon.MAGE,addon.PRIEST,addon.ROGUE,addon.WARLOCK,addon.EVOKER}},
     [addon.VOID_ELF] = {name=addon.VOID_ELF, short_name="VE", faction=addon.ALLIANCE, rtype=addon.ALLIED_RACE, classes={addon.WARRIOR,addon.HUNTER,addon.MAGE,addon.PRIEST,addon.ROGUE,addon.WARLOCK,addon.MONK,addon.DEATH_KNIGHT,addon.DEMON_HUNTER}},
     [addon.LIGHTFORGED_DRAENEI] = {name=addon.LIGHTFORGED_DRAENEI, short_name="LD", faction=addon.ALLIANCE, rtype=addon.ALLIED_RACE, classes={addon.WARRIOR,addon.HUNTER,addon.MAGE,addon.PRIEST,addon.ROGUE,addon.WARLOCK,addon.MONK,addon.DEATH_KNIGHT,addon.PALADIN}},
     [addon.DARK_IRON_DWARF] = {name=addon.DARK_IRON_DWARF, short_name="DI", faction=addon.ALLIANCE, rtype=addon.ALLIED_RACE, classes={addon.WARRIOR,addon.HUNTER,addon.MAGE,addon.PRIEST,addon.ROGUE,addon.WARLOCK,addon.MONK,addon.DEATH_KNIGHT,addon.SHAMAN,addon.PALADIN}},
