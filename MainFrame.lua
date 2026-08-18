@@ -148,7 +148,7 @@ end
 ------------------------------------------------------------------------
 
 local function MinimapButtonClick(_,btn)
-    if btn == addon.LEFT_BUTTON and DB.MainFrame.IsShown() and DB.SettingsFrame then
+    if btn == addon.LEFT_BUTTON and DB.MainFrame:IsShown() and DB.SettingsFrame then
         DB.SettingsFrame:Hide();
     elseif btn == addon.LEFT_BUTTON and DB.MainFrame:IsShown() then
         DB.MainFrame:Hide();
