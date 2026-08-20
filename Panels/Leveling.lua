@@ -46,6 +46,14 @@ local function BuildLevelingPanel(contentArea)
     local listBG, listContent, listReset = addon.MakeScrollBox(panel, nil, 110);
     listBG:SetPoint(addon.TOPLEFT, charHdr, addon.BOTTOMLEFT, 0, 0);
 
+    local noneLabel = listContent:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+    noneLabel:SetPoint(addon.TOPLEFT, listContent, addon.TOPLEFT, 8, -8);
+    noneLabel:SetTextColor(0.65, 0.30, 0.30);
+    noneLabel:Hide();
+
+    local characterRowPool = CreateFramePool(addon.BUTTON, listContent);
+    local firstRow = nil;
+
     local expBox, expLabel = addon.MakeResult(panel, nil, 52, "EXPANSION");
     expBox:SetPoint(addon.TOPLEFT, listBG, addon.BOTTOMLEFT, 0, -10);
     expLabel:SetText("Expansion")
@@ -68,11 +76,11 @@ local function BuildLevelingPanel(contentArea)
 
     local pickedClass=nil;
     local selectedChar=nil;
-    local charRows={};
 
     local function ClearList()
-        for _,r in ipairs(charRows) do r:Hide(); end
-        charRows={};
+        characterRowPool:ReleaseAll();
+        noneLabel:Hide();
+        firstRow=nil;
         selectedChar=nil;
         listContent:SetHeight(110);
         listReset();
@@ -88,57 +96,59 @@ local function BuildLevelingPanel(contentArea)
             end
         end
         if #matches==0 then
-            local none=listContent:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
-            none:SetPoint(addon.TOPLEFT,listContent,addon.TOPLEFT,8,-8);
-            none:SetTextColor(0.65,0.30,0.30);
-            none:SetText("No "..class.."s available for leveling.  (Max level characters are excluded.)");
-            table.insert(charRows, none);
+            noneLabel:SetText("No "..class.."s available for leveling. (Max level characters are excluded.)");
+            noneLabel:Show();
             listContent:SetHeight(30);
             return;
         end
         for i,ch in ipairs(matches) do
             local even=(i%2==0);
-            local row=CreateFrame(addon.BUTTON,nil,listContent);
+            local row = characterRowPool:Acquire();
+            if not row.bg then
+                row.bg = row:CreateTexture(nil, addon.BACKGROUND);
+                row.bg:SetAllPoints();
+                row.fs = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+                row.fs:SetPoint(addon.LEFT, row, addon.LEFT, 10, 0);
+                row.fs:SetJustifyH(addon.LEFT);
+            end
+
             row:SetHeight(24);
             row:SetPoint(addon.TOP,   listContent, addon.TOP,   0, -(i-1)*24);
             row:SetPoint(addon.LEFT,  listContent, addon.LEFT,  0, 0);
             row:SetPoint(addon.RIGHT, listContent, addon.RIGHT, 0, 0);
-            local rowBg=row:CreateTexture(nil,addon.BACKGROUND);
-            rowBg:SetAllPoints();
-            rowBg:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],
-                                  even and CT.row_even[2] or CT.row_odd[2],
-                                  even and CT.row_even[3] or CT.row_odd[3], 1);
+            row.bg:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],
+                                   even and CT.row_even[2] or CT.row_odd[2],
+                                   even and CT.row_even[3] or CT.row_odd[3], 1);
             local cc=addon.CLASS_INFO[ch.class] or {r=0.8, g=0.8, b=0.8};
-            local fs=row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
-            fs:SetPoint(addon.LEFT, row, addon.LEFT, 10, 0);
-            fs:SetJustifyH(addon.LEFT);
-            fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s|r  |cffffcc00Lv %d|r%s",
+            row.fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s|r  |cffffcc00Lv %d|r%s",
                 cc.r*255, cc.g*255, cc.b*255, ch.name, ch.race or addon.EMPTY_STRING, ch.level or 0,
                 ch.current and "  |cff55cc55(you)|r" or addon.EMPTY_STRING));
             local charData=ch;
             row:SetScript(addon.OnClick, function()
                 selectedChar=charData;
-                for _,r in ipairs(charRows) do
-                    if r._bg then
-                        local re=r._even;
-                        r._bg:SetColorTexture(re and CT.row_even[1] or CT.row_odd[1],
-                                              re and CT.row_even[2] or CT.row_odd[2],
-                                              re and CT.row_even[3] or CT.row_odd[3], 1);
-                    end
+                for r in characterRowPool:EnumerateActive() do
+                    local re = r._even;
+                    r.bg:SetColorTexture(re and CT.row_even[1] or CT.row_odd[1],
+                                         re and CT.row_even[2] or CT.row_odd[2],
+                                         re and CT.row_even[3] or CT.row_odd[3], 1);
                 end
-                rowBg:SetColorTexture(CT.row_select[1],CT.row_select[2],CT.row_select[3],1);
+                row.bg:SetColorTexture(CT.row_select[1],CT.row_select[2],CT.row_select[3],1);
             end)
-            row:SetScript(addon.OnEnter, function() if selectedChar~=charData then rowBg:SetColorTexture(CT.row_hover[1],CT.row_hover[2],CT.row_hover[3],1); end end);
+            row:SetScript(addon.OnEnter, function()
+                if selectedChar~=charData then
+                    row.bg:SetColorTexture(CT.row_hover[1],CT.row_hover[2],CT.row_hover[3],1);
+                end
+            end);
             row:SetScript(addon.OnLeave, function()
                 if selectedChar~=charData then
-                    rowBg:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],
+                    row.bg:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],
                                          even and CT.row_even[2] or CT.row_odd[2],
                                          even and CT.row_even[3] or CT.row_odd[3],1);
-                end end);
-            row._bg=rowBg;
+                end
+            end);
             row._even=even;
             row._charData=ch;
-            table.insert(charRows, row);
+            if i==1 then firstRow=row; end
         end
         listContent:SetHeight(math.max(24,#matches*24+2));
     end
@@ -157,16 +167,17 @@ local function BuildLevelingPanel(contentArea)
         classLabel:SetTextColor(CT.bright_text[1],CT.bright_text[2],CT.bright_text[3]);
         addon.StartSlot(classLabel, pool, function(winner)
             local cc=addon.CLASS_INFO[winner];
-            if cc then classLabel:SetTextColor(cc.r,cc.g,cc.b); end
+            if cc then
+                classLabel:SetTextColor(cc.r,cc.g,cc.b);
+            end
             PopulateList(winner);
             spinExpBtn:SetEnabled(true);
 
             -- Auto-pick: spin a random eligible character from the list
-            if autoPick and #charRows > 0 then
-                -- Build eligible pool (already filtered in PopulateList via charRows)
+            if autoPick then
                 local eligible = {};
-                for _, row in ipairs(charRows) do
-                    if row._charData then table.insert(eligible, row); end
+                for row in characterRowPool:EnumerateActive() do
+                    table.insert(eligible, row);
                 end
                 if #eligible > 0 then
                     -- Small delay so the class slot finishes visually first
@@ -175,10 +186,10 @@ local function BuildLevelingPanel(contentArea)
                         -- Simulate a click on that row
                         pick:GetScript(addon.OnClick)(pick);
                         -- Flash the selected row so user sees it
-                        if pick._bg then
-                            pick._bg:SetColorTexture(CT.spin_text[1]*0.6,CT.spin_text[2]*0.6,CT.spin_text[3]*0.6,1);
+                        if pick.bg then
+                            pick.bg:SetColorTexture(CT.spin_text[1]*0.6,CT.spin_text[2]*0.6,CT.spin_text[3]*0.6,1);
                             C_Timer.After(0.15, function()
-                                pick._bg:SetColorTexture(CT.row_select[1],CT.row_select[2],CT.row_select[3],1);
+                                pick.bg:SetColorTexture(CT.row_select[1],CT.row_select[2],CT.row_select[3],1);
                             end);
                         end
                     end);
@@ -231,8 +242,8 @@ local function BuildLevelingPanel(contentArea)
             end
             if autoChar then
                 selectedChar=autoChar
-                if charRows[1] and charRows[1]._bg then
-                    charRows[1]._bg:SetColorTexture(CT.row_select[1],CT.row_select[2],CT.row_select[3],1)
+                if firstRow then
+                    firstRow.bg:SetColorTexture(CT.row_select[1],CT.row_select[2],CT.row_select[3],1)
                 end
                 local pool=addon.GetExpansionPool(autoChar.level or 1)
                 if #pool==1 then

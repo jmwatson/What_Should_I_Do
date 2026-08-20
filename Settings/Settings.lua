@@ -266,8 +266,8 @@ local function BuildActivitiesPanel(activitiesPanel, BTN_H, SCRL_H, GAP)
     local subBG,subContent,subReset=addon.MakeScrollBox(activitiesPanel,addon.SET_COL,SCRL_H);
     -- State
     local selectedActivity=nil;
-    local activitiesRows={};
-    local subRows={};
+    local activitiesRowPool = CreateFramePool(addon.BUTTON, catContent, addon.BACKDROP_TEMPLATE);
+    local subRowPool = CreateFramePool(addon.BUTTON, subContent, addon.BACKDROP_TEMPLATE);
 
     activitiesHeader:SetPoint(addon.TOPLEFT, activitiesPanel, addon.TOPLEFT, addon.SET_PAD, -addon.SET_PAD);
     activitiesCount:SetPoint(addon.RIGHT,activitiesHeader,addon.RIGHT,-6,0);
@@ -298,38 +298,39 @@ local function BuildActivitiesPanel(activitiesPanel, BTN_H, SCRL_H, GAP)
         end
     end
 
-    local function MakeCheckboxRow(parent, i, name)
-        local even=(i%2==0);
-        local row=CreateFrame(addon.BUTTON,nil,parent,addon.BACKDROP_TEMPLATE);
+    local function AcquireCheckboxRow(pool, i, name)
+        local row = pool:Acquire();
+        local even = (i%2 == 0);
         local re,rg,rb = even and CT.row_even[1] or CT.row_odd[1], even and CT.row_even[2] or CT.row_odd[2], even and CT.row_even[3] or CT.row_odd[3];
-        local box=CreateFrame(addon.FRAME,nil,row,addon.BACKDROP_TEMPLATE);
-        local check=box:CreateTexture(nil,addon.OVERLAY);
-        local lbl=row:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
 
-        row:SetSize(addon.SET_COL-2,22);
-        row:SetPoint(addon.TOPLEFT,parent,addon.TOPLEFT,0,-(i-1)*22);
-        row:SetBackdrop({bgFile=addon.BG_FILE});
-        row:SetBackdropColor(re,rg,rb,1);
-        box:SetSize(14,14);
-        box:SetPoint(addon.LEFT,row,addon.LEFT,6,0);
-        box:SetBackdrop({bgFile=addon.BG_FILE,edgeFile=addon.BG_FILE,edgeSize=1});
-        check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check");
-        check:SetSize(16,16);
-        check:SetPoint(addon.CENTER,box,addon.CENTER,0,0);
-        lbl:SetPoint(addon.LEFT,box,addon.RIGHT,6,0);
-        lbl:SetJustifyH(addon.LEFT);
-        lbl:SetText(name);
-        lbl:SetWidth(addon.SET_COL-32);
+        if not row.box then
+            row.box = CreateFrame(addon.FRAME, nil, row, addon.BACKDROP_TEMPLATE);
+            row.check = row.box:CreateTexture(nil, addon.OVERLAY);
+            row.lbl = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
 
-        row._even=even;
-        return row, box, check, lbl, re, rg, rb;
+            row:SetBackdrop({bgFile=addon.BG_FILE});
+            row.box:SetSize(14, 14);
+            row.box:SetPoint(addon.LEFT, row, addon.LEFT, 6, 0);
+            row.box:SetBackdrop({bgFile=addon.BG_FILE, edgeFile=addon.BG_FILE, edgeSize=1});
+            row.check:SetTexture("Interface\\Buttons\\UI-CheckBox-Check");
+            row.check:SetSize(16, 16);
+            row.check:SetPoint(addon.CENTER, row.box, addon.CENTER, 0, 0);
+            row.lbl:SetPoint(addon.LEFT, row.box, addon.RIGHT, 6, 0);
+            row.lbl:SetJustifyH(addon.LEFT);
+            row.lbl:SetWidth(addon.SET_COL-32);
+        end
+        
+        row:SetSize(addon.SET_COL - 2, 22);
+        row:SetPoint(addon.TOPLEFT, row:GetParent(), addon.TOPLEFT, 0, -(i - 1) * 22);
+        row:SetBackdropColor(re, rg, rb, 1);
+        row.lbl:SetText(name);
+
+        row._even = even;
+        return row, row.box, row.check, row.lbl, re, rg, rb;
     end
 
     local function RefreshSubList()
-        for _,r in ipairs(subRows) do
-            r:Hide();
-        end
-        subRows={};
+        subRowPool:ReleaseAll();
         if not selectedActivity then
             subCount:SetText(addon.EMPTY_STRING);
             subContent:SetHeight(22);
@@ -342,7 +343,7 @@ local function BuildActivitiesPanel(activitiesPanel, BTN_H, SCRL_H, GAP)
         local subs = addon.GetAllSubActivities(selectedActivity);
         subCount:SetText("["..#subs.."]");
         for i,sub in ipairs(subs) do
-            local row, box, check, lbl = MakeCheckboxRow(subContent, i, sub);
+            local row, box, check, lbl = AcquireCheckboxRow(subRowPool, i, sub);
             local subName=sub;
             local checked = not DB.excludedSubActivities[subName];
             PaintCheckbox(box, check, lbl, checked);
@@ -359,51 +360,56 @@ local function BuildActivitiesPanel(activitiesPanel, BTN_H, SCRL_H, GAP)
                 local re,rg,rb = row._even and CT.row_even[1] or CT.row_odd[1], row._even and CT.row_even[2] or CT.row_odd[2], row._even and CT.row_even[3] or CT.row_odd[3];
                 row:SetBackdropColor(re,rg,rb,1);
             end);
-
-            table.insert(subRows,row);
         end
         subContent:SetHeight(math.max(22,#subs*22+2));
         subReset();
     end
 
-    local function SelectCat(name)
+    local function SelectActivity(name)
         selectedActivity=name
-        for _,r in ipairs(activitiesRows) do
+        for r in activitiesRowPool:EnumerateActive() do
             if r._name==name then
-                r:SetBackdropColor(CT.row_select[1],CT.row_select[2],CT.row_select[3],1)
+                r:SetBackdropColor(CT.row_select[1],CT.row_select[2],CT.row_select[3],1);
             else
-                local re,rg,rb = r._even and CT.row_even[1] or CT.row_odd[1], r._even and CT.row_even[2] or CT.row_odd[2], r._even and CT.row_even[3] or CT.row_odd[3]
-                r:SetBackdropColor(re,rg,rb,1)
+                local re,rg,rb = r._even and CT.row_even[1] or CT.row_odd[1], r._even and CT.row_even[2] or CT.row_odd[2], r._even and CT.row_even[3] or CT.row_odd[3];
+                r:SetBackdropColor(re,rg,rb,1);
             end
         end
-        subSelectLabel:SetTextColor(CT.spin_text[1],CT.spin_text[2],CT.spin_text[3])
-        subSelectLabel:SetText(name)
-        RefreshSubList()
+        subSelectLabel:SetTextColor(CT.spin_text[1],CT.spin_text[2],CT.spin_text[3]);
+        subSelectLabel:SetText(name);
+        RefreshSubList();
     end
 
     local function RefreshActivities()
-        for _,r in ipairs(activitiesRows) do r:Hide() end
-        activitiesRows={}
-        if not DB.excludedActivities then DB.excludedActivities = {} end
-        local acts = addon.GetAllActivities()
-        activitiesCount:SetText("["..#acts.."]")
+        activitiesRowPool:ReleaseAll();
+        if not DB.excludedActivities then
+            DB.excludedActivities = {};
+        end
+        local acts = addon.GetAllActivities();
+        activitiesCount:SetText("["..#acts.."]");
         for i,act in ipairs(acts) do
-            local row, box, check, lbl, re, rg, rb = MakeCheckboxRow(catContent, i, act)
-            local actName=act
-            row._name=actName
-            local checked = not DB.excludedActivities[actName]
-            PaintCheckbox(box, check, lbl, checked)
+            local row, box, check, lbl, re, rg, rb = AcquireCheckboxRow(catContent, i, act);
+            local actName=act;
+            row._name=actName;
+            local checked = not DB.excludedActivities[actName];
+            PaintCheckbox(box, check, lbl, checked);
 
             row:SetScript(addon.OnClick,function()
-                checked = not checked
-                DB.excludedActivities[actName] = checked and nil or true
-                PaintCheckbox(box, check, lbl, checked)
-                SelectCat(actName)
-            end)
-            row:SetScript(addon.OnEnter,function() if selectedActivity~=actName then row:SetBackdropColor(CT.row_hover[1],CT.row_hover[2],CT.row_hover[3],1) end end)
-            row:SetScript(addon.OnLeave,function() if selectedActivity~=actName then row:SetBackdropColor(re,rg,rb,1) end end)
-
-            table.insert(activitiesRows,row)
+                checked = not checked;
+                DB.excludedActivities[actName] = checked and nil or true;
+                PaintCheckbox(box, check, lbl, checked);
+                SelectActivity(actName);
+            end);
+            row:SetScript(addon.OnEnter,function()
+                if selectedActivity~=actName then
+                    row:SetBackdropColor(CT.row_hover[1],CT.row_hover[2],CT.row_hover[3],1);
+                end
+            end);
+            row:SetScript(addon.OnLeave,function()
+                if selectedActivity~=actName then
+                    row:SetBackdropColor(re,rg,rb,1);
+                end
+            end);
         end
         catContent:SetHeight(math.max(22,#acts*22+2))
         catReset()
@@ -479,101 +485,120 @@ local function BuildSettingsWindow()
     -- ROSTER PANEL
     --------------------------------------------------------------------
 
-    local rostHdr=addon.MakeHeader(rosterPanel,"Seen Characters",addon.SET_CW)
-    rostHdr:SetPoint(addon.TOPLEFT,rosterPanel,addon.TOPLEFT,addon.SET_PAD,-addon.SET_PAD)
-    local rostCount=rosterPanel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-    rostCount:SetPoint(addon.RIGHT,rostHdr,addon.RIGHT,-6,0)
-    rostCount:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3])
-    local rostNote=rosterPanel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-    rostNote:SetPoint(addon.TOPLEFT,rostHdr,addon.BOTTOMLEFT,4,-6)
-    rostNote:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3])
-    rostNote:SetText("Log into each alt to add it. Levels update on every login.")
-    rostNote:SetWidth(addon.SET_CW)
+    local rosterHeader=addon.MakeHeader(rosterPanel,"Seen Characters",addon.SET_CW);
+    rosterHeader:SetPoint(addon.TOPLEFT,rosterPanel,addon.TOPLEFT,addon.SET_PAD,-addon.SET_PAD);
+    local rosterCount=rosterPanel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+    rosterCount:SetPoint(addon.RIGHT,rosterHeader,addon.RIGHT,-6,0);
+    rosterCount:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3]);
+    local rosterNote=rosterPanel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+    rosterNote:SetPoint(addon.TOPLEFT,rosterHeader,addon.BOTTOMLEFT,4,-6);
+    rosterNote:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3]);
+    rosterNote:SetText("Log into each alt to add it. Levels update on every login.");
+    rosterNote:SetWidth(addon.SET_CW);
 
-    local rostBG,rostContent,rostReset=addon.MakeScrollBox(rosterPanel,addon.SET_CW,addon.SET_H-30-addon.SET_PAD*2-80)
-    rostBG:SetPoint(addon.TOPLEFT,rostNote,addon.BOTTOMLEFT,0,-8)
+    local rosterBG,rosterContent,rostReset=addon.MakeScrollBox(rosterPanel,addon.SET_CW,addon.SET_H-30-addon.SET_PAD*2-80);
+    rosterBG:SetPoint(addon.TOPLEFT,rosterNote,addon.BOTTOMLEFT,0,-8);
 
-    local rostRows={}
-    DB.RefreshRoster=function()
-        for _,r in ipairs(rostRows) do r:Hide() end
-        rostRows={}
-        local chars=DB.seenChars
-        rostCount:SetText("["..#chars.."]")
-        if not DB.excludedChars then DB.excludedChars = {} end
-        for i,ch in ipairs(chars) do
-            local even=(i%2==0)
-            local row=CreateFrame(addon.FRAME,nil,rostContent)
-            row:SetSize(addon.SET_CW-2,24)
-            row:SetPoint(addon.TOPLEFT,rostContent,addon.TOPLEFT,0,-(i-1)*24)
-            local rb=row:CreateTexture(nil,addon.BACKGROUND)
-            rb:SetAllPoints()
-            rb:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],even and CT.row_even[2] or CT.row_odd[2],even and CT.row_even[3] or CT.row_odd[3],1)
-            local cc=addon.CLASS_INFO[ch.class] or {r=0.8,g=0.8,b=0.8}
-            local isExcluded = DB.excludedChars[ch.name] == true
-            local fs=row:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-            fs:SetPoint(addon.LEFT,row,addon.LEFT,10,0)
-            fs:SetJustifyH(addon.LEFT)
-            fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s %s|r  |cffffcc00Lv %d|r%s",
-                isExcluded and 80 or cc.r*255,
-                isExcluded and 80 or cc.g*255,
-                isExcluded and 80 or cc.b*255,
-                ch.name, ch.race or addon.EMPTY_STRING, ch.class or addon.EMPTY_STRING, ch.level or 0,
-                isExcluded and "  |cff888888[excluded]|r" or addon.EMPTY_STRING))
-            local isCurrent=(ch.name==UnitName(addon.IDENTITY))
-            -- Exclude toggle button (all chars including current)
-            local exBtn=CreateFrame(addon.BUTTON,nil,row,addon.BACKDROP_TEMPLATE)
-            exBtn:SetSize(58,18)
-            exBtn:SetPoint(addon.RIGHT,row,addon.RIGHT, isCurrent and -4 or -26, 0)
-            exBtn:SetBackdrop({bgFile=addon.BG_FILE,edgeFile=addon.BG_FILE,edgeSize=1})
-            local function UpdateExBtn()
-                local ex = DB.excludedChars[ch.name] == true
-                exBtn:SetBackdropColor(ex and 0.25 or 0.08, ex and 0.08 or 0.18, ex and 0.08 or 0.08)
-                exBtn:SetBackdropBorderColor(ex and 0.6 or 0.3, ex and 0.2 or 0.3, ex and 0.2 or 0.3, 1)
-                local exL = exBtn._lbl
-                if exL then exL:SetText(ex and "|cffff6666Excluded|r" or "|cff888888Exclude|r") end
-            end
-            local exL=exBtn:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-            exL:SetAllPoints()
-            exL:SetJustifyH(addon.CENTER)
-            exBtn._lbl = exL
-            UpdateExBtn()
-            local cn=ch.name
-            exBtn:SetScript(addon.OnClick,function()
-                if DB.excludedChars[cn] then
-                    DB.excludedChars[cn] = nil
-                else
-                    DB.excludedChars[cn] = true
-                end
-                DB.RefreshRoster()
-            end)
-            if isCurrent then
-                local yl=row:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-                yl:SetPoint(addon.RIGHT,exBtn,addon.LEFT,-4,0)
-                yl:SetTextColor(0.30,0.75,0.30)
-                yl:SetText("(you)")
-            else
-                local xBtn=CreateFrame(addon.BUTTON,nil,row)
-                xBtn:SetSize(20,24)
-                xBtn:SetPoint(addon.RIGHT,row,addon.RIGHT,0,0)
-                local xL2=xBtn:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
-                xL2:SetAllPoints()
-                xL2:SetJustifyH(addon.CENTER)
-                xL2:SetText("|cffcc3333x|r")
-                xBtn:SetScript(addon.OnClick,function()
-                    addon.RemoveCharFromRoster(cn)
-                    DB.RefreshRoster()
-                end)
-                xBtn:SetScript(addon.OnEnter,function() xL2:SetText("|cffff5555x|r") end)
-                xBtn:SetScript(addon.OnLeave,function() xL2:SetText("|cffcc3333x|r") end)
-            end
-            table.insert(rostRows,row)
+    local rosterRowPool = CreateFramePool(addon.FRAME, rosterContent);
+    local function RefreshRoster()
+        rosterRowPool:ReleaseAll();
+        local characters = DB.seenChars;
+        rosterCount:SetText("["..#characters.."]");
+
+        if not DB.excludedChars then
+            DB.excludedChars = {};
         end
-        rostContent:SetHeight(math.max(24,#chars*24+2))
-        rostReset()
+
+        for i,ch in ipairs(characters) do
+            local even = (i % 2 == 0);
+            local row = rosterRowPool:Acquire();
+            local cc = addon.CLASS_INFO[ch.class] or {r = 0.8, g = 0.8, b = 0.8};
+            local isExcluded = DB.excludedChars[ch.name] == true;
+            local isCurrent = (ch.name == UnitName(addon.IDENTITY));
+
+            if not row.bg then
+                row.bg = row:CreateTexture(nil, addon.BACKGROUND);
+                row.bg:SetAllPoints();
+                row.fs = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+                row.fs:SetPoint(addon.LEFT, row, addon.LEFT, 10, 0);
+                row.fs:SetJustifyH(addon.LEFT);
+                row.btn = CreateFrame(addon.BUTTON, nil, row, addon.BACKDROP_TEMPLATE);
+                row.btn:SetSize(58, 18);
+                row.btn:SetBackdrop({bgFile = addon.BG_FILE, edgeFile = addon.BG_FILE, edgeSize = 1});
+                row.btn._lbl = row.btn:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+                row.btn._lbl:SetAllPoints();
+                row.btn._lbl:SetJustifyH(addon.CENTER);
+                row.btn:SetScript(addon.OnClick, function()
+                    local cn = row._ch.name;
+                    if DB.excludedChars[cn] then
+                        DB.excludedChars[cn] = nil;
+                    else
+                        DB.excludedChars[cn] = true;
+                    end
+                    DB.RefreshRoster();
+                end);
+
+                row.youLbl = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL)
+                row.youLbl:SetPoint(addon.RIGHT, row.btn, addon.LEFT, -4, 0);
+                row.youLbl:SetTextColor(0.30, 0.75, 0.30);
+                row.youLbl:SetText("(you)");
+                row.xbtn = CreateFrame(addon.BUTTON, nil, row);
+                row.xbtn:SetSize(20, 24);
+                row.xbtn:SetPoint(addon.RIGHT, row, addon.RIGHT, 0, 0);
+                row.xbtn._lbl = row.xbtn:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+                row.xbtn._lbl:SetAllPoints();
+                row.xbtn._lbl:SetJustifyH(addon.CENTER);
+                row.xbtn._lbl:SetText("|cffcc3333x|r");
+                row.xbtn:SetScript(addon.OnClick, function()
+                    addon.RemoveCharFromRoster(row._ch.name)
+                    DB.RefreshRoster();
+                end);
+                row.xbtn:SetScript(addon.OnEnter, function() row.xbtn._lbl:SetText("|cffff5555x|r"); end);
+                row.xbtn:SetScript(addon.OnLeave, function() row.xbtn._lbl:SetText("|cffcc3333x|r"); end);
+            end
+            
+            row._ch = ch;
+            row:SetSize(addon.SET_CW - 2, 24);
+            row:SetPoint(addon.TOPLEFT, rosterContent, addon.TOPLEFT, 0, -(i - 1) * 24);
+            row.bg:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],
+                                   even and CT.row_even[2] or CT.row_odd[2],
+                                   even and CT.row_even[3] or CT.row_odd[3]);
+
+            row.fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s %s|r  |cffffcc00Lv %d|r%s",
+                isExcluded and 80 or cc.r * 255,
+                isExcluded and 80 or cc.g * 255,
+                isExcluded and 80 or cc.b * 255,
+                ch.name,
+                ch.race or addon.EMPTY_STRING,
+                ch.class or addon.EMPTY_STRING,
+                ch.level or 0,
+                isExcluded and "  |cff888888[excluded]|r" or addon.EMPTY_STRING));
+            row.btn:ClearAllPoints();
+            row.btn:SetPoint(addon.RIGHT, row, addon.RIGHT, isCurrent and -4 or -26, 0);
+            row.btn:SetBackdropColor(isExcluded and 0.25 or 0.08,
+                                     isExcluded and 0.08 or 0.18,
+                                     isExcluded and 0.08 or 0.08);
+            row.btn:SetBackdropBorderColor(isExcluded and 0.6 or 0.3,
+                                           isExcluded and 0.2 or 0.3,
+                                           isExcluded and 0.2 or 0.3, 1);
+            row.btn._lbl:SetText(isExcluded and "|cffff6666Excluded|r" or "|cff888888Exclude|r");
+
+            if isCurrent then
+                row.youLbl:Show();
+                row.xbtn:Hide();
+            else
+                row.youLbl:Hide();
+                row.xbtn:Show();
+            end
+        end
+
+        rosterContent:SetHeight(math.max(24, #characters*24+2));
+        rostReset();
     end
+    DB.RefreshRoster = RefreshRoster;
 
     local clearBtn=addon.MakeBtn(rosterPanel,"Clear All Others",addon.SET_CW,BTN_H)
-    clearBtn:SetPoint(addon.TOPLEFT,rostBG,addon.BOTTOMLEFT,0,-10)
+    clearBtn:SetPoint(addon.TOPLEFT,rosterBG,addon.BOTTOMLEFT,0,-10)
     clearBtn:SetScript(addon.OnClick,function()
         local cur=UnitName(addon.IDENTITY)
         local kept={}
