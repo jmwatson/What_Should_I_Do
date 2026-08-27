@@ -17,7 +17,7 @@ local activitiesInfo = {
     ["Anything Goes"] = {"Do the Weirdest Thing","Finish Something Half-Done","One Hour Chaos Mode","Pick Something from Your Backlog"},
 };
 
--- Local array so we don't recalculate each time we want the filtered activities.
+-- Cache the complete activity list so we don't rebuild it each time.
 local activities = {};
 for k, _ in pairs(activitiesInfo) do
     table.insert(activities, k);
@@ -25,8 +25,18 @@ end
 
 table.sort(activities);
 
+local function CopyArray(source)
+    local result = {};
+
+    for i, value in ipairs(source) do
+        result[i] = value;
+    end
+
+    return result;
+end
+
 local function GetAllActivities()
-    return activities;
+    return CopyArray(activities);
 end
 addon.GetAllActivities = GetAllActivities;
 
@@ -41,7 +51,7 @@ end
 addon.ResetActivities = ResetActivities;
 
 local function GetAllSubActivities(activity)
-    return activitiesInfo[activity] or {};
+    return CopyArray(activitiesInfo[activity] or {});
 end
 addon.GetAllSubActivities = GetAllSubActivities;
 

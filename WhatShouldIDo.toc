@@ -50,6 +50,13 @@ Panels\RaidsDungeons.lua
 Panels\About.lua
 
 # Settings window
+Settings\Panels\Activities.lua
+Settings\Panels\Changelog.lua
+Settings\Panels\Color.lua
+Settings\Panels\Expansions.lua
+Settings\Panels\ImportExport.lua
+Settings\Panels\Roster.lua
+Settings\Panels\UIScale.lua
 Settings\Settings.lua
 
 # Main window + init
