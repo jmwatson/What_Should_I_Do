@@ -13,21 +13,21 @@ local function BuildLevelingPanel(contentArea)
 
     header:SetPoint(addon.TOPLEFT, panel, addon.TOPLEFT, addon.PAD, -addon.PAD);
     autoPickLbl:SetPoint(addon.TOPLEFT, description, addon.BOTTOMLEFT, 0, -8);
-    autoPickLbl:SetTextColor(CT.dim_text[1], CT.dim_text[2], CT.dim_text[3]);
+    addon.ApplyColor(autoPickLbl, "SetTextColor", CT.dim_text);
     autoPickLbl:SetText("Auto-pick a character after class spin:");
     autoPickBtn:SetPoint(addon.LEFT, autoPickLbl, addon.RIGHT, 8, 0);
     autoPickBtn:SetScript(addon.OnClick, function()
         autoPick = not autoPick;
         if autoPick then
             autoPickBtn._lbl:SetText("On");
-            autoPickBtn:SetBackdropColor(CT.nav_active[1], CT.nav_active[2], CT.nav_active[3]);
-            autoPickBtn:SetBackdropBorderColor(CT.nav_border[1], CT.nav_border[2], CT.nav_border[3], 1);
-            autoPickBtn._lbl:SetTextColor(1, 1, 1)
+            addon.ApplyColor(autoPickBtn, "SetBackdropColor", CT.nav_active);
+            addon.ApplyColor(autoPickBtn, "SetBackdropBorderColor", CT.nav_border);
+            addon.ApplyColor(autoPickBtn._lbl, "SetTextColor", addon.BLACK);
         else
             autoPickBtn._lbl:SetText("Off");
-            autoPickBtn:SetBackdropColor(CT.btn_bg[1], CT.btn_bg[2], CT.btn_bg[3]);
-            autoPickBtn:SetBackdropBorderColor(CT.btn_bdr[1], CT.btn_bdr[2], CT.btn_bdr[3], 1);
-            autoPickBtn._lbl:SetTextColor(CT.btn_text[1], CT.btn_text[2], CT.btn_text[3]);
+            addon.ApplyColor(autoPickBtn, "SetBackdropColor", CT.btn_bg);
+            addon.ApplyColor(autoPickBtn, "SetBackdropBorderColor", CT.btn_bdr);
+            addon.ApplyColor(autoPickBtn._lbl, "SetTextColor", CT.btn_text);
         end
     end);
 
@@ -116,9 +116,7 @@ local function BuildLevelingPanel(contentArea)
             row:SetPoint(addon.TOP,   listContent, addon.TOP,   0, -(i-1)*24);
             row:SetPoint(addon.LEFT,  listContent, addon.LEFT,  0, 0);
             row:SetPoint(addon.RIGHT, listContent, addon.RIGHT, 0, 0);
-            row.bg:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],
-                                   even and CT.row_even[2] or CT.row_odd[2],
-                                   even and CT.row_even[3] or CT.row_odd[3], 1);
+            addon.ApplyColor(row.bg, "SetColorTexture", even and CT.row_even or CT.row_odd);
             local cc=addon.CLASS_INFO[ch.class] or {r=0.8, g=0.8, b=0.8};
             row.fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s|r  |cffffcc00Lv %d|r%s",
                 cc.r*255, cc.g*255, cc.b*255, ch.name, ch.race or addon.EMPTY_STRING, ch.level or 0,
@@ -128,22 +126,18 @@ local function BuildLevelingPanel(contentArea)
                 selectedChar=charData;
                 for r in characterRowPool:EnumerateActive() do
                     local re = r._even;
-                    r.bg:SetColorTexture(re and CT.row_even[1] or CT.row_odd[1],
-                                         re and CT.row_even[2] or CT.row_odd[2],
-                                         re and CT.row_even[3] or CT.row_odd[3], 1);
+                    addon.ApplyColor(r.bg, "SetColorTexture", re and CT.row_even or CT.row_odd);
                 end
-                row.bg:SetColorTexture(CT.row_select[1],CT.row_select[2],CT.row_select[3],1);
+                addon.ApplyColor(row.bg, "SetColorTexture", CT.row_select);
             end)
             row:SetScript(addon.OnEnter, function()
                 if selectedChar~=charData then
-                    row.bg:SetColorTexture(CT.row_hover[1],CT.row_hover[2],CT.row_hover[3],1);
+                    addon.ApplyColor(row.bg, "SetColorTexture", CT.row_hover);
                 end
             end);
             row:SetScript(addon.OnLeave, function()
                 if selectedChar~=charData then
-                    row.bg:SetColorTexture(even and CT.row_even[1] or CT.row_odd[1],
-                                         even and CT.row_even[2] or CT.row_odd[2],
-                                         even and CT.row_even[3] or CT.row_odd[3],1);
+                    addon.ApplyColor(row.bg, "SetColorTexture", even and CT.row_even or CT.row_odd);
                 end
             end);
             row._even=even;
@@ -159,16 +153,16 @@ local function BuildLevelingPanel(contentArea)
         addon.StopSlot();
         selectedChar=nil;
         classLabel:SetText("Class");
-        classLabel:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3]);
+        addon.ApplyColor(classLabel, "SetTextColor", CT.dim_text);
         expLabel:SetText("Expansion");
-        expLabel:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3]);
+        addon.ApplyColor(expLabel, "SetTextColor", CT.dim_text);
         spinExpBtn:SetEnabled(false);
         ClearList();
-        classLabel:SetTextColor(CT.bright_text[1],CT.bright_text[2],CT.bright_text[3]);
+        addon.ApplyColor(classLabel, "SetTextColor", CT.bright_text);
         addon.StartSlot(classLabel, pool, function(winner)
             local cc=addon.CLASS_INFO[winner];
             if cc then
-                classLabel:SetTextColor(cc.r,cc.g,cc.b);
+                addon.ApplyColor(classLabel, "SetTextColor", {cc.r, cc.g, cc.b});
             end
             PopulateList(winner);
             spinExpBtn:SetEnabled(true);
@@ -187,9 +181,9 @@ local function BuildLevelingPanel(contentArea)
                         pick:GetScript(addon.OnClick)(pick);
                         -- Flash the selected row so user sees it
                         if pick.bg then
-                            pick.bg:SetColorTexture(CT.spin_text[1]*0.6,CT.spin_text[2]*0.6,CT.spin_text[3]*0.6,1);
+                            addon.ApplyColor(pick.bg, "SetColorTexture", addon.MulRGB(CT.spin_text, {0.6, 0.6, 0.6}));
                             C_Timer.After(0.15, function()
-                                pick.bg:SetColorTexture(CT.row_select[1],CT.row_select[2],CT.row_select[3],1);
+                                addon.ApplyColor(pick.bg, "SetColorTexture", CT.row_select);
                             end);
                         end
                     end);
@@ -201,74 +195,76 @@ local function BuildLevelingPanel(contentArea)
     end
 
     spinClassBtn:SetScript(addon.OnClick, function()
-        spinClassBtn:SetEnabled(false)
-        spinAllBtn:SetEnabled(false)
-        DoSpinClass(function(_) spinClassBtn:SetEnabled(true)
-            spinAllBtn:SetEnabled(true) end)
-    end)
+        spinClassBtn:SetEnabled(false);
+        spinAllBtn:SetEnabled(false);
+        DoSpinClass(function(_)
+            spinClassBtn:SetEnabled(true);
+            spinAllBtn:SetEnabled(true);
+        end);
+    end);
 
     spinExpBtn:SetScript(addon.OnClick, function()
         if not selectedChar then
-            UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r Select a character first.",1,0.8,0.2)
-            return
+            UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r Select a character first.",1,0.8,0.2);
+            return;
         end
-        local pool = addon.GetExpansionPool(selectedChar.level or 1)
+        local pool = addon.GetExpansionPool(selectedChar.level or 1);
         if #pool == 1 then
-            expLabel:SetText(pool[1])
-            expLabel:SetTextColor(CT.spin_text[1],CT.spin_text[2],CT.spin_text[3])
-            return
+            expLabel:SetText(pool[1]);
+            addon.ApplyColor(expLabel, "SetTextColor", CT.spin_text);
+            return;
         end
-        addon.StopSlot()
-        spinExpBtn:SetEnabled(false)
-        expLabel:SetTextColor(CT.bright_text[1],CT.bright_text[2],CT.bright_text[3])
+        addon.StopSlot();
+        spinExpBtn:SetEnabled(false);
+        addon.ApplyColor(expLabel, "SetTextColor", CT.bright_text);
         addon.StartSlot(expLabel, pool, function(_)
-            expLabel:SetTextColor(CT.spin_text[1],CT.spin_text[2],CT.spin_text[3])
-            spinExpBtn:SetEnabled(true)
-        end)
-    end)
+            addon.ApplyColor(expLabel, "SetTextColor", CT.spin_text);
+            spinExpBtn:SetEnabled(true);
+        end);
+    end);
 
     spinAllBtn:SetScript(addon.OnClick, function()
-        spinClassBtn:SetEnabled(false)
-        spinAllBtn:SetEnabled(false)
-        spinExpBtn:SetEnabled(false)
+        spinClassBtn:SetEnabled(false);
+        spinAllBtn:SetEnabled(false);
+        spinExpBtn:SetEnabled(false);
         DoSpinClass(function(winner)
-            local autoChar=nil
+            local autoChar=nil;
             for _,ch in ipairs(DB.seenChars) do
-                local excluded = DB.excludedChars and DB.excludedChars[ch.name]
+                local excluded = DB.excludedChars and DB.excludedChars[ch.name];
                 if ch.class==winner and (ch.level or 0) < 90 and not excluded then
-                    autoChar=ch
-                    break
+                    autoChar=ch;
+                    break;
                 end
             end
             if autoChar then
-                selectedChar=autoChar
+                selectedChar=autoChar;
                 if firstRow then
-                    firstRow.bg:SetColorTexture(CT.row_select[1],CT.row_select[2],CT.row_select[3],1)
+                    addon.ApplyColor(firstRow.bg, "SetColorTexture", CT.row_select);
                 end
-                local pool=addon.GetExpansionPool(autoChar.level or 1)
+                local pool=addon.GetExpansionPool(autoChar.level or 1);
                 if #pool==1 then
-                    expLabel:SetText(pool[1])
-                    expLabel:SetTextColor(CT.spin_text[1],CT.spin_text[2],CT.spin_text[3])
-                    spinClassBtn:SetEnabled(true)
-                    spinExpBtn:SetEnabled(true)
-                    spinAllBtn:SetEnabled(true)
+                    expLabel:SetText(pool[1]);
+                    addon.ApplyColor(expLabel, "SetTextColor", CT.spin_text);
+                    spinClassBtn:SetEnabled(true);
+                    spinExpBtn:SetEnabled(true);
+                    spinAllBtn:SetEnabled(true);
                 else
-                    expLabel:SetTextColor(CT.bright_text[1],CT.bright_text[2],CT.bright_text[3])
+                    addon.ApplyColor(expLabel, "SetTextColor", CT.bright_text);
                     addon.StartSlot(expLabel, pool, function(_)
-                        expLabel:SetTextColor(CT.spin_text[1],CT.spin_text[2],CT.spin_text[3])
-                        spinClassBtn:SetEnabled(true)
-                        spinExpBtn:SetEnabled(true)
-                        spinAllBtn:SetEnabled(true)
-                    end)
+                        addon.ApplyColor(expLabel, "SetTextColor", CT.spin_text);
+                        spinClassBtn:SetEnabled(true);
+                        spinExpBtn:SetEnabled(true);
+                        spinAllBtn:SetEnabled(true);
+                    end);
                 end
             else
-                spinClassBtn:SetEnabled(true)
-                spinExpBtn:SetEnabled(true)
-                spinAllBtn:SetEnabled(true)
+                spinClassBtn:SetEnabled(true);
+                spinExpBtn:SetEnabled(true);
+                spinAllBtn:SetEnabled(true);
             end
-        end)
-    end)
+        end);
+    end);
 
-    return panel
+    return panel;
 end
 addon.BuildLevelingPanel = BuildLevelingPanel;

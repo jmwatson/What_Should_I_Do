@@ -41,6 +41,9 @@ addon.DIALOG = "DIALOG";
 addon.OVERLAY = "OVERLAY";
 addon.BACKGROUND = "BACKGROUND";
 
+addon.BLACK = {0, 0, 0};
+addon.WHITE = {1, 1, 1};
+
 -- NINE SLICE
 addon.TOPLEFT = "TOPLEFT";
 addon.TOP = "TOP";

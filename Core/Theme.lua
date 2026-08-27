@@ -167,23 +167,45 @@ addon.ApplyTheme = ApplyTheme;
 ApplyTheme(addon.DEFAULT_THEME);
 
 ------------------------------------------------------------------------
+-- COLOR HELPER
+------------------------------------------------------------------------
+
+-- Applies a {r,g,b} color table to any Set*Color-style method, e.g.:
+--   addon.ApplyColor(texture, "SetColorTexture", CT.row_even)
+--   addon.ApplyColor(frame, "SetBackdropBorderColor", CT.divider, 1)
+local function ApplyColor(obj, method, colorTable, alpha)
+    obj[method](obj, colorTable[1], colorTable[2], colorTable[3], alpha or 1);
+end
+addon.ApplyColor = ApplyColor;
+
+local function AddRGB(left, right)
+    return {left[1] + right[1], left[2] + right[2], left[3] + right[3]};
+end
+addon.AddRGB = AddRGB;
+
+local function MulRGB(left, right)
+    return {left[1] * right[1], left[2] * right[2], left[3] * right[3]};
+end
+addon.MulRGB = MulRGB;
+
+------------------------------------------------------------------------
 -- RENDERING HELPERS
 ------------------------------------------------------------------------
 
 local FLAT = {bgFile=addon.BG_FILE, edgeFile=addon.BG_FILE, edgeSize=1};
 
-local function Tx(f, r, g, b, a)
-    local t = f:CreateTexture(nil, addon.BACKGROUND);
-    t:SetAllPoints();
-    t:SetColorTexture(r, g, b, a or 1);
-    return t;
+local function Tx(parent, color, alpha)
+    local texture = parent:CreateTexture(nil, addon.BACKGROUND);
+    texture:SetAllPoints();
+    ApplyColor(texture, "SetColorTexture", color, alpha);
+    return texture;
 end
 addon.Tx = Tx;
 
-local function BgBorder(f, br, bg_, bb, er, eg, eb)
-    f:SetBackdrop(FLAT);
-    f:SetBackdropColor(br, bg_, bb, 1);
-    f:SetBackdropBorderColor(er, eg, eb, 1);
+local function BgBorder(element, bgColor, bgBorderColor)
+    element:SetBackdrop(FLAT);
+    ApplyColor(element, "SetBackdropColor", bgColor);
+    ApplyColor(element, "SetBackdropBorderColor", bgBorderColor);
 end
 addon.BgBorder = BgBorder;
 
@@ -218,7 +240,7 @@ function addon.MakeScrollBox(parent, w, h)
         content:SetPoint(addon.RIGHT, clip, addon.RIGHT, 0, 0);
     end
     
-    addon.BgBorder(bg, CT.row_even[1], CT.row_even[2], CT.row_even[3], CT.divider[1], CT.divider[2], CT.divider[3]);
+    BgBorder(bg, CT.row_even, CT.divider);
     bg:SetHeight(h);
     clip:SetPoint(addon.TOPLEFT, bg, addon.TOPLEFT, 1, -1);
     clip:SetPoint(addon.BOTTOMRIGHT, bg, addon.BOTTOMRIGHT, -1, 1);
@@ -254,7 +276,7 @@ local function MakeResult(parent, w, h, tagText)
         tag:SetText(tagText);
     end
     
-    addon.BgBorder(frame, CT.result_bg[1], CT.result_bg[2], CT.result_bg[3], CT.result_bdr[1], CT.result_bdr[2], CT.result_bdr[3]);
+    BgBorder(frame, CT.result_bg, CT.result_bdr);
     frame:SetHeight(h or 52);
     label:SetFont(addon.GAME_FONT, 17, addon.EMPTY_STRING);
     label:SetPoint(addon.CENTER, frame, addon.CENTER, 0, tagText and -4 or 0);
@@ -277,13 +299,13 @@ local function MakeBtn(parent, text, w, h)
     local function ButtonSetEnabled(self, v)
         origSetEnabled(self, v);
         if v then
-            self:SetBackdropColor(CT.btn_bg[1],CT.btn_bg[2],CT.btn_bg[3]);
-            self:SetBackdropBorderColor(CT.btn_bdr[1],CT.btn_bdr[2],CT.btn_bdr[3],1);
-            label:SetTextColor(CT.btn_text[1],CT.btn_text[2],CT.btn_text[3]);
+            ApplyColor(self, "SetBackdropColor", CT.btn_bg);
+            ApplyColor(self, "SetBackdropBorderColor", CT.btn_bdr);
+            ApplyColor(label, "SetTextColor", CT.btn_text);
         else
-            self:SetBackdropColor(CT.btn_dis[1],CT.btn_dis[2],CT.btn_dis[3]);
-            self:SetBackdropBorderColor(CT.btn_dis[1]+0.10,CT.btn_dis[2]+0.10,CT.btn_dis[3]+0.10,1);
-            label:SetTextColor(CT.dim_text[1]*0.6, CT.dim_text[2]*0.6, CT.dim_text[3]*0.6);
+            ApplyColor(self, "SetBackdropColor", CT.btn_dis);
+            ApplyColor(self, "SetBackdropBorderColor", AddRGB(CT.btn_dis, {0.1, 0.1, 0.1}));
+            ApplyColor(label, "SetTextColor", AddRGB(CT.dim_text, {0.6, 0.6, 0.6}));
         end
     end
 
@@ -292,24 +314,24 @@ local function MakeBtn(parent, text, w, h)
     end
     
     -- RIGHT anchor set by caller when w is nil
-    addon.BgBorder(button, CT.btn_bg[1], CT.btn_bg[2], CT.btn_bg[3], CT.btn_bdr[1], CT.btn_bdr[2], CT.btn_bdr[3]);
+    BgBorder(button, CT.btn_bg, CT.btn_bdr);
     label:SetAllPoints();
     label:SetJustifyH(addon.CENTER);
     label:SetText(text);
-    label:SetTextColor(CT.btn_text[1],CT.btn_text[2],CT.btn_text[3]);
+    ApplyColor(label, "SetTextColor", CT.btn_text);
     button.SetEnabled = ButtonSetEnabled;
     button:SetHeight(h or 30);
     button._lbl = label;
     button:SetScript(addon.OnEnter, function(s)
         if s:IsEnabled() then
-            s:SetBackdropColor(CT.btn_hover[1],CT.btn_hover[2],CT.btn_hover[3]);
-            s:SetBackdropBorderColor(0.70,0.42,1.00,1);
+            ApplyColor(s, "SetBackdropColor", CT.btn_hover);
+            ApplyColor(s, "SetBackdropBorderColor", {0.70, 0.42, 1.00}, 1);
         end
     end);
     button:SetScript(addon.OnLeave, function(s)
         if s:IsEnabled() then
-            s:SetBackdropColor(CT.btn_bg[1],CT.btn_bg[2],CT.btn_bg[3]);
-            s:SetBackdropBorderColor(CT.btn_bdr[1],CT.btn_bdr[2],CT.btn_bdr[3],1);
+            ApplyColor(s, "SetBackdropColor", CT.btn_bg);
+            ApplyColor(s, "SetBackdropBorderColor", CT.btn_bdr);
         end
     end);
     button:SetEnabled(true);
@@ -328,9 +350,9 @@ local function MakeHeader(parent, text, w)
         header:SetPoint(addon.RIGHT, parent, addon.RIGHT, -addon.PAD, 0);
     end
 
-    addon.BgBorder(header, CT.header_bg[1],CT.header_bg[2],CT.header_bg[3], CT.divider[1],CT.divider[2],CT.divider[3]);
+    BgBorder(header, CT.header_bg, CT.divider);
     header:SetHeight(28);
-    stripe:SetColorTexture(CT.nav_border[1],CT.nav_border[2],CT.nav_border[3],1);
+    ApplyColor(stripe, "SetColorTexture", CT.nav_border);
     stripe:SetSize(3,28);
     stripe:SetPoint(addon.LEFT,header,addon.LEFT,0,0);
     label:SetPoint(addon.LEFT,header,addon.LEFT,12,0);
@@ -357,3 +379,22 @@ local function MakePanel(parent)
     return panel
 end
 addon.MakePanel = MakePanel;
+
+------------------------------------------------------------------------
+-- POOLED ROW HELPER
+------------------------------------------------------------------------
+
+-- Acquires a row from `pool`, running `buildFn(row)` exactly once per
+-- physical frame (the first time it's ever acquired) to construct its
+-- child widgets, then returning it every time after without rebuilding
+-- anything. Callers are responsible for updating per-refresh state
+-- (text, colors, anchors) on the returned row after this call.
+local function AcquirePooledRow(pool, buildFn)
+    local row = pool:Acquire();
+    if not row._built then
+        buildFn(row);
+        row._built = true;
+    end
+    return row;
+end
+addon.AcquirePooledRow = AcquirePooledRow;
