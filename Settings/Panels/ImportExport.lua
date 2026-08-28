@@ -1,6 +1,6 @@
 local _, addon = ...;
 local DB = addon.DB;
-local CT = addon.COLOR_TABLE;
+local CT = DB.COLOR_TABLE;
 
 -- XOR encode/decode for opaque export strings
 local XOR_KEY = 42;

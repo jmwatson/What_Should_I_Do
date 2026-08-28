@@ -1,6 +1,6 @@
 local _, addon = ...;
 local DB = addon.DB;
-local CT = addon.COLOR_TABLE;
+local CT = DB.COLOR_TABLE;
 
 local Options = {
     {label="50%",  val=0.50}, {label="60%",  val=0.60}, {label="70%",  val=0.70},
