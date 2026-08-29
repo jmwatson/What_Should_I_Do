@@ -39,6 +39,7 @@ Core\Roster.lua
 
 # UI primitives
 Core\LeftNav.lua
+Core\Minimap.lua
 
 # Panels
 Panels\Activity.lua
