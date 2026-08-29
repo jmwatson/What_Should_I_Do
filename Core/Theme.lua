@@ -167,26 +167,51 @@ addon.ApplyTheme = ApplyTheme;
 ApplyTheme(addon.DEFAULT_THEME);
 
 ------------------------------------------------------------------------
--- COLOR HELPER
+-- COLOR HELPERS
 ------------------------------------------------------------------------
+
+---@alias ColorTable number[]
+---@class RGB
+---@field r number
+---@field g number
+---@field b number
 
 -- Applies a {r,g,b} color table to any Set*Color-style method, e.g.:
 --   addon.ApplyColor(texture, "SetColorTexture", CT.row_even)
---   addon.ApplyColor(frame, "SetBackdropBorderColor", CT.divider, 1)
+--   addon.ApplyColor(frame, "SetBackdropBorderColor", CT.divider, 1)comment
+---@param obj Region
+---@param method string
+---@param colorTable ColorTable
+---@param alpha? number
 local function ApplyColor(obj, method, colorTable, alpha)
     obj[method](obj, colorTable[1], colorTable[2], colorTable[3], alpha or 1);
 end
 addon.ApplyColor = ApplyColor;
 
-local function AddRGB(left, right)
+---@param left ColorTable
+---@param right ColorTable
+---@return ColorTable
+local function AddColor(left, right)
     return {left[1] + right[1], left[2] + right[2], left[3] + right[3]};
 end
-addon.AddRGB = AddRGB;
+addon.AddColor = AddColor;
 
-local function MulRGB(left, right)
+---@param left ColorTable
+---@param right ColorTable
+---@return ColorTable
+local function MulColor(left, right)
     return {left[1] * right[1], left[2] * right[2], left[3] * right[3]};
 end
-addon.MulRGB = MulRGB;
+addon.MulColor = MulColor;
+
+---@param obj Region
+---@param method string
+---@param rgb RGB
+---@param alpha? number
+local function ApplyRGB(obj, method, rgb, alpha)
+    obj[method](obj, rgb.r, rgb.b, rgb.g, alpha or 1);
+end
+addon.ApplyRGB = ApplyRGB;
 
 ------------------------------------------------------------------------
 -- RENDERING HELPERS
@@ -304,8 +329,8 @@ local function MakeBtn(parent, text, w, h)
             ApplyColor(label, "SetTextColor", CT.btn_text);
         else
             ApplyColor(self, "SetBackdropColor", CT.btn_dis);
-            ApplyColor(self, "SetBackdropBorderColor", AddRGB(CT.btn_dis, {0.1, 0.1, 0.1}));
-            ApplyColor(label, "SetTextColor", AddRGB(CT.dim_text, {0.6, 0.6, 0.6}));
+            ApplyColor(self, "SetBackdropBorderColor", AddColor(CT.btn_dis, {0.1, 0.1, 0.1}));
+            ApplyColor(label, "SetTextColor", AddColor(CT.dim_text, {0.6, 0.6, 0.6}));
         end
     end
 

@@ -1,7 +1,6 @@
 local _, addon = ...;
 local DB = addon.DB;
 local CT = DB.COLOR_TABLE;
-
 local ORDER = addon.EXPANSIONS;
 local ROW_H = 28;
 local COL_W = math.floor(addon.SET_CW / 2) - 2;
@@ -10,13 +9,13 @@ local function PaintRow(row, checked)
     if checked then
         addon.ApplyColor(row.box, "SetBackdropColor", CT.result_bg);
         addon.ApplyColor(row.box, "SetBackdropBorderColor", CT.accent or CT.nav_border);
-        addon.ApplyColor(row.box, "SetVertexColor", CT.accent or CT.nav_border);
-        addon.ApplyColor(row.box, "SetTextColor", CT.bright_text);
+        addon.ApplyColor(row.check, "SetVertexColor", CT.accent or CT.nav_border);
+        addon.ApplyColor(row.lbl, "SetTextColor", CT.bright_text);
         row.check:Show();
     else
         addon.ApplyColor(row.box, "SetBackdropColor", {0.05, 0.03, 0.08});
         addon.ApplyColor(row.box, "SetBackdropBorderColor", CT.divider);
-        addon.ApplyColor(row.box, "SetTextColor", CT.dim_text);
+        addon.ApplyColor(row.lbl, "SetTextColor", CT.dim_text);
         row.check:Hide();
     end
 end
@@ -109,12 +108,12 @@ local function BuildExpansionsPanel(contentArea)
 
     addon.ApplyColor(panel.desc, "SetTextColor", CT.dim_text);
 
-    panel.rowPool = CreateFrame(addon.BUTTON, panel.content, addon.BACKDROP_TEMPLATE);
+    panel.rowPool = CreateFramePool(addon.BUTTON, panel.content, addon.BACKDROP_TEMPLATE);
 
     -- Enable All / Disable All buttons
     panel.enableAllBtn = addon.MakeBtn(panel, "Enable All", math.floor(addon.SET_CW/2) - 3, 24);
     panel.enableAllBtn:SetPoint(addon.BOTTOMLEFT, panel, addon.BOTTOMLEFT, addon.SET_PAD, addon.SET_PAD);
-    panel.enableAllBtn:SetScript(addon.OnClick, function() panel:OnClick(); end);
+    panel.enableAllBtn:SetScript(addon.OnClick, function() panel:EnableAll(); end);
 
     panel.disableAllBtn = addon.MakeBtn(panel, "Disable All", math.floor(addon.SET_CW/2) - 3, 24);
     panel.disableAllBtn:SetPoint(addon.BOTTOMRIGHT, panel, addon.BOTTOMRIGHT, -addon.SET_PAD, addon.SET_PAD);

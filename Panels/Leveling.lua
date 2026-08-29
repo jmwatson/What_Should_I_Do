@@ -174,7 +174,7 @@ function LevelingPanelMixin:DoSpinClass(onDone)
                     local pick = eligible[math.random(#eligible)];
                     self:SelectRow(pick);
                     -- Flash the selected row so user sees it
-                    addon.ApplyColor(pick.bg, "SetColorTexture", addon.MulRGB(CT.spin_text, {0.6, 0.6, 0.6}));
+                    addon.ApplyColor(pick.bg, "SetColorTexture", addon.MulColor(CT.spin_text, {0.6, 0.6, 0.6}));
                     self.autoPickFlashTimer = C_Timer.NewTimer(0.15, function()
                         self.autoPickFlashTimer = nil;
                         addon.ApplyColor(pick.bg, "SetColorTexture", CT.row_select);
