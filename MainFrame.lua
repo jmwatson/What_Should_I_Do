@@ -6,66 +6,62 @@ local WIN_W  = 660;
 local WIN_H  = 520;
 local NAV_W  = 120;
 local PAD    = 16;
-local CONT_W = WIN_W - NAV_W - PAD * 2;  -- 508
+-- local CONT_W = WIN_W - NAV_W - PAD * 2;  -- 508
 
 local MainPanels = {};
 
-local function OnSelect(settings_nav, leveling_nav)
-    local function _OnSelect(name)
-        if name==settings_nav and DB.SettingsFrame and DB.SettingsFrame:IsShown() then
+local function BuildContentArea(parent)
+    local leveling_nav = "leveling";
+    local settings_nav = "settings_nav";
+
+    local function OnSelect(name)
+        if name == settings_nav and DB.SettingsFrame and DB.SettingsFrame:IsShown() then
             DB.SettingsFrame:Hide();
-        elseif name==settings_nav and DB.SettingsFrame then
+        elseif name == settings_nav and DB.SettingsFrame then
             
             DB.SettingsFrame:Show();
-        elseif name==settings_nav then
+        elseif name == settings_nav then
             return;
         end
         -- Always refresh roster when switching to leveling so imports show immediately
-        if name==leveling_nav then
+        if name == leveling_nav then
             addon.BuildRoster();
         end
         for k,p in pairs(MainPanels) do
-            if k==name then
+            if k == name then
                 p:Show();
             else
                 p:Hide();
             end
         end
     end
-    return _OnSelect;
-end
 
-local function BuildContentArea(parent)
-    local contentArea=CreateFrame(addon.FRAME, nil, parent);
-    local actPanel  = addon.BuildActivityPanel(contentArea);
-    local crePanel  = addon.BuildCreatorPanel(contentArea);
-    local levPanel  = addon.BuildLevelingPanel(contentArea);
-    local namPanel  = addon.BuildNamePanel(contentArea);
+    local contentArea = CreateFrame(addon.FRAME, nil, parent);
+    local nav = addon.CreateLeftNav(parent, OnSelect);
+
+    local actPanel = addon.BuildActivityPanel(contentArea);
+    nav:AddNav("activity", addon.ACTIVITY_LABEL);
+    local crePanel = addon.BuildCreatorPanel(contentArea);
+    nav:AddNav("creator", addon.CREATOR_LABEL);
+    local levPanel = addon.BuildLevelingPanel(contentArea);
+    nav:AddNav(leveling_nav, addon.LEVELING_LABEL);
+    local namPanel = addon.BuildNamePanel(contentArea);
+    nav:AddNav("names", addon.NAMES_LABEL);
     local profPanel = addon.BuildProfessionPanel(contentArea);
-    local rdPanel   = addon.BuildRaidDungeonPanel(contentArea);
-    local abtPanel  = addon.BuildAboutPanel(contentArea);
-    local leveling_nav = "leveling";
-    local settings_nav = "settings_nav";
+    nav:AddNav("professions", addon.PROFESSIONS_LABEL);
+    local rdPanel = addon.BuildRaidDungeonPanel(contentArea);
+    nav:AddNav("raidsdungeons", addon.RAIDS_AND_DUNGEONS_LABEL);
+    local abtPanel = addon.BuildAboutPanel(contentArea);
+    nav:AddRule();
+    nav:AddBottomNav(settings_nav, addon.SETTINGS_LABEL);
+    nav:AddBottomNav("about", addon.ABOUT_LABEL);
+
     contentArea:SetPoint(addon.TOPLEFT, parent, addon.TOPLEFT, NAV_W, -30);
     contentArea:SetPoint(addon.BOTTOMRIGHT, parent, addon.BOTTOMRIGHT, 0, 0);
-    addon.Tx(contentArea, {CT.bg[1]+0.005, CT.bg[2]+0.005, CT.bg[3]+0.01});
+    addon.Tx(contentArea, addon.AddColor(CT.bg, {0.005, 0.005, 0.01}));
 
-    MainPanels={activity=actPanel, creator=crePanel, leveling=levPanel, names=namPanel, professions=profPanel, raidsdungeons=rdPanel, about=abtPanel};
-
-    addon.BuildLeftNav(parent,
-        {
-            {name="activity", label=addon.ACTIVITY_LABEL},
-            {name="creator", label=addon.CREATOR_LABEL},
-            {name=leveling_nav, label=addon.LEVELING_LABEL},
-            {name="names", label=addon.NAMES_LABEL},
-            {name="professions", label=addon.PROFESSIONS_LABEL},
-            {name="raidsdungeons", label=addon.RAIDS_AND_DUNGEONS_LABEL}
-        },
-        {
-            {name=settings_nav, label=addon.SETTINGS_LABEL},
-            {name="about", label=addon.ABOUT_LABEL}
-        },
-        OnSelect(settings_nav, leveling_nav));
+    MainPanels = {activity=actPanel, creator=crePanel, leveling=levPanel, names=namPanel, professions=profPanel, raidsdungeons=rdPanel, about=abtPanel};
+    nav:SetActive("activity");
 end
 
 local function BuildMainFrame()

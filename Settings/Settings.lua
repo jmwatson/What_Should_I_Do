@@ -4,60 +4,24 @@ local CT = DB.COLOR_TABLE;
 
 DB.SettingsFrame = nil;
 
-local navActive = nil;
-local navBtns = {};
 local PANELS = {};
 
 -----------------
 --- Callbacks ---
 -----------------
 
-local function SetNavActive(name)
-    local function _SetNavActive()
-        navActive = name;
-        for key, button in pairs(navBtns) do
-            if key == name then
-                addon.ApplyColor(button.bg, "SetColorTexture", CT.nav_active);
-                addon.ApplyColor(button.lbl, "SetTextColor", addon.WHITE);
-                button.stripe:Show();
-            else
-                addon.ApplyColor(button.bg, "SetColorTexture", addon.BLACK);
-                addon.ApplyColor(button.lbl, "SetTextColor", CT.dim_text);
-                button.stripe:Hide();
-            end
-        end
-        for key, panel in pairs(PANELS) do
-            if key == name then
-                panel:Show();
-            else
-                panel:Hide();
-            end
-        end
-        if name == "roster" and DB.RefreshRoster then
-            DB.RefreshRoster();
+local function OnSelect(name)
+    for key, panel in pairs(PANELS) do
+        if key == name then
+            panel:Show();
+        else
+            panel:Hide();
         end
     end
-    return _SetNavActive;
-end
 
-local function ConditionalOnEnter(name, bg, lbl)
-    local function _ConditionalOnEnter()
-        if navActive~=name then
-            addon.ApplyColor(bg, "SetColorTexture", CT.nav_hover);
-            addon.ApplyColor(lbl, "SetTextColor", CT.bright_text);
-        end
+    if name == "roster" and DB.RefreshRoster then
+        DB.RefreshRoster();
     end
-    return _ConditionalOnEnter;
-end
-
-local function ConditionalOnLeave(name, bg, lbl)
-    local function _ConditionalOnLeave()
-        if navActive~=name then
-            addon.ApplyColor(bg, "SetColorTexture", addon.BLACK, 0);
-            addon.ApplyColor(lbl, "SetTextColor", CT.dim_text);
-        end
-    end
-    return _ConditionalOnLeave;
 end
 
 local function OnEnter(bg, lbl)
@@ -78,13 +42,15 @@ end
 
 local function ResetSize()
     DB.uiScale = 1.0;
-    DB.uiScale = 1.0;
+
     if DB.MainFrame then
         DB.MainFrame:SetScale(1.0);
     end
+
     if DB.SettingsFrame then
         DB.SettingsFrame:SetScale(1.0);
     end
+
     UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r UI scale reset to 100%%.", 1, 0.85, 0.2);
 end
 
@@ -137,87 +103,6 @@ local function BuildTitleBar(parent)
     return frame;
 end
 
-local function BuildLeftNav(parent)
-    local frame = CreateFrame(addon.FRAME, nil, parent);
-    frame:SetPoint(addon.TOPLEFT, parent, addon.TOPLEFT, 0, -30);
-    frame:SetPoint(addon.BOTTOMLEFT, parent, addon.BOTTOMLEFT, 0, 0);
-    frame:SetWidth(addon.SET_NAV);
-    addon.Tx(frame, CT.sidebar);
-
-    local texture = frame:CreateTexture(nil, addon.ARTWORK);
-    addon.ApplyColor(texture, "SetColorTexture", CT.divider);
-    texture:SetWidth(1);
-    texture:SetPoint(addon.TOPRIGHT, frame, addon.TOPRIGHT, 0, 0);
-    texture:SetPoint(addon.BOTTOMRIGHT, frame, addon.BOTTOMRIGHT, 0, 0);
-
-    return frame;
-end
-
-local function BuildNavButton(parent, i, def)
-    local row = CreateFrame(addon.BUTTON, nil, parent);
-    row:SetSize(addon.SET_NAV, 36);
-    row:SetPoint(addon.TOPLEFT, parent, addon.TOPLEFT, 0, -(i-1)*36);
-
-    local background = row:CreateTexture(nil, addon.BACKGROUND);
-    background:SetAllPoints();
-    addon.ApplyColor(background, "SetColorTexture", addon.BLACK, 0);
-
-    local stripe = row:CreateTexture(nil, addon.ARTWORK);
-    addon.ApplyColor(stripe, "SetColorTexture", CT.nav_border);
-    stripe:SetSize(3, 36);
-    stripe:SetPoint(addon.LEFT, row, addon.LEFT, 0, 0);
-    stripe:Hide();
-
-    local label = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
-    label:SetPoint(addon.LEFT, row, addon.LEFT, 12, 0);
-    label:SetText(def.label);
-    addon.ApplyColor(label, "SetTextColor", CT.dim_text);
-
-    local name = def.name;
-    row:SetScript(addon.OnClick, SetNavActive(name));
-    row:SetScript(addon.OnEnter, ConditionalOnEnter(name,  background,  label));
-    row:SetScript(addon.OnLeave, ConditionalOnLeave(name,  background,  label));
-
-    navBtns[def.name] = {bg = background, stripe = stripe, lbl = label};
-end
-
-local function BuildChangeListButton(parent)
-    local frame = CreateFrame(addon.BUTTON, nil, parent);
-    frame:SetSize(addon.SET_NAV, 36);
-    frame:SetPoint(addon.BOTTOMLEFT, parent, addon.BOTTOMLEFT, 0, 36);
-
-    local background = frame:CreateTexture(nil, addon.BACKGROUND);
-    background:SetAllPoints();
-    addon.ApplyColor(background, "SetColorTexture", addon.BLACK, 0);
-
-    local artwork = frame:CreateTexture(nil, addon.ARTWORK);
-    addon.ApplyColor(artwork, "SetColorTexture", CT.nav_border);
-    artwork:SetSize(3, 36);
-    artwork:SetPoint(addon.LEFT, frame, addon.LEFT, 0, 0);
-    artwork:Hide();
-
-    local label = frame:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
-    label:SetPoint(addon.LEFT, frame, addon.LEFT, 12, 0);
-    label:SetText("Changelog");
-    addon.ApplyColor(label, "SetTextColor", CT.dim_text);
-
-    frame:SetScript(addon.OnClick, SetNavActive("changelog"));
-    frame:SetScript(addon.OnEnter, ConditionalOnEnter("changelog", background, label));
-    frame:SetScript(addon.OnLeave, ConditionalOnLeave("changelog", background, label));
-
-    navBtns["changelog"] = {bg=background, stripe=artwork, lbl=label};
-
-    return frame;
-end
-
-local function BuildSeperator(parent, y_offset)
-    local rule = parent:CreateTexture(nil, addon.ARTWORK);
-    addon.ApplyColor(rule, "SetColorTexture", CT.divider);
-    rule:SetHeight(1);
-    rule:SetPoint(addon.BOTTOMLEFT, parent, addon.BOTTOMLEFT, 0, y_offset);
-    rule:SetPoint(addon.BOTTOMRIGHT, parent, addon.BOTTOMRIGHT, 0, y_offset);
-end
-
 local function BuildResetSizeButton(parent)
     local frame = CreateFrame(addon.BUTTON, nil, parent);
     frame:SetSize(addon.SET_NAV, 36);
@@ -239,47 +124,37 @@ end
 
 local function BuildSettingsWindow()
     local mainFrame = BuildMainFrame(UIParent);
-    -- Left nav
-    local navBg = BuildLeftNav(mainFrame);
     local content = CreateFrame(addon.FRAME, nil, mainFrame);
-    local activitiesPanel = addon.BuildActivitiesPanel(content);
-    local rosterPanel = addon.BuildRosterPanel(content);
-    local importExportPanel = addon.BuildImportExportPanel(content);
-    local colorsPanel = addon.BuildColorsPanel(content);
-    local scalePanel = addon.BuildUIScalePanel(content);
-    local expansionsPanel = addon.BuildExpansionsPanel(content);
-    local changelogPanel = addon.BuildChangelogPanel(content);
-    BuildTitleBar(mainFrame);
-
     content:SetPoint(addon.TOPLEFT, mainFrame, addon.TOPLEFT, addon.SET_NAV, -30);
     content:SetPoint(addon.BOTTOMRIGHT, mainFrame, addon.BOTTOMRIGHT, 0, 0);
-    PANELS.activities = activitiesPanel;
-    PANELS.roster = rosterPanel;
-    PANELS.importexport = importExportPanel;
-    PANELS.expansions = expansionsPanel;
-    PANELS.colors = colorsPanel;
-    PANELS.uiscale = scalePanel;
-    PANELS.changelog = changelogPanel;
 
-    local panelStrings = {
-        {name="activities", label="Activities"},
-        {name="roster", label="Roster"},
-        {name="importexport", label="Import/Export"},
-        {name="expansions", label="Expansions"},
-        {name="colors", label="Colors"},
-        {name="uiscale", label="UI Scale"}
-    };
-
-    for i,def in ipairs(panelStrings) do
-        BuildNavButton(navBg, i, def);
-    end
-
-    BuildChangeListButton(navBg);
-    BuildSeperator(navBg, 72);
+    local navBg = addon.CreateLeftNav(mainFrame, OnSelect, {
+        width = addon.SET_NAV,
+        rowHeight = 36,
+        bottomInset = 36, -- Reserves room below nav for reset button
+    });
+    
+    PANELS.activities = addon.BuildActivitiesPanel(content);
+    navBg:AddNav("activities", "Activities");
+    PANELS.roster = addon.BuildRosterPanel(content);
+    navBg:AddNav("roster", "Roster");
+    PANELS.importexport = addon.BuildImportExportPanel(content);
+    navBg:AddNav("importexport", "Import/Export");
+    PANELS.expansions = addon.BuildExpansionsPanel(content);
+    navBg:AddNav("expansions", "Expansions");
+    PANELS.colors = addon.BuildColorsPanel(content);
+    navBg:AddNav("colors", "Colors");
+    PANELS.uiscale = addon.BuildUIScalePanel(content);
+    navBg:AddNav("uiscale", "UI Scale");
+    PANELS.changelog = addon.BuildChangelogPanel(content);
+    navBg:AddRule();
+    navBg:AddBottomNav("changelog", "Changelog");
+    
+    BuildTitleBar(mainFrame);
     BuildResetSizeButton(navBg);
 
-    mainFrame:SetScript(addon.OnShow, SetNavActive("activities"));
-    SetNavActive("activities");
+    mainFrame:SetScript(addon.OnShow, function() navBg:SetActive("activities"); end);
+    navBg:SetActive("activities");
 
     return mainFrame;
 end
