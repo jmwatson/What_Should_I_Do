@@ -207,6 +207,7 @@ end
 
 -- EXPORT section
 function ImportExportPanelMixin:BuildExportPanel()
+    local panel = self;
     self.expHdr = addon.MakeHeader(self, "Export Roster", addon.SET_CW);
     self.expHdr:SetPoint(addon.TOPLEFT, self.noteBG, addon.BOTTOMLEFT, -4, -10);
 
@@ -249,7 +250,7 @@ function ImportExportPanelMixin:BuildExportPanel()
 
     -- Sync scroll when text changes
     self.expBox:SetScript(addon.OnTextChanged, function(self)
-        self.expScroll:UpdateScrollChildRect();
+        panel.expScroll:UpdateScrollChildRect();
     end);
 
     -- Block typing but allow select/copy
@@ -272,14 +273,14 @@ function ImportExportPanelMixin:BuildExportPanel()
     self.expGenBtn:SetScript(addon.OnClick, function()
         local str = BuildExportStr();
         if not str then
-            self.expBox._last = addon.EMPTY_STRING;
-            self.expBox:SetText("No characters in roster.");
+            panel.expBox._last = addon.EMPTY_STRING;
+            panel.expBox:SetText("No characters in roster.");
             return;
         end
         local encoded = EncodeStr(str);
-        self.expBox._last = encoded;
-        self.expBox:SetText(encoded);
-        self.expBox:SetFocus();
+        panel.expBox._last = encoded;
+        panel.expBox:SetText(encoded);
+        panel.expBox:SetFocus();
     end);
 
     self.ioRule = self:CreateTexture(nil,addon.ARTWORK);
@@ -291,6 +292,7 @@ end
 
 -- IMPORT
 function ImportExportPanelMixin:BuildImportPanel()
+    local panel = self;
     self.impHdr = addon.MakeHeader(self, "Import Roster", addon.SET_CW);
     self.impHdr:SetPoint(addon.TOPLEFT, self.ioRule, addon.BOTTOMLEFT, 0, -8);
 
@@ -325,10 +327,10 @@ function ImportExportPanelMixin:BuildImportPanel()
     self.impStatus:SetWidth(addon.SET_CW);
 
     self.impBtn:SetScript(addon.OnClick, function()
-        self:DoImport(self.impBox:GetText());
+        panel:DoImport(panel.impBox:GetText());
     end);
     self.impBox:SetScript(addon.OnEnterPressed, function(s)
-        self:DoImport(s:GetText());
+        panel:DoImport(s:GetText());
         s:ClearFocus();
     end);
 end
