@@ -1,16 +1,30 @@
-local _, addon = ...
+local _, addon = ...;
+
+local defaults = {
+    colorTheme = addon.DEFAULT_THEME,
+    COLOR_TABLE = {},
+    customColors = {},
+    excludedActivities = {},
+    excludedChars = {},
+    excludedExpansions = {},
+    excludeFarming = false,
+    excludedSubActivities = {},
+    minimap = {
+        hide = false,
+        minimapPos = 45,
+    },
+    seenChars = {},
+    uiScale = 1.0,
+};
 
 WhatShouldIDoDB = WhatShouldIDoDB or {};
-WhatShouldIDoDB.COLOR_TABLE = WhatShouldIDoDB.COLOR_TABLE or {};
-WhatShouldIDoDB.customColors = WhatShouldIDoDB.customColors or {};
-WhatShouldIDoDB.excludedActivities = WhatShouldIDoDB.excludedActivities or {};
-WhatShouldIDoDB.excludedChars = WhatShouldIDoDB.excludedChars or {};
-WhatShouldIDoDB.excludedExpansions = WhatShouldIDoDB.excludedExpansions or {};
-WhatShouldIDoDB.excludeFarming = WhatShouldIDoDB.excludeFarming or false;
-WhatShouldIDoDB.excludedSubActivities = WhatShouldIDoDB.excludedSubActivities or {};
-WhatShouldIDoDB.minimap = WhatShouldIDoDB.minimap or {hide=false, minimapPos=45};
-WhatShouldIDoDB.seenChars = WhatShouldIDoDB.seenChars or {};
-WhatShouldIDoDB.uiScale = WhatShouldIDoDB.uiScale or 1.0;
+
+for key, value in pairs(defaults) do
+    if WhatShouldIDoDB[key] == nil then
+        WhatShouldIDoDB[key] = value;
+    end
+end
+
 addon.DB = WhatShouldIDoDB;
 
 local function InitDB()
