@@ -188,6 +188,15 @@ local function ApplyColor(obj, method, colorTable, alpha)
 end
 addon.ApplyColor = ApplyColor;
 
+---@param obj Region
+---@param method string
+---@param rgb RGB
+---@param alpha? number
+local function ApplyRGB(obj, method, rgb, alpha)
+    obj[method](obj, rgb.r, rgb.b, rgb.g, alpha or 1);
+end
+addon.ApplyRGB = ApplyRGB;
+
 ---@param left ColorTable
 ---@param right ColorTable
 ---@return ColorTable
@@ -204,14 +213,53 @@ local function MulColor(left, right)
 end
 addon.MulColor = MulColor;
 
----@param obj Region
----@param method string
----@param rgb RGB
----@param alpha? number
-local function ApplyRGB(obj, method, rgb, alpha)
-    obj[method](obj, rgb.r, rgb.b, rgb.g, alpha or 1);
+---@param left RGB
+---@param right RGB
+---@return RGB
+local function AddRGB(left, right)
+    return {r=left.r + right.r, g=left.g + right.g, b=left.b + right.b};
 end
-addon.ApplyRGB = ApplyRGB;
+addon.AddRGB = AddRGB;
+
+---@param left RGB
+---@param right RGB
+---@return RGB
+local function MulRGB(left, right)
+    return {r=left.r * right.r, g=left.g * right.g, b=left.b * right.b};
+end
+addon.MulRGB = MulRGB;
+
+---@param left RGB
+---@param right ColorTable
+---@return RGB
+local function AddRGBL(left, right)
+    return {r=left.r + right[1], g=left.g + right[2], b=left.b + right[3]};
+end
+addon.AddRGBL = AddRGBL;
+
+---@param left RGB
+---@param right ColorTable
+---@return RGB
+local function MulRGBL(left, right)
+    return {r=left.r * right[1], g=left.g * right[2], b=left.b * right[3]};
+end
+addon.MulRGBL = MulRGBL;
+
+---@param left ColorTable
+---@param right RGB
+---@return ColorTable
+local function AddRGBR(left, right)
+    return {left[1] + right.r, left[2] + right.g, left[3] + right.b};
+end
+addon.AddRGBR = AddRGBR;
+
+---@param left ColorTable
+---@param right RGB
+---@return ColorTable
+local function MulRGBR(left, right)
+    return {left[1] * right.r, left[2] * right.g, left[3] * right.b};
+end
+addon.MulRGBR = MulRGBR;
 
 ------------------------------------------------------------------------
 -- RENDERING HELPERS

@@ -148,8 +148,8 @@ function ActivitiesPanelMixin:RefreshActivities()
         end);
     end
 
-    self.catContent:SetHeight(math.max(22, #acts * 22 + 2));
-    self.catReset();
+    self.actContent:SetHeight(math.max(22, #acts * 22 + 2));
+    self.actReset();
 
     if self.selectedActivity then
         for row in self.activitiesRowPool:EnumerateActive() do

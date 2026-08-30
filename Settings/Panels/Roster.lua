@@ -18,7 +18,7 @@ function RosterPanelMixin:Refresh()
     for i,ch in ipairs(characters) do
         local even = (i % 2 == 0);
         local row = self.rowPool:Acquire();
-        local cc = addon.CLASS_INFO[ch.class] or {r = 0.8, g = 0.8, b = 0.8};
+        local cc = addon.GetClassColor(ch.class) or {r = 0.8, g = 0.8, b = 0.8};
         local isExcluded = DB.excludedChars[ch.name] == true;
         local isCurrent = (ch.name == UnitName(addon.IDENTITY));
 

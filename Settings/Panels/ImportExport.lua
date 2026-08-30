@@ -207,7 +207,6 @@ end
 
 -- EXPORT section
 function ImportExportPanelMixin:BuildExportPanel()
-    local panel = self;
     self.expHdr = addon.MakeHeader(self, "Export Roster", addon.SET_CW);
     self.expHdr:SetPoint(addon.TOPLEFT, self.noteBG, addon.BOTTOMLEFT, -4, -10);
 
@@ -249,8 +248,8 @@ function ImportExportPanelMixin:BuildExportPanel()
     end
 
     -- Sync scroll when text changes
-    self.expBox:SetScript(addon.OnTextChanged, function(self)
-        panel.expScroll:UpdateScrollChildRect();
+    self.expBox:SetScript(addon.OnTextChanged, function(_)
+        self.expScroll:UpdateScrollChildRect();
     end);
 
     -- Block typing but allow select/copy
@@ -273,14 +272,14 @@ function ImportExportPanelMixin:BuildExportPanel()
     self.expGenBtn:SetScript(addon.OnClick, function()
         local str = BuildExportStr();
         if not str then
-            panel.expBox._last = addon.EMPTY_STRING;
-            panel.expBox:SetText("No characters in roster.");
+            self.expBox._last = addon.EMPTY_STRING;
+            self.expBox:SetText("No characters in roster.");
             return;
         end
         local encoded = EncodeStr(str);
-        panel.expBox._last = encoded;
-        panel.expBox:SetText(encoded);
-        panel.expBox:SetFocus();
+        self.expBox._last = encoded;
+        self.expBox:SetText(encoded);
+        self.expBox:SetFocus();
     end);
 
     self.ioRule = self:CreateTexture(nil,addon.ARTWORK);
