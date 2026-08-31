@@ -19,7 +19,7 @@ local CreatorPanelMixin = {};
 
 function CreatorPanelMixin:GetRaceNames()
     local names={}
-    for _, race in ipairs(addon.RACE_INFO) do
+    for _, race in pairs(addon.RACE_INFO) do
         if race and (self.factionFilter == defaultFaction or race.faction == self.factionFilter or race.faction == addon.NEUTRAL) then
             table.insert(names, race.name)
         end

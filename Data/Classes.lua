@@ -46,7 +46,7 @@ addon.CLASS_INFO = {
 
 local function GetClassShortNames()
     local short_name={};
-    for _,c in ipairs(addon.CLASS_INFO) do table.insert(short_name, c.short_name); end
+    for _,c in pairs(addon.CLASS_INFO) do table.insert(short_name, c.short_name); end
     return short_name;
 end
 addon.GetClassShortNames = GetClassShortNames;
@@ -67,7 +67,7 @@ local function DecodeClass(class_short_name)
     local class = addon.UNKNOWN;
     
     if class_short_name then
-        for _, class_info in ipairs(addon.CLASS_INFO) do
+        for _, class_info in pairs(addon.CLASS_INFO) do
             if class_info.short_name == class_short_name then
                 class = class_info.name;
                 break;

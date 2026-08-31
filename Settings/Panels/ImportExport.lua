@@ -70,14 +70,14 @@ end
 -- Build Encode/Decode tables.
 local CLASS_ENC = {};
 local CLASS_DEC = {};
-for _, c in ipairs(addon.CLASS_INFO) do
+for _, c in pairs(addon.CLASS_INFO) do
     CLASS_ENC[c.name] = c.short_name;
     CLASS_DEC[c.short_name] = c.name;
 end
 
 local RACE_ENC = {};
 local RACE_DEC = {};
-for _, r in ipairs(addon.RACE_INFO) do
+for _, r in pairs(addon.RACE_INFO) do
     if r then
         RACE_ENC[r.name] = r.short_name;
         RACE_DEC[r.short_name] = r.name;

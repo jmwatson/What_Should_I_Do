@@ -65,14 +65,14 @@ addon.RACE_INFO = {
 
 local function GetRaceNames()
     local names = {};
-    for _, race in ipairs(addon.RACE_INFO) do table.insert(names, race.name); end
+    for _, race in pairs(addon.RACE_INFO) do table.insert(names, race.name); end
     return names;
 end
 addon.GetRaceNames = GetRaceNames;
 
 local function GetRaceShortNames()
     local short_names={};
-    for _, race in ipairs(addon.RACE_INFO) do table.insert(short_names, race.short_name); end
+    for _, race in pairs(addon.RACE_INFO) do table.insert(short_names, race.short_name); end
     return short_names;
 end
 addon.GetRaceShortNames = GetRaceShortNames;
