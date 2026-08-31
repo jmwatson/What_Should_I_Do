@@ -1,144 +1,196 @@
--- Panels/RaidsDungeons.lua
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
+local DB = addon.DB;
+local CT = addon.Runtime.COLOR_TABLE;
 
-function BuildRaidDungeonPanel(contentArea)
-    local panel = MakePanel(contentArea)
-    local hdr = MakeHeader(panel, "Raids & Dungeons")
-    hdr:SetPoint("TOPLEFT", panel, "TOPLEFT", WSID_PAD, -WSID_PAD)
+local RAIDS = "Raids";
+local DUNGEONS = "Dungeons";
 
-    local desc = MakeDimLabel(panel, "Choose Raids or Dungeons, spin an expansion, then spin a random instance.", hdr, "BOTTOMLEFT", 4, -8)
+local RaidDungeonPanelMixin = {};
 
-    -- Mode toggle: Raids or Dungeons
-    local modeLbl = panel:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    modeLbl:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -10)
-    modeLbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-    modeLbl:SetText("Mode:")
+function RaidDungeonPanelMixin:MakeModeBtn(mode)
+    local offset = mode == RAIDS and 0 or 1;
+    local btn = addon.MakeBtn(self, mode, 100, 26);
+    btn:SetPoint(addon.LEFT, self.modeLbl, addon.RIGHT, 6 + offset * 104, 0);
+    btn:SetScript(addon.OnClick, function()
+        self.mode = mode;
 
-    local mode = "Raids"
-    local modeBtns = {}
-    for i, m in ipairs({"Raids","Dungeons"}) do
-        local mb = MakeBtn(panel, m, 100, 26)
-        mb:SetPoint("LEFT", modeLbl, "RIGHT", 6+(i-1)*104, 0)
-        local mv = m
-        mb:SetScript("OnClick", function()
-            mode = mv
-            for _, b in ipairs(modeBtns) do
-                b:SetBackdropColor(C.btn_bg[1],C.btn_bg[2],C.btn_bg[3])
-                b:SetBackdropBorderColor(C.btn_bdr[1],C.btn_bdr[2],C.btn_bdr[3],1)
-                b._lbl:SetTextColor(C.btn_text[1],C.btn_text[2],C.btn_text[3])
-            end
-            mb:SetBackdropColor(C.nav_active[1],C.nav_active[2],C.nav_active[3])
-            mb:SetBackdropBorderColor(C.nav_border[1],C.nav_border[2],C.nav_border[3],1)
-            mb._lbl:SetTextColor(1,1,1)
-        end)
-        table.insert(modeBtns, mb)
-    end
-    -- Default: Raids active
-    modeBtns[1]:SetBackdropColor(C.nav_active[1],C.nav_active[2],C.nav_active[3])
-    modeBtns[1]:SetBackdropBorderColor(C.nav_border[1],C.nav_border[2],C.nav_border[3],1)
-    modeBtns[1]._lbl:SetTextColor(1,1,1)
-
-    -- Expansion result
-    local expBox, expLabel = MakeResult(panel, nil, 52, "EXPANSION")
-    expBox:SetPoint("TOPLEFT", modeLbl, "BOTTOMLEFT", 0, -12)
-    expLabel:SetText("Expansion")
-
-    -- Instance result
-    local instBox, instLabel = MakeResult(panel, nil, 52, "RAID / DUNGEON")
-    instBox:SetPoint("TOPLEFT", expBox, "BOTTOMLEFT", 0, -8)
-    instLabel:SetText("--")
-
-    -- Spin buttons
-    local spinExpBtn = MakeBtn(panel, "Spin Expansion", nil, 30)
-    spinExpBtn:SetPoint("TOP", instBox, "BOTTOM", 0, -10)
-    spinExpBtn:SetPoint("LEFT",    panel, "LEFT",  WSID_PAD, 0)
-    spinExpBtn:SetPoint("RIGHT",   panel, "CENTER", -3, 0)
-
-    local spinInstBtn = MakeBtn(panel, "Spin Instance", nil, 30)
-    spinInstBtn:SetPoint("TOP", instBox, "BOTTOM", 0, -10)
-    spinInstBtn:SetPoint("LEFT",    panel, "CENTER", 3, 0)
-    spinInstBtn:SetPoint("RIGHT",   panel, "RIGHT", -WSID_PAD, 0)
-    spinInstBtn:SetEnabled(false)
-
-    local spinBothBtn = MakeBtn(panel, "Spin Both", nil, 30)
-    spinBothBtn:SetPoint("TOP", spinExpBtn, "BOTTOM", 0, -6)
-    spinBothBtn:SetPoint("LEFT",    panel, "LEFT",  WSID_PAD, 0)
-    spinBothBtn:SetPoint("RIGHT",   panel, "RIGHT", -WSID_PAD, 0)
-
-    local pickedExp = nil
-
-    local function GetExpansionList()
-        local pool = {}
-        local src = mode == "Raids" and WSID_RAIDS_BY_EXPANSION or WSID_DUNGEONS_BY_EXPANSION
-        local excluded = WhatShouldIDoDB and WhatShouldIDoDB.excludedExpansions or {}
-        for exp, instances in pairs(src) do
-            if #instances > 0 and not excluded[exp] then table.insert(pool, exp) end
+        for _, b in ipairs(self.modeBtns) do
+            addon.ApplyColor(b, "SetBackdropColor", CT.btn_bg);
+            addon.ApplyColor(b, "SetBackdropBorderColor", CT.btn_bdr);
+            addon.ApplyColor(b._lbl, "SetTextColor", CT.btn_text);
         end
-        -- Sort chronologically
-        local ORDER = {"Classic","The Burning Crusade","Wrath of the Lich King","Cataclysm","Mists of Pandaria","Warlords of Draenor","Legion","Battle for Azeroth","Shadowlands","Dragonflight","The War Within","Midnight"}
-        table.sort(pool, function(a,b)
-            local ai, bi = 99, 99
-            for i,v in ipairs(ORDER) do if v==a then ai=i end if v==b then bi=i end end
-            return ai < bi
-        end)
-        return pool
-    end
 
-    local function GetInstanceList(exp)
-        local src = mode == "Raids" and WSID_RAIDS_BY_EXPANSION or WSID_DUNGEONS_BY_EXPANSION
-        return src[exp] or {}
-    end
+        addon.ApplyColor(btn, "SetBackdropColor", CT.nav_active);
+        addon.ApplyColor(btn, "SetBackdropBorderColor", CT.nav_border);
+        addon.ApplyColor(btn._lbl, "SetTextColor", addon.BLACK);
+    end);
 
-    spinExpBtn:SetScript("OnClick", function()
-        local pool = GetExpansionList()
-        if #pool == 0 then return end
-        StopSlot()
-        spinExpBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false)
-        spinInstBtn:SetEnabled(false) ; pickedExp = nil
-        instLabel:SetText("--") ; instLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        expLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        StartSlot(expLabel, pool, function(winner)
-            pickedExp = winner
-            expLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-            spinExpBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinInstBtn:SetEnabled(true)
-        end)
-    end)
-
-    spinInstBtn:SetScript("OnClick", function()
-        if not pickedExp then return end
-        local pool = GetInstanceList(pickedExp)
-        if #pool == 0 then instLabel:SetText("None found") return end
-        StopSlot() ; spinInstBtn:SetEnabled(false)
-        instLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        StartSlot(instLabel, pool, function(_)
-            instLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-            spinInstBtn:SetEnabled(true)
-        end)
-    end)
-
-    spinBothBtn:SetScript("OnClick", function()
-        local pool = GetExpansionList()
-        if #pool == 0 then return end
-        StopSlot()
-        spinExpBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false) ; spinInstBtn:SetEnabled(false)
-        pickedExp = nil
-        instLabel:SetText("--") ; instLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        expLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        StartSlot(expLabel, pool, function(winner)
-            pickedExp = winner
-            expLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-            local instPool = GetInstanceList(winner)
-            if #instPool == 0 then
-                spinExpBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; return
-            end
-            instLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-            StartSlot(instLabel, instPool, function(_)
-                instLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-                spinExpBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinInstBtn:SetEnabled(true)
-            end)
-        end)
-    end)
-
-    return panel
+    return btn;
 end
 
+function RaidDungeonPanelMixin:GetExpansionList()
+    local pool = {};
+    local src = self.mode == RAIDS and addon.RAIDS_BY_EXPANSION or addon.DUNGEONS_BY_EXPANSION;
+    local excluded = DB and DB.excludedExpansions or {};
+
+    for exp, instances in pairs(src) do
+        if exp and #instances > 0 and not excluded[exp] then
+            table.insert(pool, exp);
+        end
+    end
+    -- Sort chronologically using the central index map
+
+    table.sort(pool, function(a,b)
+        local ai = addon.EXPANSION_INDEX[a] or 99;
+        local bi = addon.EXPANSION_INDEX[b] or 99;
+        return ai < bi;
+    end);
+
+    return pool;
+end
+
+function RaidDungeonPanelMixin:GetInstanceList(exp)
+    local src = self.mode == RAIDS and addon.RAIDS_BY_EXPANSION or addon.DUNGEONS_BY_EXPANSION;
+    return src[exp] or {};
+end
+
+function RaidDungeonPanelMixin:SetBtnEnabled(enabled)
+    self.spinExpBtn:SetEnabled(enabled);
+    self.spinBothBtn:SetEnabled(enabled);
+    self.spinInstBtn:SetEnabled(enabled);
+end
+
+function RaidDungeonPanelMixin:SpinExpBtnClick()
+    local pool = self:GetExpansionList();
+
+    if #pool == 0 then
+        return;
+    end
+
+    addon.StopSlot();
+    self:SetBtnEnabled(false);
+    self.picked = nil;
+    self.instLabel:SetText(addon.DASH_DASH);
+    addon.ApplyColor(self.instLabel, "SetTextColor", CT.dim_text);
+    addon.ApplyColor(self.expLabel, "SetTextColor", CT.bright_text);
+    addon.StartSlot(self.expLabel, pool, function(winner)
+        self.picked = winner;
+        self:SetBtnEnabled(true);
+        addon.ApplyColor(self.expLabel, "SetTextColor", CT.spin_text);
+    end);
+end
+
+function RaidDungeonPanelMixin:SpinInstBtnClick()
+    if not self.picked then
+        return;
+    end
+
+    local pool = self:GetInstanceList(self.picked);
+
+    if #pool == 0 then
+        self.instLabel:SetText("None found");
+        return;
+    end
+
+    addon.StopSlot()
+    self.spinInstBtn:SetEnabled(false);
+    addon.ApplyColor(self.instLabel, "SetTextColor", CT.bright_text);
+    addon.StartSlot(self.instLabel, pool, function(_)
+        addon.ApplyColor(self.instLabel, "SetTextColor", CT.spin_text);
+        self.spinInstBtn:SetEnabled(true);
+    end);
+end
+
+function RaidDungeonPanelMixin:SpinBothBtnClick()
+    local pool = self:GetExpansionList();
+
+    if #pool == 0 then
+        return;
+    end
+
+    addon.StopSlot();
+    self:SetBtnEnabled(false);
+    self.picked = nil;
+    self.instLabel:SetText(addon.DASH_DASH);
+    addon.ApplyColor(self.instLabel, "SetTextColor", CT.dim_text);
+    addon.ApplyColor(self.expLabel, "SetTextColor", CT.bright_text);
+    addon.StartSlot(self.expLabel, pool, function(winner)
+        self.picked = winner;
+        local instPool = self:GetInstanceList(winner);
+        
+        if #instPool == 0 then
+            self.spinExpBtn:SetEnabled(true);
+            self.spinBothBtn:SetEnabled(true);
+            return;
+        end
+        
+        addon.ApplyColor(self.expLabel, "SetTextColor", CT.spin_text);
+        addon.ApplyColor(self.instLabel, "SetTextColor", CT.bright_text);
+        addon.StartSlot(self.instLabel, instPool, function(_)
+            addon.ApplyColor(self.instLabel, "SetTextColor", CT.spin_text);
+            self:SetBtnEnabled(true);
+        end);
+    end);
+end
+
+local function BuildRaidDungeonPanel(contentArea)
+    local panel = addon.MakePanel(contentArea);
+    Mixin(panel, RaidDungeonPanelMixin);
+
+    panel.header = addon.MakeHeader(panel, addon.RAIDS_AND_DUNGEONS_LABEL);
+    panel.header:SetPoint(addon.TOPLEFT, panel, addon.TOPLEFT, addon.PAD, -addon.PAD);
+    panel.desc = addon.MakeLabel(panel, "Choose Raids or Dungeons, spin an expansion, then spin a random instance.", panel.header, addon.BOTTOMLEFT, 4, -8);
+
+    -- Mode toggle: Raids or Dungeons
+    panel.modeLbl = panel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+    panel.modeLbl:SetPoint(addon.TOPLEFT, panel.desc, addon.BOTTOMLEFT, 0, -10);
+    addon.ApplyColor(panel.modeLbl, "SetTextColor", CT.dim_text);
+    panel.modeLbl:SetText("Mode:");
+
+    panel.mode = RAIDS;
+    panel.modeBtns = {
+        panel:MakeModeBtn(RAIDS),
+        panel:MakeModeBtn(DUNGEONS)
+    };
+
+    -- Default: Raids active
+    addon.ApplyColor(panel.modeBtns[1], "SetBackdropColor", CT.nav_active);
+    addon.ApplyColor(panel.modeBtns[1], "SetBackdropBorderColor", CT.nav_border);
+    addon.ApplyColor(panel.modeBtns[1]._lbl, "SetTextColor", addon.BLACK);
+
+    -- Expansion result
+    panel.expBox, panel.expLabel = addon.MakeResult(panel, nil, 52, "EXPANSION");
+    panel.expBox:SetPoint(addon.TOPLEFT, panel.modeLbl, addon.BOTTOMLEFT, 0, -12);
+    panel.expLabel:SetText("Expansion");
+
+    -- Instance result
+    panel.instBox, panel.instLabel = addon.MakeResult(panel, nil, 52, "RAID / DUNGEON");
+    panel.instBox:SetPoint(addon.TOPLEFT, panel.expBox, addon.BOTTOMLEFT, 0, -8);
+    panel.instLabel:SetText(addon.DASH_DASH);
+
+    -- Spin buttons
+    panel.spinExpBtn = addon.MakeBtn(panel, "Spin Expansion", nil, 30);
+    panel.spinExpBtn:SetPoint(addon.TOP, panel.instBox, addon.BOTTOM, 0, -10);
+    panel.spinExpBtn:SetPoint(addon.LEFT, panel, addon.LEFT, addon.PAD, 0);
+    panel.spinExpBtn:SetPoint(addon.RIGHT, panel, addon.CENTER, -3, 0);
+
+    panel.spinInstBtn = addon.MakeBtn(panel, "Spin Instance", nil, 30);
+    panel.spinInstBtn:SetPoint(addon.TOP, panel.instBox, addon.BOTTOM, 0, -10);
+    panel.spinInstBtn:SetPoint(addon.LEFT, panel, addon.CENTER, 3, 0);
+    panel.spinInstBtn:SetPoint(addon.RIGHT, panel, addon.RIGHT, -addon.PAD, 0);
+    panel.spinInstBtn:SetEnabled(false)
+
+    panel.spinBothBtn = addon.MakeBtn(panel, "Spin Both", nil, 30);
+    panel.spinBothBtn:SetPoint(addon.TOP, panel.spinExpBtn, addon.BOTTOM, 0, -6);
+    panel.spinBothBtn:SetPoint(addon.LEFT, panel, addon.LEFT, addon.PAD, 0);
+    panel.spinBothBtn:SetPoint(addon.RIGHT, panel, addon.RIGHT, -addon.PAD, 0);
+
+    panel.picked = nil;
+
+    panel.spinExpBtn:SetScript(addon.OnClick, function() panel:SpinExpBtnClick(); end);
+    panel.spinInstBtn:SetScript(addon.OnClick, function() panel:SpinInstBtnClick(); end);
+    panel.spinBothBtn:SetScript(addon.OnClick, function() panel:SpinBothBtnClick(); end);
+
+    return panel;
+end
+addon.BuildRaidDungeonPanel = BuildRaidDungeonPanel;

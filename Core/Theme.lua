@@ -1,12 +1,19 @@
--- Core/Theme.lua
--- Theme system, color table, ApplyTheme, and all UI primitive helpers
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
+local DB = addon.DB;
+local CT = addon.Runtime.COLOR_TABLE;
 
 ------------------------------------------------------------------------
 -- THEME DEFINITIONS
 ------------------------------------------------------------------------
 
-WSID_THEMES = {
+addon.DEFAULT_THEME = "Default";
+addon.DEUTERANOPIA = "Deuteranopia";
+addon.PROTANOPIA = "Protanopia";
+addon.TRITANOPIA = "Tritanopia";
+addon.HIGHCONTRAST = "HighContrast";
+addon.CUSTOM_THEME = "Custom";
+
+addon.THEMES = {
     Default = {
         bg          = {0.058, 0.048, 0.075},
         sidebar     = {0.040, 0.032, 0.058},
@@ -32,6 +39,7 @@ WSID_THEMES = {
         win_border  = {0.28,  0.16,  0.44},
         divider     = {0.18,  0.12,  0.28},
     },
+    -- Deuteranopia: red-green blind -- replace purples with blues/cyans
     Deuteranopia = {
         bg          = {0.04,  0.06,  0.12},
         sidebar     = {0.03,  0.04,  0.09},
@@ -57,6 +65,7 @@ WSID_THEMES = {
         win_border  = {0.14,  0.30,  0.55},
         divider     = {0.10,  0.18,  0.34},
     },
+    -- Protanopia: red blind -- similar to deuteranopia, heavier blue shift
     Protanopia = {
         bg          = {0.04,  0.05,  0.10},
         sidebar     = {0.03,  0.04,  0.08},
@@ -82,6 +91,7 @@ WSID_THEMES = {
         win_border  = {0.12,  0.28,  0.52},
         divider     = {0.09,  0.16,  0.32},
     },
+    -- Tritanopia: blue-yellow blind -- use orange/red accents instead of blue/purple
     Tritanopia = {
         bg          = {0.10,  0.06,  0.04},
         sidebar     = {0.08,  0.04,  0.03},
@@ -107,6 +117,7 @@ WSID_THEMES = {
         win_border  = {0.48,  0.24,  0.08},
         divider     = {0.28,  0.14,  0.06},
     },
+    -- High Contrast: white/black/yellow for maximum readability
     HighContrast = {
         bg          = {0.02,  0.02,  0.02},
         sidebar     = {0.05,  0.05,  0.05},
@@ -132,177 +143,331 @@ WSID_THEMES = {
         win_border  = {1.00,  1.00,  0.00},
         divider     = {0.40,  0.40,  0.40},
     },
-}
+};
 
--- C is the live color table, starts as Default
-C = {}
-for k, v in pairs(WSID_THEMES.Default) do C[k] = {v[1], v[2], v[3]} end
-
-function ApplyTheme(themeName, customColors)
-    local src = WSID_THEMES[themeName]
-    if not src and themeName == "Custom" then
-        src = customColors or WSID_THEMES.Default
-    end
-    if not src then src = WSID_THEMES.Default end
-    for k, v in pairs(src) do
-        C[k][1] = v[1] ; C[k][2] = v[2] ; C[k][3] = v[3]
-    end
+local function Clamp(v, lo, hi)
+    return math.max(lo, math.min(hi, v));
 end
+
+-- Starts as Default
+
+local function ApplyTheme(themeName, customColors)
+    local src = addon.THEMES[themeName];
+    if not src and themeName == addon.CUSTOM_THEME then
+        src = customColors or addon.THEMES.Default;
+    end
+    if not src then src = addon.THEMES.Default end
+    for k, v in pairs(src) do
+        CT[k] = {v[1], v[2], v[3]};
+    end
+    return CT;
+end
+addon.ApplyTheme = ApplyTheme;
+
+ApplyTheme(addon.DEFAULT_THEME);
+
+------------------------------------------------------------------------
+-- COLOR HELPERS
+------------------------------------------------------------------------
+
+---@alias ColorTable number[]
+---@class RGB
+---@field r number
+---@field g number
+---@field b number
+
+-- Applies a {r,g,b} color table to any Set*Color-style method, e.g.:
+--   addon.ApplyColor(texture, "SetColorTexture", CT.row_even)
+--   addon.ApplyColor(frame, "SetBackdropBorderColor", CT.divider, 1)comment
+---@param obj Region
+---@param method string
+---@param colorTable ColorTable
+---@param alpha? number
+local function ApplyColor(obj, method, colorTable, alpha)
+    obj[method](obj, colorTable[1], colorTable[2], colorTable[3], alpha or 1);
+end
+addon.ApplyColor = ApplyColor;
+
+---@param obj Region
+---@param method string
+---@param rgb RGB
+---@param alpha? number
+local function ApplyRGB(obj, method, rgb, alpha)
+    obj[method](obj, rgb.r, rgb.b, rgb.g, alpha or 1);
+end
+addon.ApplyRGB = ApplyRGB;
+
+---@param left ColorTable
+---@param right ColorTable
+---@return ColorTable
+local function AddColor(left, right)
+    return {left[1] + right[1], left[2] + right[2], left[3] + right[3]};
+end
+addon.AddColor = AddColor;
+
+---@param left ColorTable
+---@param right ColorTable
+---@return ColorTable
+local function MulColor(left, right)
+    return {left[1] * right[1], left[2] * right[2], left[3] * right[3]};
+end
+addon.MulColor = MulColor;
+
+---@param left RGB
+---@param right RGB
+---@return RGB
+local function AddRGB(left, right)
+    return {r=left.r + right.r, g=left.g + right.g, b=left.b + right.b};
+end
+addon.AddRGB = AddRGB;
+
+---@param left RGB
+---@param right RGB
+---@return RGB
+local function MulRGB(left, right)
+    return {r=left.r * right.r, g=left.g * right.g, b=left.b * right.b};
+end
+addon.MulRGB = MulRGB;
+
+---@param left RGB
+---@param right ColorTable
+---@return RGB
+local function AddRGBL(left, right)
+    return {r=left.r + right[1], g=left.g + right[2], b=left.b + right[3]};
+end
+addon.AddRGBL = AddRGBL;
+
+---@param left RGB
+---@param right ColorTable
+---@return RGB
+local function MulRGBL(left, right)
+    return {r=left.r * right[1], g=left.g * right[2], b=left.b * right[3]};
+end
+addon.MulRGBL = MulRGBL;
+
+---@param left ColorTable
+---@param right RGB
+---@return ColorTable
+local function AddRGBR(left, right)
+    return {left[1] + right.r, left[2] + right.g, left[3] + right.b};
+end
+addon.AddRGBR = AddRGBR;
+
+---@param left ColorTable
+---@param right RGB
+---@return ColorTable
+local function MulRGBR(left, right)
+    return {left[1] * right.r, left[2] * right.g, left[3] * right.b};
+end
+addon.MulRGBR = MulRGBR;
 
 ------------------------------------------------------------------------
 -- RENDERING HELPERS
 ------------------------------------------------------------------------
 
-local FLAT = {bgFile="Interface\\Buttons\\WHITE8x8", edgeFile="Interface\\Buttons\\WHITE8x8", edgeSize=1}
+local FLAT = {bgFile=addon.BG_FILE, edgeFile=addon.BG_FILE, edgeSize=1};
 
-function Tx(f, r, g, b, a)
-    local t = f:CreateTexture(nil, "BACKGROUND")
-    t:SetAllPoints() ; t:SetColorTexture(r, g, b, a or 1) ; return t
+local function Tx(parent, color, alpha)
+    local texture = parent:CreateTexture(nil, addon.BACKGROUND);
+    texture:SetAllPoints();
+    ApplyColor(texture, "SetColorTexture", color, alpha);
+    return texture;
 end
+addon.Tx = Tx;
 
-function BgBorder(f, br, bg_, bb, er, eg, eb)
-    f:SetBackdrop(FLAT)
-    f:SetBackdropColor(br, bg_, bb, 1)
-    f:SetBackdropBorderColor(er, eg, eb, 1)
+local function BgBorder(element, bgColor, bgBorderColor)
+    element:SetBackdrop(FLAT);
+    ApplyColor(element, "SetBackdropColor", bgColor);
+    ApplyColor(element, "SetBackdropBorderColor", bgBorderColor);
 end
+addon.BgBorder = BgBorder;
 
 ------------------------------------------------------------------------
 -- SCROLL BOX
 ------------------------------------------------------------------------
 
-function MakeScrollBox(parent, w, h)
-    local bg = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-    bg:SetHeight(h)
-    if w then bg:SetWidth(w) else
-        bg:SetPoint("LEFT",  parent, "LEFT",  WSID_PAD, 0)
-        bg:SetPoint("RIGHT", parent, "RIGHT", -WSID_PAD, 0)
-    end
-    BgBorder(bg, C.row_even[1],C.row_even[2],C.row_even[3],
-                 C.divider[1], C.divider[2], C.divider[3])
-    local clip = CreateFrame("Frame", nil, bg)
-    clip:SetPoint("TOPLEFT",     bg, "TOPLEFT",     1, -1)
-    clip:SetPoint("BOTTOMRIGHT", bg, "BOTTOMRIGHT", -1, 1)
-    clip:SetClipsChildren(true)
-    local content = CreateFrame("Frame", nil, clip)
-    if w then
-        content:SetWidth(w-2)
-    else
-        -- Stretch content to clip width dynamically
-        content:SetPoint("LEFT",  clip, "LEFT",  0, 0)
-        content:SetPoint("RIGHT", clip, "RIGHT", 0, 0)
-    end
-    content:SetHeight(h)
-    content:SetPoint("TOPLEFT", clip, "TOPLEFT", 0, 0)
-    local scrollOff = 0
-    local function Clamp(v,lo,hi) return math.max(lo,math.min(hi,v)) end
+function addon.MakeScrollBox(parent, w, h)
+    local bg = CreateFrame(addon.FRAME, nil, parent, addon.BACKDROP_TEMPLATE);
+    local clip = CreateFrame(addon.FRAME, nil, bg);
+    local content = CreateFrame(addon.FRAME, nil, clip);
+    local scrollOff = 0;
+    
     local function Scroll(d)
-        scrollOff = Clamp(scrollOff - d*22*2, 0, math.max(0, content:GetHeight()-clip:GetHeight()))
-        content:SetPoint("TOPLEFT", clip, "TOPLEFT", 0, scrollOff)
+        scrollOff = Clamp(scrollOff - d*22*2, 0, math.max(0, content:GetHeight()-clip:GetHeight()));
+        content:SetPoint(addon.TOPLEFT, clip, addon.TOPLEFT, 0, scrollOff);
     end
-    bg:EnableMouseWheel(true)
-    bg:SetScript("OnMouseWheel", function(_,d) Scroll(d) end)
+
     local function ResetScroll()
-        scrollOff=0 ; content:SetPoint("TOPLEFT", clip, "TOPLEFT", 0, 0)
+        scrollOff = 0;
+        content:SetPoint(addon.TOPLEFT, clip, addon.TOPLEFT, 0, 0);
     end
-    return bg, content, ResetScroll
+
+    if w then
+        bg:SetWidth(w);
+        content:SetWidth(w-2);
+    else
+        bg:SetPoint(addon.LEFT,  parent, addon.LEFT,  addon.PAD, 0);
+        bg:SetPoint(addon.RIGHT, parent, addon.RIGHT, -addon.PAD, 0);
+        -- Stretch content to clip width dynamically
+        content:SetPoint(addon.LEFT, clip, addon.LEFT, 0, 0);
+        content:SetPoint(addon.RIGHT, clip, addon.RIGHT, 0, 0);
+    end
+    
+    BgBorder(bg, CT.row_even, CT.divider);
+    bg:SetHeight(h);
+    clip:SetPoint(addon.TOPLEFT, bg, addon.TOPLEFT, 1, -1);
+    clip:SetPoint(addon.BOTTOMRIGHT, bg, addon.BOTTOMRIGHT, -1, 1);
+    content:SetPoint(addon.TOPLEFT, clip, addon.TOPLEFT, 0, 0);
+    clip:SetClipsChildren(true);
+    content:SetHeight(h);
+    bg:EnableMouseWheel(true);
+    bg:SetScript(addon.OnMouseWheel, function(_,d) Scroll(d) end);
+
+    return bg, content, ResetScroll;
 end
 
 ------------------------------------------------------------------------
 -- UI PRIMITIVES
 ------------------------------------------------------------------------
 
-function MakeResult(parent, w, h, tagText)
-    local f = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-    f:SetHeight(h or 52)
+local function MakeResult(parent, w, h, tagText)
+    local frame = CreateFrame(addon.FRAME, nil, parent, addon.BACKDROP_TEMPLATE);
+    local label = frame:CreateFontString(nil,addon.OVERLAY);
+    
     -- If w is a number use fixed size; if nil stretch to parent
-    if w then f:SetWidth(w) else
+    if w then frame:SetWidth(w) else
         -- caller sets TOPLEFT; we add LEFT+RIGHT for stretch
-        f:SetPoint("LEFT",  parent, "LEFT",  WSID_PAD, 0)
-        f:SetPoint("RIGHT", parent, "RIGHT", -WSID_PAD, 0)
+        frame:SetPoint(addon.LEFT,  parent, addon.LEFT,  addon.PAD, 0);
+        frame:SetPoint(addon.RIGHT, parent, addon.RIGHT, -addon.PAD, 0);
     end
-    BgBorder(f, C.result_bg[1],C.result_bg[2],C.result_bg[3],
-                C.result_bdr[1],C.result_bdr[2],C.result_bdr[3])
+    
+    
     if tagText then
-        local tag = f:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-        tag:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -6)
-        tag:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        tag:SetText(tagText)
+        local tag = frame:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+        tag:SetPoint(addon.TOPLEFT, frame, addon.TOPLEFT, 10, -6);
+        tag:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3]);
+        tag:SetText(tagText);
     end
-    local lbl = f:CreateFontString(nil,"OVERLAY")
-    lbl:SetFont("Fonts\\FRIZQT__.TTF", 17, "")
-    lbl:SetPoint("CENTER", f, "CENTER", 0, tagText and -4 or 0)
-    lbl:SetPoint("LEFT",  f, "LEFT",  10, 0)
-    lbl:SetPoint("RIGHT", f, "RIGHT", -10, 0)
-    lbl:SetJustifyH("CENTER") ; lbl:SetWordWrap(false)
-    lbl:SetText("--") ; lbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-    return f, lbl
+    
+    BgBorder(frame, CT.result_bg, CT.result_bdr);
+    frame:SetHeight(h or 52);
+    label:SetFont(addon.GAME_FONT, 17, addon.EMPTY_STRING);
+    label:SetPoint(addon.CENTER, frame, addon.CENTER, 0, tagText and -4 or 0);
+    label:SetPoint(addon.LEFT,  frame, addon.LEFT,  10, 0);
+    label:SetPoint(addon.RIGHT, frame, addon.RIGHT, -10, 0);
+    label:SetJustifyH(addon.CENTER);
+    label:SetWordWrap(false);
+    label:SetText(addon.DASH_DASH);
+    label:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3]);
+    
+    return frame, label;
 end
+addon.MakeResult = MakeResult;
 
-function MakeBtn(parent, text, w, h)
-    local b = CreateFrame("Button", nil, parent, "BackdropTemplate")
-    b:SetHeight(h or 30)
-    if w then b:SetWidth(w) end
-    -- RIGHT anchor set by caller when w is nil
-    BgBorder(b, C.btn_bg[1],C.btn_bg[2],C.btn_bg[3], C.btn_bdr[1],C.btn_bdr[2],C.btn_bdr[3])
-    local lbl = b:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    lbl:SetAllPoints() ; lbl:SetJustifyH("CENTER")
-    lbl:SetText(text) ; lbl:SetTextColor(C.btn_text[1],C.btn_text[2],C.btn_text[3])
-    b:SetScript("OnEnter", function(s)
-        if s:IsEnabled() then
-            s:SetBackdropColor(C.btn_hover[1],C.btn_hover[2],C.btn_hover[3])
-            s:SetBackdropBorderColor(0.70,0.42,1.00,1)
-        end
-    end)
-    b:SetScript("OnLeave", function(s)
-        if s:IsEnabled() then
-            s:SetBackdropColor(C.btn_bg[1],C.btn_bg[2],C.btn_bg[3])
-            s:SetBackdropBorderColor(C.btn_bdr[1],C.btn_bdr[2],C.btn_bdr[3],1)
-        end
-    end)
-    b._lbl = lbl
-    local origSetEnabled = b.SetEnabled
-    b.SetEnabled = function(self, v)
-        origSetEnabled(self, v)
+local function MakeBtn(parent, text, w, h)
+    local button = CreateFrame(addon.BUTTON, nil, parent, addon.BACKDROP_TEMPLATE);
+    local label = button:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+    local origSetEnabled = button.SetEnabled;
+
+    local function ButtonSetEnabled(self, v)
+        origSetEnabled(self, v);
         if v then
-            self:SetBackdropColor(C.btn_bg[1],C.btn_bg[2],C.btn_bg[3])
-            self:SetBackdropBorderColor(C.btn_bdr[1],C.btn_bdr[2],C.btn_bdr[3],1)
-            lbl:SetTextColor(C.btn_text[1],C.btn_text[2],C.btn_text[3])
+            ApplyColor(self, "SetBackdropColor", CT.btn_bg);
+            ApplyColor(self, "SetBackdropBorderColor", CT.btn_bdr);
+            ApplyColor(label, "SetTextColor", CT.btn_text);
         else
-            self:SetBackdropColor(C.btn_dis[1],C.btn_dis[2],C.btn_dis[3])
-            self:SetBackdropBorderColor(C.btn_dis[1]+0.10,C.btn_dis[2]+0.10,C.btn_dis[3]+0.10,1)
-            lbl:SetTextColor(C.dim_text[1]*0.6, C.dim_text[2]*0.6, C.dim_text[3]*0.6)
+            ApplyColor(self, "SetBackdropColor", CT.btn_dis);
+            ApplyColor(self, "SetBackdropBorderColor", AddColor(CT.btn_dis, {0.1, 0.1, 0.1}));
+            ApplyColor(label, "SetTextColor", AddColor(CT.dim_text, {0.6, 0.6, 0.6}));
         end
     end
-    b:SetEnabled(true)
-    return b
-end
 
-function MakeHeader(parent, text, w)
-    local f = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-    f:SetHeight(28)
-    if w then f:SetWidth(w) else
-        f:SetPoint("LEFT",  parent, "LEFT",  WSID_PAD, 0)
-        f:SetPoint("RIGHT", parent, "RIGHT", -WSID_PAD, 0)
+    if w then
+        button:SetWidth(w);
     end
-    BgBorder(f, C.header_bg[1],C.header_bg[2],C.header_bg[3], C.divider[1],C.divider[2],C.divider[3])
-    local stripe = f:CreateTexture(nil,"ARTWORK")
-    stripe:SetColorTexture(C.nav_border[1],C.nav_border[2],C.nav_border[3],1)
-    stripe:SetSize(3,28) ; stripe:SetPoint("LEFT",f,"LEFT",0,0)
-    local lbl = f:CreateFontString(nil,"OVERLAY","GameFontNormal")
-    lbl:SetPoint("LEFT",f,"LEFT",12,0)
-    lbl:SetText(text) ; lbl:SetTextColor(C.header_txt[1],C.header_txt[2],C.header_txt[3])
-    return f
-end
+    
+    -- RIGHT anchor set by caller when w is nil
+    BgBorder(button, CT.btn_bg, CT.btn_bdr);
+    label:SetAllPoints();
+    label:SetJustifyH(addon.CENTER);
+    label:SetText(text);
+    ApplyColor(label, "SetTextColor", CT.btn_text);
+    button.SetEnabled = ButtonSetEnabled;
+    button:SetHeight(h or 30);
+    button._lbl = label;
+    button:SetScript(addon.OnEnter, function(s)
+        if s:IsEnabled() then
+            ApplyColor(s, "SetBackdropColor", CT.btn_hover);
+            ApplyColor(s, "SetBackdropBorderColor", {0.70, 0.42, 1.00}, 1);
+        end
+    end);
+    button:SetScript(addon.OnLeave, function(s)
+        if s:IsEnabled() then
+            ApplyColor(s, "SetBackdropColor", CT.btn_bg);
+            ApplyColor(s, "SetBackdropBorderColor", CT.btn_bdr);
+        end
+    end);
+    button:SetEnabled(true);
 
-function MakeDimLabel(parent, text, anchorFrame, anchorPoint, ox, oy)
-    local fs = parent:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    fs:SetPoint("TOPLEFT", anchorFrame, anchorPoint or "BOTTOMLEFT", ox or 0, oy or -6)
-    fs:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-    fs:SetText(text)
-    return fs
+    return button;
 end
+addon.MakeBtn = MakeBtn;
 
-function MakePanel(parent)
-    local p = CreateFrame("Frame", nil, parent)
-    p:SetAllPoints(parent) ; p:Hide() ; return p
+local function MakeHeader(parent, text, w)
+    local header = CreateFrame(addon.FRAME, nil, parent, addon.BACKDROP_TEMPLATE);
+    local stripe = header:CreateTexture(nil,addon.ARTWORK);
+    local label = header:CreateFontString(nil,addon.OVERLAY,addon.NORMAL);
+
+    if w then header:SetWidth(w) else
+        header:SetPoint(addon.LEFT,  parent, addon.LEFT,  addon.PAD, 0);
+        header:SetPoint(addon.RIGHT, parent, addon.RIGHT, -addon.PAD, 0);
+    end
+
+    BgBorder(header, CT.header_bg, CT.divider);
+    header:SetHeight(28);
+    ApplyColor(stripe, "SetColorTexture", CT.nav_border);
+    stripe:SetSize(3,28);
+    stripe:SetPoint(addon.LEFT,header,addon.LEFT,0,0);
+    label:SetPoint(addon.LEFT,header,addon.LEFT,12,0);
+    label:SetText(text);
+    label:SetTextColor(CT.header_txt[1],CT.header_txt[2],CT.header_txt[3]);
+    
+    return header;
 end
+addon.MakeHeader = MakeHeader;
+
+local function MakeLabel(parent, text, anchorFrame, anchorPoint, ox, oy)
+    local fontString = parent:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
+    fontString:SetPoint(addon.TOPLEFT, anchorFrame, anchorPoint or addon.BOTTOMLEFT, ox or 0, oy or -6)
+    fontString:SetTextColor(CT.dim_text[1],CT.dim_text[2],CT.dim_text[3])
+    fontString:SetText(text)
+    return fontString
+end
+addon.MakeLabel = MakeLabel;
+
+local function MakePanel(parent)
+    local panel = CreateFrame(addon.FRAME, nil, parent)
+    panel:SetAllPoints(parent)
+    panel:Hide()
+    return panel
+end
+addon.MakePanel = MakePanel;
+
+------------------------------------------------------------------------
+-- POOLED ROW HELPER
+------------------------------------------------------------------------
+
+-- Acquires a row from `pool`, running `buildFn(row)` exactly once per
+-- physical frame (the first time it's ever acquired) to construct its
+-- child widgets, then returning it every time after without rebuilding
+-- anything. Callers are responsible for updating per-refresh state
+-- (text, colors, anchors) on the returned row after this call.
+local function AcquirePooledRow(pool, buildFn)
+    local row = pool:Acquire();
+    if not row._built then
+        buildFn(row);
+        row._built = true;
+    end
+    return row;
+end
+addon.AcquirePooledRow = AcquirePooledRow;

@@ -1,87 +1,141 @@
--- Panels/Activity.lua
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
+local DB = addon.DB;
+local CT = addon.Runtime.COLOR_TABLE;
 
-function BuildActivityPanel(contentArea)
-    local panel = MakePanel(contentArea)
-    local hdr = MakeHeader(panel, "Activity Wheel")
-    hdr:SetPoint("TOPLEFT", panel, "TOPLEFT", WSID_PAD, -WSID_PAD)
+local ActivityPanelMixin = {};
 
-    local desc = MakeDimLabel(panel, "Spin a category, then spin a sub-activity.", hdr, "BOTTOMLEFT", 4, -8)
-
-    local catBox, catLabel = MakeResult(panel, nil, 52, "CATEGORY")
-    catBox:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", -4, -12)
-    catLabel:SetText("Category")
-
-    local subBox, subLabel = MakeResult(panel, nil, 52, "SUB-ACTIVITY")
-    subBox:SetPoint("TOPLEFT", catBox, "BOTTOMLEFT", 0, -10)
-    subLabel:SetText("Sub-Activity")
-
-    local spinCatBtn = MakeBtn(panel, "Spin Category", nil, 30)
-    spinCatBtn:SetPoint("TOP",  subBox, "BOTTOMLEFT",  0, -14)
-    spinCatBtn:SetPoint("LEFT",     panel, "LEFT",  WSID_PAD, 0)
-    spinCatBtn:SetPoint("RIGHT",    panel, "CENTER",       -3, 0)
-
-    local spinSubBtn = MakeBtn(panel, "Spin Sub-Activity", nil, 30)
-    spinSubBtn:SetPoint("TOP",  subBox, "BOTTOMLEFT",  0, -14)
-    spinSubBtn:SetPoint("LEFT",     panel, "CENTER",        3, 0)
-    spinSubBtn:SetPoint("RIGHT",    panel, "RIGHT",       -WSID_PAD, 0)
-    spinSubBtn:SetEnabled(false)
-
-    local spinBothBtn = MakeBtn(panel, "Spin Both", nil, 30)
-    spinBothBtn:SetPoint("TOP",  spinCatBtn, "BOTTOM", 0, -6)
-    spinBothBtn:SetPoint("LEFT",     panel, "LEFT",  WSID_PAD, 0)
-    spinBothBtn:SetPoint("RIGHT",    panel, "RIGHT", -WSID_PAD, 0)
-
-    local lastCat = nil
-
-    local function ResetSub()
-        subLabel:SetText("Sub-Activity") ; subLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        spinSubBtn:SetEnabled(false) ; lastCat = nil
-    end
-
-    spinCatBtn:SetScript("OnClick", function()
-        local pool = WhatShouldIDoDB.activities ; if #pool==0 then return end
-        StopSlot() ; spinCatBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false) ; ResetSub()
-        catLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        StartSlot(catLabel, pool, function(w)
-            lastCat=w ; catLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-            spinCatBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinSubBtn:SetEnabled(true)
-        end)
-    end)
-
-    spinSubBtn:SetScript("OnClick", function()
-        if not lastCat then return end
-        local pool = GetSubPool(lastCat) ; if not pool or #pool==0 then subLabel:SetText("(none)") return end
-        StopSlot() ; spinSubBtn:SetEnabled(false)
-        subLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        StartSlot(subLabel, pool, function(_)
-            subLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3]) ; spinSubBtn:SetEnabled(true)
-        end)
-    end)
-
-    spinBothBtn:SetScript("OnClick", function()
-        local pool = WhatShouldIDoDB.activities ; if #pool==0 then return end
-        StopSlot() ; spinCatBtn:SetEnabled(false) ; spinBothBtn:SetEnabled(false) ; ResetSub()
-        catLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        StartSlot(catLabel, pool, function(w)
-            lastCat=w ; catLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-            local sub = GetSubPool(w)
-            if sub and #sub>0 then
-                subLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-                StartSlot(subLabel, sub, function(_)
-                    subLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-                    spinCatBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true) ; spinSubBtn:SetEnabled(true)
-                end)
-            else
-                subLabel:SetText("(none)") ; spinCatBtn:SetEnabled(true) ; spinBothBtn:SetEnabled(true)
-            end
-        end)
-    end)
-
-    return panel
+function ActivityPanelMixin:ResetSub()
+    self.subLabel:SetText("Sub-Activity");
+    addon.ApplyColor(self.subLabel, "SetTextColor", CT.dim_text);
+    self.spinSubBtn:SetEnabled(false);
+    self.spinBothBtn:SetEnabled(false);
+    self.lastCat = nil;
 end
 
-------------------------------------------------------------------------
--- TAB 2: CREATOR
-------------------------------------------------------------------------
+function ActivityPanelMixin:CatSlotStart(w)
+    self.lastCat = w;
+    addon.ApplyColor(self.catLabel, "SetTextColor", CT.spin_text);
+    self.spinCatBtn:SetEnabled(true);
+    self.spinSubBtn:SetEnabled(true);
+    self.spinBothBtn:SetEnabled(true);
+end
 
+function ActivityPanelMixin:SubSlotStart()
+    addon.ApplyColor(self.subLabel, "SetTextColor", CT.spin_text);
+    self.spinSubBtn:SetEnabled(true);
+end
+
+function ActivityPanelMixin:BothSlotStart(w)
+    self.lastCat = w
+    addon.ApplyColor(self.catLabel, "SetTextColor", CT.spin_text);
+    local sub = addon.GetSubActivities(w);
+    
+    if sub and #sub > 0 then
+        addon.ApplyColor(self.subLabel, "SetTextColor", CT.bright_text);
+        addon.StartSlot(self.subLabel, sub, function(_)
+            addon.ApplyColor(self.subLabel, "SetTextColor", CT.spin_text);
+            self.spinCatBtn:SetEnabled(true);
+            self.spinSubBtn:SetEnabled(true);
+            self.spinBothBtn:SetEnabled(true);
+        end);
+    else
+        self.subLabel:SetText("(none)");
+        self.spinCatBtn:SetEnabled(true);
+        self.spinBothBtn:SetEnabled(true);
+    end
+end
+
+function ActivityPanelMixin:CatBtnOnClick()
+    local pool = addon.GetActivities();
+
+    -- Early out if no activities available
+    if #pool==0 then
+        return;
+    end
+
+    addon.StopSlot();
+    addon.ApplyColor(self.catLabel, "SetTextColor", CT.bright_text);
+    self.spinCatBtn:SetEnabled(false);
+    self:ResetSub();
+    addon.StartSlot(self.catLabel, pool, function(w)
+        self:CatSlotStart(w);
+    end);
+end
+
+function ActivityPanelMixin:SubBtnOnClick()
+    if not self.lastCat then
+        return;
+    end
+    
+    local pool = addon.GetSubActivities(self.lastCat);
+    
+    if not pool or #pool == 0 then
+        self.subLabel:SetText("(none)");
+        return;
+    end
+
+    addon.StopSlot();
+    addon.ApplyColor(self.subLabel, "SetTextColor", CT.bright_text);
+    self.spinSubBtn:SetEnabled(false);
+    addon.StartSlot(self.subLabel, pool, function(_)
+        self:SubSlotStart();
+    end);
+end
+
+function ActivityPanelMixin:BothBtnOnClick()
+    local pool = addon.GetActivities();
+
+    if #pool == 0 then
+        return;
+    end
+
+    addon.StopSlot();
+    addon.ApplyColor(self.catLabel, "SetTextColor", CT.bright_text);
+    self.spinCatBtn:SetEnabled(false);
+    self:ResetSub();
+    addon.StartSlot(self.catLabel, pool, function(w)
+        self:BothSlotStart(w);
+    end);
+end
+
+local function BuildActivityPanel(contentArea)
+    local panel = addon.MakePanel(contentArea);
+    Mixin(panel, ActivityPanelMixin);
+
+    panel.lastCat = nil;
+    panel.header = addon.MakeHeader(panel, "Activity Wheel");
+    panel.header:SetPoint(addon.TOPLEFT, panel, addon.TOPLEFT, addon.PAD, -addon.PAD);
+    panel.description = addon.MakeLabel(panel, "Spin a category, then spin a sub-activity.", panel.header, addon.BOTTOMLEFT, 4, -8);
+    panel.catBox, panel.catLabel = addon.MakeResult(panel, nil, 52, "CATEGORY");
+    panel.catBox:SetPoint(addon.TOPLEFT, panel.description, addon.BOTTOMLEFT, -4, -12);
+    panel.catLabel:SetText("Category");
+    panel.subBox, panel.subLabel = addon.MakeResult(panel, nil, 52, "SUB-ACTIVITY");
+    panel.subBox:SetPoint(addon.TOPLEFT, panel.catBox, addon.BOTTOMLEFT, 0, -10);
+    panel.subLabel:SetText("Sub-Activity");
+    panel.spinCatBtn = addon.MakeBtn(panel, "Spin Category", nil, 30);
+    panel.spinCatBtn:SetPoint(addon.TOP, panel.subBox, addon.BOTTOMLEFT, 0, -14);
+    panel.spinCatBtn:SetPoint(addon.LEFT, panel, addon.LEFT, addon.PAD, 0);
+    panel.spinCatBtn:SetPoint(addon.RIGHT, panel, addon.CENTER, -3, 0);
+    panel.spinSubBtn = addon.MakeBtn(panel, "Spin Sub-Activity", nil, 30);
+    panel.spinBothBtn = addon.MakeBtn(panel, "Spin Both", nil, 30);
+    panel.spinBothBtn:SetPoint(addon.TOP, panel.spinCatBtn, addon.BOTTOM, 0, -6);
+    panel.spinBothBtn:SetPoint(addon.LEFT, panel, addon.LEFT, addon.PAD, 0);
+    panel.spinBothBtn:SetPoint(addon.RIGHT, panel, addon.RIGHT, -addon.PAD, 0);
+    panel.spinSubBtn:SetPoint(addon.TOP, panel.subBox, addon.BOTTOMLEFT, 0, -14);
+    panel.spinSubBtn:SetPoint(addon.LEFT, panel, addon.CENTER, 3, 0);
+    panel.spinSubBtn:SetPoint(addon.RIGHT, panel, addon.RIGHT, -addon.PAD, 0);
+    panel.spinSubBtn:SetEnabled(false);
+
+    panel.spinCatBtn:SetScript(addon.OnClick, function()
+        panel:CatBtnOnClick();
+    end);
+    panel.spinBothBtn:SetScript(addon.OnClick, function()
+        panel:BothBtnOnClick();
+    end);
+    panel.spinSubBtn:SetScript(addon.OnClick, function()
+        panel:SubBtnOnClick();
+    end);
+
+    return panel;
+end
+addon.BuildActivityPanel = BuildActivityPanel;

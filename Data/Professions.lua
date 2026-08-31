@@ -1,9 +1,37 @@
--- Data/Professions.lua
--- Profession list
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
 
-WSID_PROFESSIONS = {
-    "Alchemy","Blacksmithing","Enchanting","Engineering","Herbalism",
-    "Inscription","Jewelcrafting","Leatherworking","Mining","Skinning","Tailoring",
-    "Fishing","Cooking",
+addon.ALCHEMY = "Alchemy";
+addon.BLACKSMITHING = "Blacksmithing";
+addon.ENCHANTING = "Enchanting";
+addon.ENGINEERING = "Engineering";
+addon.HERBALISM = "Herbalism";
+addon.INSCRIPTION = "Inscription";
+addon.JEWELCRAFTING = "Jewelcrafting";
+addon.LEATHERWORKING = "Leatherworking";
+addon.MINING = "Mining";
+addon.SKINNING = "Skinning";
+addon.TAILORING = "Tailoring";
+addon.FISHING = "Fishing";
+addon.COOKING = "Cooking";
+
+addon.PROFESSIONS = {
+    addon.ALCHEMY,
+    addon.BLACKSMITHING,
+    addon.ENCHANTING,
+    addon.ENGINEERING,
+    addon.HERBALISM,
+    addon.INSCRIPTION,
+    addon.JEWELCRAFTING,
+    addon.LEATHERWORKING,
+    addon.MINING,
+    addon.SKINNING,
+    addon.TAILORING,
+    addon.FISHING,
+    addon.COOKING,
+};
+
+addon.FARM_PROFESSIONS = {
+    [addon.HERBALISM] = true,
+    [addon.MINING] = true,
+    [addon.SKINNING] = true,
 }

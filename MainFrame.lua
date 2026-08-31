@@ -1,153 +1,181 @@
--- MainFrame.lua
--- Main window, left nav, minimap button, init, slash commands
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
+local DB = addon.DB;
+local CT = addon.Runtime.COLOR_TABLE;
+local RT = addon.Runtime;
 
-mainFrame = nil
-mainPanels = {}
+local WIN_W  = 660;
+local WIN_H  = 520;
+local NAV_W  = 120;
+local PAD    = 16;
+-- local CONT_W = WIN_W - NAV_W - PAD * 2;  -- 508
 
-mainFrame = nil
-mainPanels = {}
+local MainPanels = {};
 
-function BuildMainFrame()
-    local f=CreateFrame("Frame","WhatShouldIDoFrame",UIParent,"BackdropTemplate")
-    f:SetSize(WSID_WIN_W,WSID_WIN_H) ; f:SetPoint("CENTER")
-    f:SetMovable(true) ; f:EnableMouse(true)
-    f:RegisterForDrag("LeftButton")
-    f:SetScript("OnDragStart",f.StartMoving) ; f:SetScript("OnDragStop",f.StopMovingOrSizing)
-    f:SetFrameStrata("DIALOG")
-    f:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8x8",edgeFile="Interface\\Buttons\\WHITE8x8",edgeSize=1})
-    f:SetBackdropColor(C.bg[1],C.bg[2],C.bg[3],1)
-    f:SetBackdropBorderColor(C.win_border[1],C.win_border[2],C.win_border[3],1)
+local function BuildContentArea(parent)
+    local leveling_nav = "leveling";
+    local settings_nav = "settings_nav";
 
-    -- Title bar
-    local tb=CreateFrame("Frame",nil,f) ; tb:SetHeight(30)
-    tb:SetPoint("TOPLEFT",f,"TOPLEFT",0,0) ; tb:SetPoint("TOPRIGHT",f,"TOPRIGHT",0,0)
-    Tx(tb,C.sidebar[1],C.sidebar[2],C.sidebar[3])
-    local tbb=tb:CreateTexture(nil,"ARTWORK")
-    tbb:SetColorTexture(C.divider[1],C.divider[2],C.divider[3],1) ; tbb:SetHeight(1)
-    tbb:SetPoint("BOTTOMLEFT",tb,"BOTTOMLEFT",0,0) ; tbb:SetPoint("BOTTOMRIGHT",tb,"BOTTOMRIGHT",0,0)
-    local titleLbl=tb:CreateFontString(nil,"OVERLAY","GameFontNormalLarge")
-    titleLbl:SetPoint("CENTER",tb,"CENTER",0,0)
-    titleLbl:SetText("What Should I Do?") ; titleLbl:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-    local closeBtn=CreateFrame("Button",nil,f,"UIPanelCloseButton")
-    closeBtn:SetPoint("TOPRIGHT",f,"TOPRIGHT",-2,-2)
-    closeBtn:SetFrameStrata(f:GetFrameStrata())
-    closeBtn:SetFrameLevel(f:GetFrameLevel() + 1)
-    closeBtn:SetScript("OnClick",function()
-        f:Hide() ; if settingsFrame then settingsFrame:Hide() end
+    local function OnSelect(name)
+        if name == settings_nav and RT.SettingsFrame and RT.SettingsFrame:IsShown() then
+            RT.SettingsFrame:Hide();
+        elseif name == settings_nav and RT.SettingsFrame then
+            
+            RT.SettingsFrame:Show();
+        elseif name == settings_nav then
+            return;
+        end
+        -- Always refresh roster when switching to leveling so imports show immediately
+        if name == leveling_nav then
+            addon.BuildRoster();
+        end
+        for k,p in pairs(MainPanels) do
+            if k == name then
+                p:Show();
+            else
+                p:Hide();
+            end
+        end
+    end
+
+    local contentArea = CreateFrame(addon.FRAME, nil, parent);
+    local nav = addon.CreateLeftNav(parent, OnSelect);
+
+    local actPanel = addon.BuildActivityPanel(contentArea);
+    nav:AddNav("activity", addon.ACTIVITY_LABEL);
+    local crePanel = addon.BuildCreatorPanel(contentArea);
+    nav:AddNav("creator", addon.CREATOR_LABEL);
+    local levPanel = addon.BuildLevelingPanel(contentArea);
+    nav:AddNav(leveling_nav, addon.LEVELING_LABEL);
+    local namPanel = addon.BuildNamePanel(contentArea);
+    nav:AddNav("names", addon.NAMES_LABEL);
+    local profPanel = addon.BuildProfessionPanel(contentArea);
+    nav:AddNav("professions", addon.PROFESSIONS_LABEL);
+    local rdPanel = addon.BuildRaidDungeonPanel(contentArea);
+    nav:AddNav("raidsdungeons", addon.RAIDS_AND_DUNGEONS_LABEL);
+    local abtPanel = addon.BuildAboutPanel(contentArea);
+    nav:AddRule();
+    nav:AddBottomNav(settings_nav, addon.SETTINGS_LABEL);
+    nav:AddBottomNav("about", addon.ABOUT_LABEL);
+
+    contentArea:SetPoint(addon.TOPLEFT, parent, addon.TOPLEFT, NAV_W, -30);
+    contentArea:SetPoint(addon.BOTTOMRIGHT, parent, addon.BOTTOMRIGHT, 0, 0);
+    addon.Tx(contentArea, addon.AddColor(CT.bg, {0.005, 0.005, 0.01}));
+
+    MainPanels = {activity=actPanel, creator=crePanel, leveling=levPanel, names=namPanel, professions=profPanel, raidsdungeons=rdPanel, about=abtPanel};
+    nav:SetActive("activity");
+end
+
+local function BuildMainFrame()
+    local frame = CreateFrame(addon.FRAME, addon.FRAME, UIParent, addon.BACKDROP_TEMPLATE);
+    local titleBar = CreateFrame(addon.FRAME, nil, frame);
+    local titleBarB = titleBar:CreateTexture(nil, addon.ARTWORK);
+    local titleLabel = titleBar:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_LARGE);
+    local closeBtn = CreateFrame(addon.BUTTON, nil, frame, addon.UI_PANEL_CLOSE_BUTTON);
+
+    frame:SetSize(WIN_W, WIN_H);
+    frame:SetPoint(addon.CENTER);
+    frame:SetMovable(true);
+    frame:EnableMouse(true);
+    frame:RegisterForDrag(addon.LEFT_BUTTON);
+    frame:SetScript(addon.OnDragStart, frame.StartMoving);
+    frame:SetScript(addon.OnDragStop, frame.StopMovingOrSizing);
+    frame:SetFrameStrata(addon.DIALOG);
+    frame:SetBackdrop({bgFile=addon.BG_FILE, edgeFile=addon.BG_FILE, edgeSize=1});
+    addon.ApplyColor(frame, "SetBackdropColor", CT.bg);
+    addon.ApplyColor(frame, "SetBackdropBorderColor", CT.win_border);
+    titleBar:SetHeight(30);
+    titleBar:SetPoint(addon.TOPLEFT, frame, addon.TOPLEFT, 0, 0);
+    titleBar:SetPoint(addon.TOPRIGHT, frame, addon.TOPRIGHT, 0, 0);
+    addon.Tx(titleBar, CT.sidebar);
+    addon.ApplyColor(titleBarB, "SetColorTexture", CT.divider);
+    titleBarB:SetHeight(1);
+    titleBarB:SetPoint(addon.BOTTOMLEFT, titleBar, addon.BOTTOMLEFT, 0, 0);
+    titleBarB:SetPoint(addon.BOTTOMRIGHT, titleBar, addon.BOTTOMRIGHT, 0, 0);
+    titleLabel:SetPoint(addon.CENTER, titleBar, addon.CENTER, 0, 0);
+    titleLabel:SetText(addon.STRING);
+    addon.ApplyColor(titleLabel, "SetTextColor", CT.bright_text);
+    closeBtn:SetPoint(addon.TOPRIGHT, frame, addon.TOPRIGHT, -2, -2);
+    closeBtn:SetFrameStrata(frame:GetFrameStrata());
+    closeBtn:SetFrameLevel(frame:GetFrameLevel() + 1);
+    closeBtn:SetScript(addon.OnClick, function()
+        frame:Hide();
+        if RT.SettingsFrame then RT.SettingsFrame:Hide(); end
     end)
 
     -- Content area
-    local contentArea=CreateFrame("Frame",nil,f)
-    contentArea:SetPoint("TOPLEFT",f,"TOPLEFT",WSID_NAV_W,-30)
-    contentArea:SetPoint("BOTTOMRIGHT",f,"BOTTOMRIGHT",0,0)
-    Tx(contentArea,C.bg[1]+0.005,C.bg[2]+0.005,C.bg[3]+0.01)
+    BuildContentArea(frame);
 
-    local actPanel  = BuildActivityPanel(contentArea)
-    local crePanel  = BuildCreatorPanel(contentArea)
-    local levPanel  = BuildLevelingPanel(contentArea)
-    local namPanel  = BuildNamePanel(contentArea)
-    local profPanel = BuildProfessionPanel(contentArea)
-    local rdPanel   = BuildRaidDungeonPanel(contentArea)
-    local abtPanel  = BuildAboutPanel(contentArea)
-    mainPanels={activity=actPanel,creator=crePanel,leveling=levPanel,names=namPanel,professions=profPanel,raidsdungeons=rdPanel,about=abtPanel}
-
-    BuildLeftNav(f,
-        {{name="activity",label="Activity"},{name="creator",label="Creator"},{name="leveling",label="Leveling"},{name="names",label="Name Generator"},{name="professions",label="Professions"},{name="raidsdungeons",label="Raids & Dungeons"}},
-        {{name="settings_nav",label="Settings"},{name="about",label="About"}},
-        function(name)
-            if name=="settings_nav" then
-                if settingsFrame then
-                    if settingsFrame:IsShown() then settingsFrame:Hide() else settingsFrame:Show() end
-                end
-                return
-            end
-            -- Always refresh WSID_Roster when switching to leveling so imports show immediately
-            if name=="leveling" then BuildRoster() end
-            for k,p in pairs(mainPanels) do if k==name then p:Show() else p:Hide() end end
-        end
-    )
-
-    f:Hide() ; return f
+    frame:Hide();
+    return frame;
 end
 
-------------------------------------------------------------------------
--- MINIMAP BUTTON
-------------------------------------------------------------------------
+local function OnAddonLoaded(self, event, arg1)
+    addon.InitDB();
+    -- Apply saved theme (must run after InitDB sets defaults)
+    if DB.colorTheme == addon.CUSTOM_THEME and next(DB.customColors) then
+        addon.ApplyTheme(addon.CUSTOM_THEME, DB.customColors);
+    else
+        addon.ApplyTheme(DB.colorTheme or addon.DEFAULT_THEME);
+    end
 
-function RegisterMinimapButton()
-    local LDB=LibStub("LibDataBroker-1.1") ; local LibDBIcon=LibStub("LibDBIcon-1.0")
-    local broker=LDB:NewDataObject("WhatShouldIDo",{
-        type="launcher", icon="Interface\\Icons\\INV_Misc_QuestionMark", label="What Should I Do?",
-        OnClick=function(_,btn)
-            if btn=="LeftButton" then
-                if mainFrame:IsShown() then mainFrame:Hide() ; if settingsFrame then settingsFrame:Hide() end
-                else BuildRoster() ; mainFrame:Show() end
-            elseif btn=="RightButton" then
-                if settingsFrame:IsShown() then settingsFrame:Hide() else settingsFrame:Show() end
-            end
-        end,
-        OnTooltipShow=function(tt)
-            tt:SetText("What Should I Do?",1,0.85,0.20)
-            tt:AddLine("Left-click: open / close",0.8,0.8,0.8)
-            tt:AddLine("Right-click: settings",   0.8,0.8,0.8)
-        end,
-    })
-    LibDBIcon:Register("WhatShouldIDo",broker,WhatShouldIDoDB.minimap)
+    -- Define StaticPopup dialogs at init time so they're registered before use
+    StaticPopupDialogs["WSID_CONFIRM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_THEME"] or {};
+    StaticPopupDialogs["WSID_CONFIRM_WhatShouldIDoDB.CUSTOM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_WhatShouldIDoDB.CUSTOM_THEME"] or {};
+    RT.MainFrame = BuildMainFrame();
+    RT.SettingsFrame = addon.BuildSettingsWindow();
+    addon.RegisterMinimapButton();
+    -- ESC closes the windows
+    tinsert(UISpecialFrames, addon.FRAME);
+    tinsert(UISpecialFrames, "WhatShouldIDoSettings");
+    -- Apply saved UI scale
+    local scale = DB.uiScale or 1.0;
+    RT.MainFrame:SetScale(scale);
+    RT.SettingsFrame:SetScale(scale);
+end
+
+local function HandleEvent(self, event, arg1)
+    if event == addon.ADDON_LOADED and arg1 == addon.ADDON_NAME then
+        OnAddonLoaded(self, event, arg1);
+    elseif event == addon.PLAYER_LOGIN then
+        addon.BuildRoster();
+    end
 end
 
 ------------------------------------------------------------------------
 -- INIT
 ------------------------------------------------------------------------
 
-local initFrame=CreateFrame("Frame")
-initFrame:RegisterEvent("ADDON_LOADED") ; initFrame:RegisterEvent("PLAYER_LOGIN")
-initFrame:SetScript("OnEvent",function(self,event,arg1)
-    if event=="ADDON_LOADED" and arg1==WSID_ADDON_NAME then
-        InitDB()
-        -- Apply saved theme (must run after InitDB sets defaults and after ApplyTheme is defined)
-        if WhatShouldIDoDB.colorTheme == "Custom" and next(WhatShouldIDoDB.customColors) then
-            ApplyTheme("Custom", WhatShouldIDoDB.customColors)
-        else
-            ApplyTheme(WhatShouldIDoDB.colorTheme or "Default")
-        end
+local initFrame=CreateFrame(addon.FRAME);
+initFrame:RegisterEvent(addon.ADDON_LOADED);
+initFrame:RegisterEvent(addon.PLAYER_LOGIN);
+initFrame:SetScript(addon.OnEvent, HandleEvent);
 
-        -- Define StaticPopup dialogs at init time so they're registered before use
-        StaticPopupDialogs["WSID_CONFIRM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_THEME"] or {}
-        StaticPopupDialogs["WSID_CONFIRM_CUSTOM"] = StaticPopupDialogs["WSID_CONFIRM_CUSTOM"] or {}
-        mainFrame     = BuildMainFrame()
-        settingsFrame = BuildSettingsWindow()
-        RegisterMinimapButton()
-        -- ESC closes the windows
-        tinsert(UISpecialFrames, "WhatShouldIDoFrame")
-        tinsert(UISpecialFrames, "WhatShouldIDoSettings")
-        -- Apply saved UI scale
-        local scale = WhatShouldIDoDB.uiScale or 1.0
-        mainFrame:SetScale(scale)
-        settingsFrame:SetScale(scale)
-    elseif event=="PLAYER_LOGIN" then
-        if WhatShouldIDoDB then BuildRoster() end
-    end
-end)
-
-SLASH_WSID1="/wsid" ; SLASH_WSID2="/whatshouldido"
-SlashCmdList["WSID"]=function(msg)
-    msg=strtrim(msg)
-    local msgL=msg:lower()
-    if msgL=="WSID_Roster" then
-        BuildRoster()
-        print("|cffd5a742What Should I Do?:|r Roster refreshed -- "..#WSID_Roster.." character(s).")
-        return
+SLASH_WSID1="/wsid";
+SLASH_WSID2="/whatshouldido";
+SLASH_WSID3="/sw";
+local function WSID(msg)
+    msg=strtrim(msg);
+    local msgL=msg:lower();
+    if msgL=="roster" then
+        addon.BuildRoster();
+        print("|cffd5a742What Should I Do?:|r Roster refreshed -- "..#DB.seenChars.." character(s).");
+        return;
     end
     if msgL=="settings" then
-        if settingsFrame then
-            if settingsFrame:IsShown() then settingsFrame:Hide() else settingsFrame:Show() end
+        if RT.SettingsFrame and RT.SettingsFrame:IsShown() then
+            RT.SettingsFrame:Hide();
+        else
+            RT.SettingsFrame:Show();
         end
         return
     end
-    if mainFrame then
-        if mainFrame:IsShown() then mainFrame:Hide() ; if settingsFrame then settingsFrame:Hide() end
-        else BuildRoster() ; mainFrame:Show() end
+    if RT.MainFrame and RT.MainFrame:IsShown() and RT.SettingsFrame then
+        RT.SettingsFrame:Hide();
+    elseif RT.MainFrame and RT.MainFrame:IsShown() then
+        RT.MainFrame:Hide();
+    else
+        addon.BuildRoster();
+        RT.MainFrame:Show();
     end
 end
-
+SlashCmdList.WSID = WSID;

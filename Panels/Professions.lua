@@ -1,153 +1,132 @@
--- Panels/Professions.lua
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
+local DB = addon.DB;
+local CT = addon.Runtime.COLOR_TABLE;
 
-function BuildProfessionPanel(contentArea)
-    local panel = MakePanel(contentArea)
-    local hdr = MakeHeader(panel, "Profession Picker")
-    hdr:SetPoint("TOPLEFT", panel, "TOPLEFT", WSID_PAD, -WSID_PAD)
+local ProfessionPanelMixin = {};
 
-    local desc = MakeDimLabel(panel, "Spin two professions for your character.", hdr, "BOTTOMLEFT", 4, -8)
+function ProfessionPanelMixin:SetFarmState(shouldExclude)
+    if not DB then
+        return;
+    end
 
-    local prof1Box, prof1Label = MakeResult(panel, nil, 52, "PROFESSION 1")
-    prof1Box:SetPoint("TOP", desc, "BOTTOM", 0, -12)
-    prof1Box:SetPoint("LEFT",    panel, "LEFT",  WSID_PAD, 0)
-    prof1Box:SetPoint("RIGHT",   panel, "CENTER", -3, 0)
-    prof1Label:SetText("--")
+    DB.excludeFarming = shouldExclude;
 
-    local prof2Box, prof2Label = MakeResult(panel, nil, 52, "PROFESSION 2")
-    prof2Box:SetPoint("TOP",  desc, "BOTTOM", 0, -12)
-    prof2Box:SetPoint("LEFT",     panel, "CENTER", 3, 0)
-    prof2Box:SetPoint("RIGHT",    panel, "RIGHT", -WSID_PAD, 0)
-    prof2Label:SetText("--")
+    if shouldExclude then
+        addon.ApplyColor(self.farmBox, "SetBackdropColor", CT.result_bg or {0.06, 0.04, 0.1});
+        addon.ApplyColor(self.farmBox, "SetBackdropBorderColor", CT.accent or {0.84, 0.67, 0.2});
+        addon.ApplyColor(self.farmCheck, "SetVertexColor", CT.accent or {0.84, 0.67, 0.2});
+        addon.ApplyColor(self.farmLbl, "SetTextColor", CT.bright_text or {1.0, 0.9, 0.4});
+        self.farmCheck:Show();
+    else
+        addon.ApplyColor(self.farmBox, "SetBackdropColor", {0.05, 0.03, 0.08});
+        addon.ApplyColor(self.farmBox, "SetBackdropBorderColor", CT.divider or {0.25, 0.2, 0.35});
+        addon.ApplyColor(self.farmLbl, "SetTextColor", CT.dim_text or {0.5, 0.45, 0.55});
+        self.farmCheck:Hide();
+    end
+end
 
-    local spinBtn = MakeBtn(panel, "Spin Professions", nil, 30)
-    spinBtn:SetPoint("TOP", prof1Box, "BOTTOM", 0, -10)
-    spinBtn:SetPoint("LEFT",    panel, "LEFT",  WSID_PAD, 0)
-    spinBtn:SetPoint("RIGHT",   panel, "RIGHT", -WSID_PAD, 0)
+function ProfessionPanelMixin:SpinBtnClick()
+    if self.spinning then
+        return;
+    end
 
-    -- Exclude farming professions checkbox
-    local FARMING = {Herbalism=true, Mining=true, Skinning=true}
+    local excludeFarming = DB and DB.excludeFarming;
+    local pool = {};
 
-    local farmBox = CreateFrame("Frame", nil, panel, "BackdropTemplate")
-    farmBox:SetSize(14, 14)
-    farmBox:SetPoint("TOPLEFT", spinBtn, "BOTTOMLEFT", 0, -14)
-    farmBox:SetBackdrop({bgFile="Interface\\Buttons\\WHITE8x8",edgeFile="Interface\\Buttons\\WHITE8x8",edgeSize=1})
-
-    local farmCheck = farmBox:CreateTexture(nil,"OVERLAY")
-    farmCheck:SetTexture("Interface\\Buttons\\UI-CheckBox-Check")
-    farmCheck:SetSize(16,16) ; farmCheck:SetPoint("CENTER", farmBox, "CENTER", 0, 0)
-
-    local farmLbl = panel:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    farmLbl:SetPoint("LEFT", farmBox, "RIGHT", 6, 0)
-    farmLbl:SetText("Exclude farming professions (Herbalism, Mining, Skinning)")
-
-    local function SetFarmState(on)
-        if not WhatShouldIDoDB then return end
-        WhatShouldIDoDB.excludeFarming = on
-        local ac1,ac2,ac3   = C.accent      and C.accent[1]      or 0.84, C.accent      and C.accent[2]      or 0.67, C.accent      and C.accent[3]      or 0.20
-        local rb1,rb2,rb3   = C.result_bg   and C.result_bg[1]   or 0.06, C.result_bg   and C.result_bg[2]   or 0.04, C.result_bg   and C.result_bg[3]   or 0.10
-        local di1,di2,di3   = C.divider     and C.divider[1]     or 0.25, C.divider     and C.divider[2]     or 0.20, C.divider     and C.divider[3]     or 0.35
-        local br1,br2,br3   = C.bright_text and C.bright_text[1] or 1.00, C.bright_text and C.bright_text[2] or 0.90, C.bright_text and C.bright_text[3] or 0.40
-        local dm1,dm2,dm3   = C.dim_text    and C.dim_text[1]    or 0.50, C.dim_text    and C.dim_text[2]    or 0.45, C.dim_text    and C.dim_text[3]    or 0.55
-        if on then
-            farmBox:SetBackdropColor(rb1,rb2,rb3,1)
-            farmBox:SetBackdropBorderColor(ac1,ac2,ac3,1)
-            farmCheck:SetVertexColor(ac1,ac2,ac3,1)
-            farmCheck:Show()
-            farmLbl:SetTextColor(br1,br2,br3)
-        else
-            farmBox:SetBackdropColor(0.05,0.03,0.08,1)
-            farmBox:SetBackdropBorderColor(di1,di2,di3,1)
-            farmCheck:Hide()
-            farmLbl:SetTextColor(dm1,dm2,dm3)
+    for _, p in ipairs(addon.PROFESSIONS) do
+        if p ~= addon.FISHING and p ~= addon.COOKING and not (excludeFarming and addon.FARM_PROFESSIONS[p]) then
+            table.insert(pool, p);
         end
     end
 
-    local farmBtn = CreateFrame("Button", nil, panel)
-    farmBtn:SetHeight(20)
-    farmBtn:SetPoint("TOPLEFT", spinBtn, "BOTTOMLEFT", 0, -10)
-    farmBtn:SetPoint("RIGHT",   panel,   "RIGHT", -WSID_PAD, 0)
-    farmBtn:SetScript("OnClick", function()
-        SetFarmState(not (WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming))
-    end)
+    if #pool < 2 then
+        return;
+    end
 
-    -- Init state after frame shown (C table populated by then)
-    panel:SetScript("OnShow", function()
-        SetFarmState(WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming or false)
-        panel:SetScript("OnShow", nil)
-    end)
+    self.spinning = true;
+    self.spinBtn:SetEnabled(false);
 
-    local spinning = false
+    -- Pre-pick two different winners
+    local idx1   = math.random(#pool);
+    local winner1 = pool[idx1];
+    local pool2  = {};
 
-    spinBtn:SetScript("OnClick", function()
-        if spinning then return end
-        local excludeFarming = WhatShouldIDoDB and WhatShouldIDoDB.excludeFarming
-        local pool = {}
-        for _, p in ipairs(WSID_PROFESSIONS) do
-            if p ~= "Fishing" and p ~= "Cooking" then
-                if not (excludeFarming and FARMING[p]) then
-                    table.insert(pool, p)
-                end
-            end
+    for _, p in ipairs(pool) do
+        if p ~= winner1 then
+            table.insert(pool2, p);
         end
-        if #pool < 2 then return end
-        spinning = true ; spinBtn:SetEnabled(false)
+    end
 
-        -- Pre-pick two different winners
-        local idx1   = math.random(#pool)
-        local winner1 = pool[idx1]
-        local pool2  = {}
-        for _, p in ipairs(pool) do if p ~= winner1 then table.insert(pool2, p) end end
-        local winner2 = pool2[math.random(#pool2)]
+    local winner2 = pool2[math.random(#pool2)];
 
-        prof1Label:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        prof2Label:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
+    addon.ApplyColor(self.prof1Label, "SetTextColor", CT.bright_text);
+    addon.ApplyColor(self.prof2Label, "SetTextColor", CT.bright_text);
 
-        -- Chain: spin 1 then spin 2
-        StartSlot(prof1Label, pool, function(_)
-            prof1Label:SetText(winner1)
-            prof1Label:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-            StartSlot(prof2Label, pool2, function(_)
-                prof2Label:SetText(winner2)
-                prof2Label:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-                spinning = false ; spinBtn:SetEnabled(true)
-            end)
-        end)
-    end)
-
-    return panel
+    -- Chain: spin 1 then spin 2
+    addon.StartSlot(self.prof1Label, pool, function(_)
+        self.prof1Label:SetText(winner1);
+        addon.ApplyColor(self.prof1Label, "SetTextColor", CT.spin_text);
+        addon.StartSlot(self.prof2Label, pool2, function(_)
+            self.prof2Label:SetText(winner2);
+            addon.ApplyColor(self.prof2Label, "SetTextColor", CT.spin_text);
+            self.spinning = false;
+            self.spinBtn:SetEnabled(true);
+        end);
+    end);
 end
 
-------------------------------------------------------------------------
--- RAIDS & DUNGEONS PANEL
-------------------------------------------------------------------------
+local function BuildProfessionPanel(contentArea)
+    local panel = addon.MakePanel(contentArea);
+    Mixin(panel, ProfessionPanelMixin);
 
-local WSID_RAIDS_BY_EXPANSION = {
-    ["The Burning Crusade"]     = {"Karazhan","Gruul's Lair","Magtheridon's Lair","Serpentshrine Cavern","Tempest Keep","Mount Hyjal","Black Temple","Sunwell Plateau"},
-    ["Wrath of the Lich King"]  = {"Naxxramas","The Obsidian Sanctum","The Eye of Eternity","Ulduar","Trial of the Crusader","Onyxia's Lair","Icecrown Citadel","The Ruby Sanctum"},
-    ["Cataclysm"]               = {"Blackwing Descent","The Bastion of Twilight","Throne of the Four Winds","Firelands","Dragon Soul"},
-    ["Mists of Pandaria"]       = {"Mogu'shan Vaults","Heart of Fear","Terrace of Endless Spring","Throne of Thunder","Siege of Orgrimmar"},
-    ["Warlords of Draenor"]     = {"Highmaul","Blackrock Foundry","Hellfire Citadel"},
-    ["Legion"]                  = {"The Emerald Nightmare","Trial of Valor","The Nighthold","Tomb of Sargeras","Antorus the Burning Throne"},
-    ["Battle for Azeroth"]      = {"Uldir","Battle of Dazar'alor","Crucible of Storms","The Eternal Palace","Ny'alotha the Waking City"},
-    ["Shadowlands"]             = {"Castle Nathria","Sanctum of Domination","Sepulcher of the First Ones"},
-    ["Dragonflight"]            = {"Vault of the Incarnates","Aberrus the Shadowed Crucible","Amirdrassil the Dream's Hope"},
-    ["The War Within"]          = {"Nerub-ar Palace","Liberation of Undermine"},
-    ["Midnight"]                = {"The Bleeding Edge","Cinderbrew Meadery","Darkflame Cleft","The Dawnbreaker","Operation: Floodgate","Priory of the Sacred Flame","The Rookery","The Stonevault"},
-}
+    panel.spinning = false;
+    panel.header = addon.MakeHeader(panel, "Profession Picker");
+    panel.header:SetPoint(addon.TOPLEFT, panel, addon.TOPLEFT, addon.PAD, -addon.PAD);
+    panel.desc = addon.MakeLabel(panel, "Spin two professions for your character.", panel.header, addon.BOTTOMLEFT, 4, -8);
+    panel.prof1Box, panel.prof1Label = addon.MakeResult(panel, nil, 52, "PROFESSION 1");
+    panel.prof1Box:SetPoint(addon.TOP, panel.desc, addon.BOTTOM, 0, -12);
+    panel.prof1Box:SetPoint(addon.LEFT, panel, addon.LEFT,  addon.PAD, 0);
+    panel.prof1Box:SetPoint(addon.RIGHT, panel, addon.CENTER, -3, 0);
+    panel.prof1Label:SetText(addon.DASH_DASH);
+    panel.prof2Box, panel.prof2Label = addon.MakeResult(panel, nil, 52, "PROFESSION 2");
+    panel.prof2Box:SetPoint(addon.TOP, panel.desc, addon.BOTTOM, 0, -12);
+    panel.prof2Box:SetPoint(addon.LEFT, panel, addon.CENTER, 3, 0);
+    panel.prof2Box:SetPoint(addon.RIGHT, panel, addon.RIGHT, -addon.PAD, 0);
+    panel.prof2Label:SetText(addon.DASH_DASH);
+    panel.spinBtn = addon.MakeBtn(panel, "Spin Professions", nil, 30);
+    panel.spinBtn:SetPoint(addon.TOP, panel.prof1Box, addon.BOTTOM, 0, -10);
+    panel.spinBtn:SetPoint(addon.LEFT, panel, addon.LEFT,  addon.PAD, 0);
+    panel.spinBtn:SetPoint(addon.RIGHT, panel, addon.RIGHT, -addon.PAD, 0);
 
-local WSID_DUNGEONS_BY_EXPANSION = {
-    ["Classic"]                 = {"Ragefire Chasm","Wailing Caverns","The Deadmines","Shadowfang Keep","Blackfathom Deeps","The Stockade","Gnomeregan","Razorfen Kraul","Scarlet Monastery","Razorfen Downs","Uldaman","Zul'Farrak","Maraudon","Temple of Atal'Hakkar","Blackrock Depths","Lower Blackrock Spire","Upper Blackrock Spire","Dire Maul","Stratholme","Scholomance"},
-    ["The Burning Crusade"]     = {"Hellfire Ramparts","The Blood Furnace","The Slave Pens","The Underbog","Mana-Tombs","Auchenai Crypts","Sethekk Halls","Shadow Labyrinth","The Shattered Halls","The Steamvault","The Botanica","The Mechanar","Old Hillsbrad Foothills","The Black Morass","Magister's Terrace"},
-    ["Wrath of the Lich King"]  = {"Utgarde Keep","The Nexus","Azjol-Nerub","Ahn'kahet","Drak'Tharon Keep","Violet Hold","Gundrak","Halls of Stone","Halls of Lightning","The Oculus","Utgarde Pinnacle","The Culling of Stratholme","Trial of the Champion","The Forge of Souls","Pit of Saron","Halls of Reflection"},
-    ["Cataclysm"]               = {"Blackrock Caverns","Throne of the Tides","The Stonecore","The Vortex Pinnacle","Lost City of Tol'vir","The Halls of Origination","Grim Batol","Deadmines","Shadowfang Keep","End Time","Well of Eternity","Hour of Twilight","Zul'Gurub","Zul'Aman"},
-    ["Mists of Pandaria"]       = {"Temple of the Jade Serpent","Stormstout Brewery","Shado-pan Monastery","Gate of the Setting Sun","Mogu'shan Palace","Siege of Niuzao Temple","Scarlet Halls","Scarlet Monastery","Scholomance","Siege of Niuzao Temple"},
-    ["Warlords of Draenor"]     = {"Bloodmaul Slag Mines","Iron Docks","Auchindoun","Skyreach","The Everbloom","Grimrail Depot","Upper Blackrock Spire","Shadowmoon Burial Grounds"},
-    ["Legion"]                  = {"Eye of Azshara","Darkheart Thicket","Black Rook Hold","Halls of Valor","Neltharion's Lair","Vault of the Wardens","Court of Stars","The Arcway","Cathedral of Eternal Night","Return to Karazhan","Seat of the Triumvirate"},
-    ["Battle for Azeroth"]      = {"Atal'Dazar","Freehold","Tol Dagor","The MOTHERLODE!!","Waycrest Manor","Kings' Rest","Temple of Sethraliss","Underrot","Shrine of the Storm","Siege of Boralus","Operation: Mechagon"},
-    ["Shadowlands"]             = {"Mists of Tirna Scithe","The Necrotic Wake","De Other Side","Halls of Atonement","Plaguefall","Spires of Ascension","Theater of Pain","Sanguine Depths","Tazavesh the Veiled Market"},
-    ["Dragonflight"]            = {"Ruby Life Pools","The Nokhud Offensive","The Azure Vault","Algeth'ar Academy","Uldaman: Legacy of Tyr","Neltharus","Brackenhide Hollow","Halls of Infusion","Dawn of the Infinite","Murozond's Rise"},
-    ["The War Within"]          = {"The Rookery","The Stonevault","City of Threads","The Dawnbreaker","Ara-Kara City of Echoes","Darkflame Cleft","Priory of the Sacred Flame","The Necrotic Wake"},
-    ["Midnight"]                = {"Cinderbrew Meadery","Darkflame Cleft","The Dawnbreaker","Operation: Floodgate","Priory of the Sacred Flame","The Rookery","The Stonevault","Liberation of Undermine"},
-}
+    -- Exclude farming professions checkbox
+    panel.farmBox = CreateFrame(addon.FRAME, nil, panel, addon.BACKDROP_TEMPLATE);
+    panel.farmBox:SetSize(14, 14);
+    panel.farmBox:SetPoint(addon.TOPLEFT, panel.spinBtn, addon.BOTTOMLEFT, 0, -14);
+    panel.farmBox:SetBackdrop({bgFile=addon.BG_FILE,edgeFile=addon.BG_FILE,edgeSize=1});
+    panel.farmCheck = panel.farmBox:CreateTexture(nil,addon.OVERLAY);
+    panel.farmCheck:SetTexture("Interface\\Buttons\\UI-CheckBox-Check");
+    panel.farmCheck:SetSize(16,16);
+    panel.farmCheck:SetPoint(addon.CENTER, panel.farmBox, addon.CENTER, 0, 0);
+    panel.farmLbl = panel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+    panel.farmLbl:SetPoint(addon.LEFT, panel.farmBox, addon.RIGHT, 6, 0);
+    panel.farmLbl:SetText("Exclude farming professions (Herbalism, Mining, Skinning)");
+    panel.farmBtn = CreateFrame(addon.BUTTON, nil, panel);
+    panel.farmBtn:SetHeight(20);
+    panel.farmBtn:SetPoint(addon.TOPLEFT, panel.spinBtn, addon.BOTTOMLEFT, 0, -10);
+    panel.farmBtn:SetPoint(addon.RIGHT,   panel,   addon.RIGHT, -addon.PAD, 0);
+    panel.farmBtn:SetScript(addon.OnClick, function()
+        panel:SetFarmState(not (DB and DB.excludeFarming));
+    end);
+
+    -- Init state after frame shown (C table populated by then)
+    panel:SetScript(addon.OnShow, function()
+        panel:SetFarmState(DB and DB.excludeFarming or false);
+        panel:SetScript(addon.OnShow, nil);
+    end);
+
+    panel.spinBtn:SetScript(addon.OnClick, function() panel:SpinBtnClick(); end);
+
+    return panel;
+end
+addon.BuildProfessionPanel = BuildProfessionPanel;
 

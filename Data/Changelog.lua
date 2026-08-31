@@ -1,10 +1,5 @@
--- Data/Changelog.lua
--- Addon changelog entries
--- Author: I_AM_T3X
--- To add a new version: add a new block at the TOP of WSID_CHANGELOG
--- Types: "new", "fix", "change"
-
-WSID_CHANGELOG = {
+local _, addon = ...;
+addon.CHANGELOG = {
     {version="1.2.1", entries={
         {type="change", text="Patch 12.1 compatibility update."},
     }},
@@ -29,4 +24,4 @@ WSID_CHANGELOG = {
         {type="fix",  text="Raids & Dungeons data corrected -- all expansion lists verified directly from the Adventure Guide."},
         {type="fix",  text="Export string encoding collision fixed between Hunter (class) and Horde (faction) short codes."},
     }},
-}
+};

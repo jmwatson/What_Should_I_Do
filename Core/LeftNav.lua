@@ -1,104 +1,143 @@
--- Core/LeftNav.lua
--- Left navigation bar builder
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
+local DB = addon.DB;
+local CT = addon.Runtime.COLOR_TABLE;
 
-function BuildLeftNav(parent, topDefs, bottomDefs, onSelect)
-    local ROW_H = 38
-    local navBg = CreateFrame("Frame", nil, parent)
-    navBg:SetPoint("TOPLEFT",    parent,"TOPLEFT",    0,-30)
-    navBg:SetPoint("BOTTOMLEFT", parent,"BOTTOMLEFT", 0,  0)
-    navBg:SetWidth(WSID_NAV_W)
-    Tx(navBg, C.sidebar[1],C.sidebar[2],C.sidebar[3])
-    local divR = navBg:CreateTexture(nil,"ARTWORK")
-    divR:SetColorTexture(C.divider[1],C.divider[2],C.divider[3],1)
-    divR:SetWidth(1)
-    divR:SetPoint("TOPRIGHT",navBg,"TOPRIGHT",0,0)
-    divR:SetPoint("BOTTOMRIGHT",navBg,"BOTTOMRIGHT",0,0)
+local function CreateLeftNav(parent, OnSelect, opts)
+    opts = opts or {};
+    local NAV_W = opts.width or 120;
+    local ROW_H = opts.rowHeight or 38;
+    local ROW_W = 3;
+    local bottomInset = opts.bottomInset or 0;
 
-    local btns   = {}
-    local active = nil
+    local navBg = CreateFrame(addon.FRAME, nil, parent);
 
-    local function SetActive(name)
-        active = name
-        for k,b in pairs(btns) do
+    local btns = {};
+    local active = nil;
+    local topAnchor = navBg;
+    local topAnchorPt = addon.TOPLEFT;
+    local bottomSection = nil;
+    local bottomHeight = 0;
+
+    --- PRIVATE API
+    local function _SetActive(name)
+        active = name;
+
+        for k, btn in pairs(btns) do
             if k == name then
-                b.bg:SetColorTexture(C.nav_active[1],C.nav_active[2],C.nav_active[3],1)
-                b.stripe:Show() ; b.lbl:SetTextColor(1,1,1)
+                addon.ApplyColor(btn.bg, "SetColorTexture", CT.nav_active);
+                addon.ApplyColor(btn.lbl, "SetTextColor", addon.WHITE);
+                btn.stripe:Show();
             else
-                b.bg:SetColorTexture(0,0,0,0)
-                b.stripe:Hide() ; b.lbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
+                addon.ApplyColor(btn.bg, "SetColorTexture", addon.BLACK, 0);
+                addon.ApplyColor(btn.lbl, "SetTextColor", CT.dim_text);
+                btn.stripe:Hide();
             end
         end
-        if onSelect then onSelect(name) end
+
+        if OnSelect then
+            OnSelect(name);
+        end
     end
 
-    local function AddRow(def, anchorFrm, anchorPt, anchorOff)
-        local row = CreateFrame("Button", nil, navBg)
-        row:SetSize(WSID_NAV_W, ROW_H)
-        row:SetPoint("TOPLEFT", anchorFrm, anchorPt, 0, anchorOff or 0)
-        local bg     = row:CreateTexture(nil,"BACKGROUND") ; bg:SetAllPoints() ; bg:SetColorTexture(0,0,0,0)
-        local stripe = row:CreateTexture(nil,"ARTWORK")
-        stripe:SetColorTexture(C.nav_border[1],C.nav_border[2],C.nav_border[3],1)
-        stripe:SetSize(3,ROW_H) ; stripe:SetPoint("LEFT",row,"LEFT",0,0) ; stripe:Hide()
-        local lbl = row:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-        lbl:SetPoint("LEFT",row,"LEFT",16,0) ; lbl:SetText(def.label)
-        lbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        local name = def.name
-        row:SetScript("OnClick",  function() SetActive(name) end)
-        row:SetScript("OnEnter",  function()
-            if active~=name then bg:SetColorTexture(C.nav_hover[1],C.nav_hover[2],C.nav_hover[3],1)
-                                 lbl:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3]) end end)
-        row:SetScript("OnLeave",  function()
-            if active~=name then bg:SetColorTexture(0,0,0,0)
-                                 lbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3]) end end)
-        btns[name] = {bg=bg,stripe=stripe,lbl=lbl}
-        return row
+    local function AddRow(def, SetRowPoint, rowParent)
+        local row = CreateFrame(addon.BUTTON, nil, rowParent or navBg);
+        local bg = row:CreateTexture(nil, addon.BACKGROUND);
+        local stripe = row:CreateTexture(nil, addon.ARTWORK);
+        local lbl = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+        local name = def.name;
+
+        row:SetSize(NAV_W, ROW_H);
+        SetRowPoint(row);
+        bg:SetAllPoints();
+        stripe:SetSize(ROW_W, ROW_H);
+        stripe:SetPoint(addon.LEFT, row, addon.LEFT, 0, 0);
+        stripe:Hide();
+        lbl:SetPoint(addon.LEFT, row, addon.LEFT, 16, 0);
+        lbl:SetText(def.label);
+        addon.ApplyColor(bg, "SetColorTexture", addon.BLACK, 0);
+        addon.ApplyColor(stripe, "SetColorTexture", CT.nav_border);
+        addon.ApplyColor(lbl, "SetTextColor", CT.dim_text);
+
+        row:SetScript(addon.OnClick, function() _SetActive(name); end);
+        row:SetScript(addon.OnEnter, function()
+            if active ~= name then
+                addon.ApplyColor(bg, "SetColorTexture", CT.nav_hover);
+                addon.ApplyColor(lbl, "SetTextColor", CT.bright_text);
+            end
+        end);
+        row:SetScript(addon.OnLeave, function()
+            if active ~= name then
+                addon.ApplyColor(bg, "SetColorTexture", addon.BLACK, 0);
+                addon.ApplyColor(lbl, "SetTextColor", CT.dim_text);
+            end
+        end);
+
+        btns[name] = {bg=bg, stripe=stripe, lbl=lbl};
+
+        return row;
     end
 
-    local prev = navBg ; local pp = "TOPLEFT"
-    for _, def in ipairs(topDefs) do
-        local row = AddRow(def, prev, pp, 0)
-        prev = row ; pp = "BOTTOMLEFT"
+    local function EnsureBottomSection()
+        if not bottomSection then
+            bottomSection = CreateFrame(addon.FRAME, nil, navBg);
+            bottomSection:SetPoint(addon.BOTTOMLEFT, navBg, addon.BOTTOMLEFT, 0, bottomInset);
+            bottomSection:SetPoint(addon.BOTTOMRIGHT, navBg, addon.BOTTOMRIGHT, 0, bottomInset);
+            bottomSection:SetHeight(0.01);
+        end
+
+        return bottomSection;
     end
 
-    -- divider above bottom items
-    local bdiv = navBg:CreateTexture(nil,"ARTWORK")
-    bdiv:SetColorTexture(C.divider[1],C.divider[2],C.divider[3],1) ; bdiv:SetHeight(1)
-    bdiv:SetPoint("BOTTOMLEFT",  navBg,"BOTTOMLEFT",  0, #bottomDefs*ROW_H)
-    bdiv:SetPoint("BOTTOMRIGHT", navBg,"BOTTOMRIGHT", 0, #bottomDefs*ROW_H)
+    --- PUBLIC API
+    function navBg:AddNav(name, label)
+        local anchorFrm, anchorPt = topAnchor, topAnchorPt;
+        local row = AddRow({name = name, label = label}, function(r)
+            r:SetPoint(addon.TOPLEFT, anchorFrm, anchorPt, 0, 0);
+        end);
+        topAnchor = row;
+        topAnchorPt = addon.BOTTOMLEFT;
 
-    for i, def in ipairs(bottomDefs) do
-        local row = CreateFrame("Button", nil, navBg)
-        row:SetSize(WSID_NAV_W, ROW_H)
-        row:SetPoint("BOTTOMLEFT", navBg,"BOTTOMLEFT", 0, (#bottomDefs-i)*ROW_H)
-        local bg     = row:CreateTexture(nil,"BACKGROUND") ; bg:SetAllPoints() ; bg:SetColorTexture(0,0,0,0)
-        local stripe = row:CreateTexture(nil,"ARTWORK")
-        stripe:SetColorTexture(C.nav_border[1],C.nav_border[2],C.nav_border[3],1)
-        stripe:SetSize(3,ROW_H) ; stripe:SetPoint("LEFT",row,"LEFT",0,0) ; stripe:Hide()
-        local lbl = row:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-        lbl:SetPoint("LEFT",row,"LEFT",16,0) ; lbl:SetText(def.label)
-        lbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        local name = def.name
-        row:SetScript("OnClick",  function() SetActive(name) end)
-        row:SetScript("OnEnter",  function()
-            if active~=name then bg:SetColorTexture(C.nav_hover[1],C.nav_hover[2],C.nav_hover[3],1)
-                                 lbl:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3]) end end)
-        row:SetScript("OnLeave",  function()
-            if active~=name then bg:SetColorTexture(0,0,0,0)
-                                 lbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3]) end end)
-        btns[name] = {bg=bg,stripe=stripe,lbl=lbl}
+        return row;
     end
 
-    SetActive(topDefs[1].name)
-    return SetActive
+    function navBg:AddBottomNav(name, label)
+        local sec = EnsureBottomSection();
+        local yOff = bottomHeight;
+        local row = AddRow({name = name, label = label}, function(r)
+            r:SetPoint(addon.TOPLEFT, sec, addon.TOPLEFT, 0, -yOff);
+        end, sec);
+        bottomHeight = bottomHeight + ROW_H;
+        sec:SetHeight(bottomHeight);
+
+        return row;
+    end
+
+    function navBg:AddRule()
+        local sec = EnsureBottomSection();
+        local rule = sec:CreateTexture(nil, addon.ARTWORK);
+        addon.ApplyColor(rule, "SetColorTexture", CT.divider);
+        rule:SetHeight(1);
+        rule:SetPoint(addon.TOPLEFT, sec, addon.TOPLEFT, 0, -bottomHeight);
+        rule:SetPoint(addon.TOPRIGHT, sec, addon.TOPRIGHT, 0, -bottomHeight);
+        bottomHeight = bottomHeight + 1;
+        sec:SetHeight(bottomHeight);
+    end
+
+    function navBg:SetActive(name)
+        _SetActive(name);
+    end
+
+    addon.Tx(navBg, CT.sidebar);
+    navBg:SetPoint(addon.TOPLEFT, parent, addon.TOPLEFT, 0, -30);
+    navBg:SetPoint(addon.BOTTOMLEFT, parent, addon.BOTTOMLEFT, 0, 0);
+    navBg:SetWidth(NAV_W);
+
+    local divR = navBg:CreateTexture(nil, addon.ARTWORK);
+    addon.ApplyColor(divR, "SetColorTexture", CT.divider);
+    divR:SetWidth(1);
+    divR:SetPoint(addon.TOPRIGHT, navBg, addon.TOPRIGHT, 0, 0);
+    divR:SetPoint(addon.BOTTOMRIGHT, navBg, addon.BOTTOMRIGHT, 0, 0);
+
+    return navBg;
 end
-
-------------------------------------------------------------------------
--- TAB 1: ACTIVITY
-------------------------------------------------------------------------
--- Layout (total content height needed = 490px available):
---   WSID_PAD(16) + hdr(28) + gap(10) + desc(14) + gap(12)
---   + catBox(52) + gap(10) + subBox(52) + gap(14)
---   + btnRow(30) + gap(6) + bothBtn(30) + WSID_PAD(16) = 290px  (lots of breathing room)
-
-
+addon.CreateLeftNav = CreateLeftNav;

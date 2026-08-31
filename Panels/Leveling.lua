@@ -1,392 +1,325 @@
--- Panels/Leveling.lua
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
+local DB = addon.DB;
+local CT = addon.Runtime.COLOR_TABLE;
 
-function BuildLevelingPanel(contentArea)
-    local panel = MakePanel(contentArea)
-    local hdr = MakeHeader(panel, "Leveling Wheel")
-    hdr:SetPoint("TOPLEFT", panel, "TOPLEFT", WSID_PAD, -WSID_PAD)
+local LevelingPanelMixin = {};
 
-    local desc = MakeDimLabel(panel, "Spin a class -> pick a character -> spin an expansion.", hdr, "BOTTOMLEFT", 4, -8)
+function LevelingPanelMixin:AutoPick()
+    self.autoPick = not self.autoPick;
+    if self.autoPick then
+        self.autoPickBtn._lbl:SetText("On");
+        addon.ApplyColor(self.autoPickBtn, "SetBackdropColor", CT.nav_active);
+        addon.ApplyColor(self.autoPickBtn, "SetBackdropBorderColor", CT.nav_border);
+        addon.ApplyColor(self.autoPickBtn._lbl, "SetTextColor", addon.BLACK);
+    else
+        self.autoPickBtn._lbl:SetText("Off");
+        addon.ApplyColor(self.autoPickBtn, "SetBackdropColor", CT.btn_bg);
+        addon.ApplyColor(self.autoPickBtn, "SetBackdropBorderColor", CT.btn_bdr);
+        addon.ApplyColor(self.autoPickBtn._lbl, "SetTextColor", CT.btn_text);
+    end
+end
 
-    -- Auto-pick character toggle
-    local autoPickLbl = panel:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    autoPickLbl:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -8)
-    autoPickLbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-    autoPickLbl:SetText("Auto-pick a character after class spin:")
+function LevelingPanelMixin:SetSpinButtonsEnabled(enabled)
+    self.spinClassBtn:SetEnabled(enabled);
+    self.spinExpBtn:SetEnabled(enabled);
+    self.spinAllBtn:SetEnabled(enabled);
+end
 
-    local autoPick = false
-    local autoPickBtn = MakeBtn(panel, "Off", 60, 24)
-    autoPickBtn:SetPoint("LEFT", autoPickLbl, "RIGHT", 8, 0)
-    autoPickBtn:SetScript("OnClick", function()
-        autoPick = not autoPick
-        if autoPick then
-            autoPickBtn._lbl:SetText("On")
-            autoPickBtn:SetBackdropColor(C.nav_active[1],C.nav_active[2],C.nav_active[3])
-            autoPickBtn:SetBackdropBorderColor(C.nav_border[1],C.nav_border[2],C.nav_border[3],1)
-            autoPickBtn._lbl:SetTextColor(1,1,1)
+function LevelingPanelMixin:GetEligibleChars(class)
+    local matches = {};
+
+    for _, ch in ipairs(DB.seenChars) do
+        local excluded = DB.excludedChars and DB.excludedChars[ch.name];
+
+        if ch.class == class and (ch.level or 0) < 90 and not excluded then
+            table.insert(matches, ch);
+        end
+    end
+
+    return matches;
+end
+
+function LevelingPanelMixin:ClearList()
+    self.characterRowPool:ReleaseAll();
+
+    if self.autoPickTimer then
+        self.autoPickTimer:Cancel();
+        self.autoPickTimer = nil;
+    end
+
+    if self.autoPickFlashTimer then
+        self.autoPickFlashTimer:Cancel();
+        self.autoPickFlashTimer = nil;
+    end
+
+    if self.noneLabel then
+        self.noneLabel:Hide();
+    end
+
+    self.selectedChar=nil;
+    self.listContent:SetHeight(110);
+    self.listReset();
+end
+
+function LevelingPanelMixin:SelectRow(row)
+    self.selectedChar = row._charData;
+
+    for r in self.characterRowPool:EnumerateActive() do
+        addon.ApplyColor(r.bg, "SetColorTexture", r._even and CT.row_even or CT.row_odd);
+    end
+
+    addon.ApplyColor(row.bg, "SetColorTexture", CT.row_select);
+end
+
+---@param class string
+function LevelingPanelMixin:PopulateList(class)
+    self:ClearList();
+    local matches = self:GetEligibleChars(class);
+
+    if #matches == 0 then
+        if not self.noneLabel then
+            self.noneLabel = self.listContent:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+            self.noneLabel:SetPoint(addon.TOPLEFT, self.listContent, addon.TOPLEFT, 8, -8);
+            addon.ApplyColor(self.noneLabel, "SetTextColor", {0.65, 0.3, 0.3});
+        end
+
+        self.noneLabel:SetText("No "..class.."s available for leveling. (Max level characters are excluded.)");
+        self.noneLabel:Show();
+        self.listContent:SetHeight(30);
+        return;
+    end
+
+    for i, ch in ipairs(matches) do
+        local even = (i % 2 == 0);
+        local row = self.characterRowPool:Acquire();
+
+        if not row.bg then
+            row.bg = row:CreateTexture(nil, addon.BACKGROUND);
+            row.bg:SetAllPoints();
+            row.fs = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+            row.fs:SetPoint(addon.LEFT, row, addon.LEFT, 10, 0);
+            row.fs:SetJustifyH(addon.LEFT);
+        end
+
+        row:Show();
+        row:SetHeight(24);
+        row:ClearAllPoints();
+        row:SetPoint(addon.TOP,   self.listContent, addon.TOP,   0, -(i - 1) * 24);
+        row:SetPoint(addon.LEFT,  self.listContent, addon.LEFT,  0, 0);
+        row:SetPoint(addon.RIGHT, self.listContent, addon.RIGHT, 0, 0);
+
+        local cc = addon.GetClassColor(ch.class) or {r=0.8, g=0.8, b=0.8};
+        cc = addon.MulRGBL(cc, {255, 255, 255});
+        addon.ApplyColor(row.bg, "SetColorTexture", even and CT.row_even or CT.row_odd);
+        row.fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s|r  |cffffcc00Lv %d|r%s",
+            cc.r, cc.g, cc.b, ch.name, ch.race or addon.EMPTY_STRING, ch.level or 0,
+            ch.current and "  |cff55cc55(you)|r" or addon.EMPTY_STRING));
+        
+        row._even = even;
+        row._charData = ch;
+
+        row:SetScript(addon.OnClick, function() self:SelectRow(row); end);
+        row:SetScript(addon.OnEnter, function()
+            if self.selectedChar ~= ch then
+                addon.ApplyColor(row.bg, "SetColorTexture", CT.row_hover);
+            end
+        end);
+        row:SetScript(addon.OnLeave, function()
+            if self.selectedChar ~= ch then
+                addon.ApplyColor(row.bg, "SetColorTexture", even and CT.row_even or CT.row_odd);
+            end
+        end);
+    end
+
+    self.listContent:SetHeight(math.max(24, #matches * 24 + 2));
+end
+
+function LevelingPanelMixin:DoSpinClass(onDone)
+    local pool={};
+
+    for _, clsInfo in pairs(addon.CLASS_INFO) do
+        table.insert(pool, clsInfo.name);
+    end
+
+    addon.StopSlot();
+    self.selectedChar = nil;
+    self.classLabel:SetText("Class");
+    self.expLabel:SetText("Expansion");
+    self.spinExpBtn:SetEnabled(false);
+    self:ClearList();
+
+    addon.ApplyColor(self.expLabel, "SetTextColor", CT.dim_text);
+    addon.ApplyColor(self.classLabel, "SetTextColor", CT.bright_text);
+
+    addon.StartSlot(self.classLabel, pool, function(winner)
+        local cc = addon.CLASS_INFO[winner];
+
+        if cc then
+            addon.ApplyRGB(self.classLabel, "SetTextColor", cc.colors);
+        end
+
+        self:PopulateList(winner);
+        self.spinExpBtn:SetEnabled(true);
+
+        -- Auto-pick: spin a random eligible character from the list
+        if self.autoPick then
+            local eligible = {};
+
+            for row in self.characterRowPool:EnumerateActive() do
+                table.insert(eligible, row);
+            end
+
+            if #eligible > 0 then
+                -- Small delay so the class slot finishes visually first
+                self.autoPickTimer = C_Timer.NewTimer(0.3, function()
+                    self.autoPickTimer = nil;
+                    local pick = eligible[math.random(#eligible)];
+                    self:SelectRow(pick);
+                    -- Flash the selected row so user sees it
+                    addon.ApplyColor(pick.bg, "SetColorTexture", addon.MulColor(CT.spin_text, {0.6, 0.6, 0.6}));
+                    self.autoPickFlashTimer = C_Timer.NewTimer(0.15, function()
+                        self.autoPickFlashTimer = nil;
+                        addon.ApplyColor(pick.bg, "SetColorTexture", CT.row_select);
+                    end);
+                end);
+            end
+        end
+
+        if onDone then onDone(winner); end
+    end);
+end
+
+function LevelingPanelMixin:FindRowForChar(char)
+    for row in self.characterRowPool:EnumerateActive() do
+        if row._charData == char then
+            return row;
+        end
+    end
+
+    return nil;
+end
+
+function LevelingPanelMixin:SpinExpansionFor(char, onDone)
+    local pool = addon.GetExpansionPool(char.level or 1);
+
+    if #pool == 1 then
+        self.expLabel:SetText(pool[1]);
+        addon.ApplyColor(self.expLabel, "SetTextColor", CT.spin_text);
+        if onDone then onDone() end
+        return;
+    end
+
+    addon.StopSlot();
+    addon.ApplyColor(self.expLabel, "SetTextColor", CT.bright_text);
+    addon.StartSlot(self.expLabel, pool, function(_)
+        addon.ApplyColor(self.expLabel, "SetTextColor", CT.spin_text);
+        if onDone then onDone() end
+    end);
+end
+
+function LevelingPanelMixin:SpinClassBtnClick()
+    self.spinClassBtn:SetEnabled(false);
+    self.spinAllBtn:SetEnabled(false);
+    self:DoSpinClass(function(_)
+        self.spinClassBtn:SetEnabled(true);
+        self.spinAllBtn:SetEnabled(true);
+    end);
+end
+
+function LevelingPanelMixin:SpinExpBtnClick()
+    if not self.selectedChar then
+        UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r Select a character first.", 1, 0.8, 0.2);
+        return;
+    end
+    
+    self.spinExpBtn:SetEnabled(false);
+    self:SpinExpansionFor(self.selectedChar, function()
+        self.spinExpBtn:SetEnabled(true);
+    end);
+end
+
+function LevelingPanelMixin:SpinAllBtnClick()
+    self:SetSpinButtonsEnabled(false);
+    self:DoSpinClass(function(winner)
+        local autoChar = self:GetEligibleChars(winner)[1];
+
+        if not autoChar then
+            self:SetSpinButtonsEnabled(true);
+            return;
+        end
+
+        local row = self:FindRowForChar(autoChar);
+
+        if row then
+            self:SelectRow(row);
         else
-            autoPickBtn._lbl:SetText("Off")
-            autoPickBtn:SetBackdropColor(C.btn_bg[1],C.btn_bg[2],C.btn_bg[3])
-            autoPickBtn:SetBackdropBorderColor(C.btn_bdr[1],C.btn_bdr[2],C.btn_bdr[3],1)
-            autoPickBtn._lbl:SetTextColor(C.btn_text[1],C.btn_text[2],C.btn_text[3])
+            self.selectedChar = autoChar;
         end
-    end)
 
-    local classBox, classLabel = MakeResult(panel, nil, 52, "CLASS")
-    classBox:SetPoint("TOPLEFT", autoPickLbl, "BOTTOMLEFT", 0, -10)
-    classLabel:SetText("Class")
-
-    local spinClassBtn = MakeBtn(panel, "Spin Class", nil, 30)
-    spinClassBtn:SetPoint("TOP", classBox, "BOTTOM", 0, -10)
-    spinClassBtn:SetPoint("LEFT",    panel, "LEFT",  WSID_PAD, 0)
-    spinClassBtn:SetPoint("RIGHT",   panel, "RIGHT", -WSID_PAD, 0)
-
-    local charHdr = MakeHeader(panel, "Characters of that class  (click to select)")
-    charHdr:SetPoint("TOPLEFT", spinClassBtn, "BOTTOMLEFT", 0, -10)
-
-    local listBG, listContent, listReset = MakeScrollBox(panel, nil, 110)
-    listBG:SetPoint("TOPLEFT", charHdr, "BOTTOMLEFT", 0, 0)
-
-    local expBox, expLabel = MakeResult(panel, nil, 52, "EXPANSION")
-    expBox:SetPoint("TOPLEFT", listBG, "BOTTOMLEFT", 0, -10)
-    expLabel:SetText("Expansion")
-
-    local spinExpBtn = MakeBtn(panel, "Spin Expansion", nil, 30)
-    spinExpBtn:SetPoint("TOP", expBox, "BOTTOM", 0, -10)
-    spinExpBtn:SetPoint("LEFT",    panel, "LEFT",  WSID_PAD, 0)
-    spinExpBtn:SetPoint("RIGHT",   panel, "CENTER", -3, 0)
-    spinExpBtn:SetEnabled(false)
-
-    local spinAllBtn = MakeBtn(panel, "Spin All Steps", nil, 30)
-    spinAllBtn:SetPoint("TOP", expBox, "BOTTOM", 0, -10)
-    spinAllBtn:SetPoint("LEFT",    panel, "CENTER", 3, 0)
-    spinAllBtn:SetPoint("RIGHT",   panel, "RIGHT", -WSID_PAD, 0)
-
-    local noteLbl = panel:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    noteLbl:SetPoint("TOPLEFT", spinExpBtn, "BOTTOMLEFT", 0, -10)
-    noteLbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-    noteLbl:SetText("Roster fills automatically as you log into each character.")
-
-    local pickedClass=nil ; local selectedChar=nil ; local charRows={}
-
-    local function ClearList()
-        for _,r in ipairs(charRows) do r:Hide() end
-        charRows={} ; selectedChar=nil ; listContent:SetHeight(110) ; listReset()
-    end
-
-    local function PopulateList(class)
-        ClearList()
-        local matches={}
-        for _,ch in ipairs(WSID_Roster) do
-            local excluded = WhatShouldIDoDB.excludedChars and WhatShouldIDoDB.excludedChars[ch.name]
-            if ch.class==class and (ch.level or 0) < 90 and not excluded then
-                table.insert(matches,ch)
-            end
-        end
-        if #matches==0 then
-            local none=listContent:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-            none:SetPoint("TOPLEFT",listContent,"TOPLEFT",8,-8)
-            none:SetTextColor(0.65,0.30,0.30)
-            none:SetText("No "..class.."s available for leveling.  (Max level characters are excluded.)")
-            table.insert(charRows, none) ; listContent:SetHeight(30) ; return
-        end
-        for i,ch in ipairs(matches) do
-            local even=(i%2==0)
-            local row=CreateFrame("Button",nil,listContent)
-            row:SetHeight(24)
-            row:SetPoint("TOP",   listContent, "TOP",   0, -(i-1)*24)
-            row:SetPoint("LEFT",  listContent, "LEFT",  0, 0)
-            row:SetPoint("RIGHT", listContent, "RIGHT", 0, 0)
-            local rowBg=row:CreateTexture(nil,"BACKGROUND") ; rowBg:SetAllPoints()
-            rowBg:SetColorTexture(even and C.row_even[1] or C.row_odd[1],
-                                  even and C.row_even[2] or C.row_odd[2],
-                                  even and C.row_even[3] or C.row_odd[3],1)
-            local cc=WSID_CLASS_COLORS[ch.class] or {r=0.8,g=0.8,b=0.8}
-            local fs=row:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-            fs:SetPoint("LEFT",row,"LEFT",10,0) ; fs:SetJustifyH("LEFT")
-            fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s|r  |cffffcc00Lv %d|r%s",
-                cc.r*255,cc.g*255,cc.b*255,ch.name,ch.race or "",ch.level or 0,
-                ch.current and "  |cff55cc55(you)|r" or ""))
-            local charData=ch
-            row:SetScript("OnClick", function()
-                selectedChar=charData
-                for _,r in ipairs(charRows) do
-                    if r._bg then
-                        local re=r._even
-                        r._bg:SetColorTexture(re and C.row_even[1] or C.row_odd[1],
-                                              re and C.row_even[2] or C.row_odd[2],
-                                              re and C.row_even[3] or C.row_odd[3],1)
-                    end
-                end
-                rowBg:SetColorTexture(C.row_select[1],C.row_select[2],C.row_select[3],1)
-            end)
-            row:SetScript("OnEnter", function()
-                if selectedChar~=charData then rowBg:SetColorTexture(C.row_hover[1],C.row_hover[2],C.row_hover[3],1) end end)
-            row:SetScript("OnLeave", function()
-                if selectedChar~=charData then
-                    rowBg:SetColorTexture(even and C.row_even[1] or C.row_odd[1],
-                                         even and C.row_even[2] or C.row_odd[2],
-                                         even and C.row_even[3] or C.row_odd[3],1)
-                end end)
-            row._bg=rowBg ; row._even=even ; row._charData=ch
-            table.insert(charRows, row)
-        end
-        listContent:SetHeight(math.max(24,#matches*24+2))
-    end
-
-    local function DoSpinClass(onDone)
-        local pool={} ; for cls in pairs(WSID_CLASS_COLORS) do table.insert(pool,cls) end
-        StopSlot() ; pickedClass=nil ; selectedChar=nil
-        classLabel:SetText("Class") ; classLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        expLabel:SetText("Expansion") ; expLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-        spinExpBtn:SetEnabled(false) ; ClearList()
-        classLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        StartSlot(classLabel, pool, function(winner)
-            pickedClass=winner
-            local cc=WSID_CLASS_COLORS[winner]
-            if cc then classLabel:SetTextColor(cc.r,cc.g,cc.b) end
-            PopulateList(winner) ; spinExpBtn:SetEnabled(true)
-
-            -- Auto-pick: spin a random eligible character from the list
-            if autoPick and #charRows > 0 then
-                -- Build eligible pool (already filtered in PopulateList via charRows)
-                local eligible = {}
-                for _, row in ipairs(charRows) do
-                    if row._charData then table.insert(eligible, row) end
-                end
-                if #eligible > 0 then
-                    -- Small delay so the class slot finishes visually first
-                    C_Timer.After(0.3, function()
-                        local pick = eligible[math.random(#eligible)]
-                        -- Simulate a click on that row
-                        pick:GetScript("OnClick")(pick)
-                        -- Flash the selected row so user sees it
-                        if pick._bg then
-                            pick._bg:SetColorTexture(C.spin_text[1]*0.6,C.spin_text[2]*0.6,C.spin_text[3]*0.6,1)
-                            C_Timer.After(0.15, function()
-                                pick._bg:SetColorTexture(C.row_select[1],C.row_select[2],C.row_select[3],1)
-                            end)
-                        end
-                    end)
-                end
-            end
-
-            if onDone then onDone(winner) end
-        end)
-    end
-
-    spinClassBtn:SetScript("OnClick", function()
-        spinClassBtn:SetEnabled(false) ; spinAllBtn:SetEnabled(false)
-        DoSpinClass(function(_) spinClassBtn:SetEnabled(true) ; spinAllBtn:SetEnabled(true) end)
-    end)
-
-    spinExpBtn:SetScript("OnClick", function()
-        if not selectedChar then
-            UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r Select a character first.",1,0.8,0.2) ; return
-        end
-        local pool = GetExpansionPool(selectedChar.level or 1)
-        if #pool == 1 then
-            expLabel:SetText(pool[1])
-            expLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-            return
-        end
-        StopSlot() ; spinExpBtn:SetEnabled(false)
-        expLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        StartSlot(expLabel, pool, function(_)
-            expLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3]) ; spinExpBtn:SetEnabled(true)
-        end)
-    end)
-
-    spinAllBtn:SetScript("OnClick", function()
-        spinClassBtn:SetEnabled(false) ; spinAllBtn:SetEnabled(false) ; spinExpBtn:SetEnabled(false)
-        DoSpinClass(function(winner)
-            local autoChar=nil
-            for _,ch in ipairs(WSID_Roster) do
-                local excluded = WhatShouldIDoDB.excludedChars and WhatShouldIDoDB.excludedChars[ch.name]
-                if ch.class==winner and (ch.level or 0) < 90 and not excluded then
-                    autoChar=ch ; break
-                end
-            end
-            if autoChar then
-                selectedChar=autoChar
-                if charRows[1] and charRows[1]._bg then
-                    charRows[1]._bg:SetColorTexture(C.row_select[1],C.row_select[2],C.row_select[3],1)
-                end
-                local pool=GetExpansionPool(autoChar.level or 1)
-                if #pool==1 then
-                    expLabel:SetText(pool[1])
-                    expLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-                    spinClassBtn:SetEnabled(true) ; spinExpBtn:SetEnabled(true) ; spinAllBtn:SetEnabled(true)
-                else
-                    expLabel:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-                    StartSlot(expLabel, pool, function(_)
-                        expLabel:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-                        spinClassBtn:SetEnabled(true) ; spinExpBtn:SetEnabled(true) ; spinAllBtn:SetEnabled(true)
-                    end)
-                end
-            else
-                spinClassBtn:SetEnabled(true) ; spinExpBtn:SetEnabled(true) ; spinAllBtn:SetEnabled(true)
-            end
-        end)
-    end)
-
-    return panel
+        self:SpinExpansionFor(autoChar, function()
+            self:SetSpinButtonsEnabled(true);
+        end);
+    end);
 end
 
-------------------------------------------------------------------------
--- NAME GENERATOR DATA
-------------------------------------------------------------------------
+local function BuildLevelingPanel(contentArea)
+    local panel = addon.MakePanel(contentArea);
+    Mixin(panel, LevelingPanelMixin);
 
-local NAME_DATA = {
-    ["Human"] = {
-        male   = {{"Al","Ard","Bren","Cal","Dar","Ed","Gar","Hal","Jan","Kel","Lor","Mar","Ned","Or","Per","Ran","Sar","Tal","Ulf","Val"},
-                  {"an","ath","bert","dan","ek","en","ford","hard","ik","lan","len","mar","on","or","ric","rick","ton","us","win"}},
-        female = {{"Ade","Bri","Cath","Dor","El","Gwen","Helen","Is","Joss","Kath","Lil","Mar","Mir","Nat","Or","Per","Ros","Sara","Tan","Val"},
-                  {"a","aine","ath","en","ess","ia","ine","ith","la","len","lyn","na","nis","ora","ra","tha","ya"}},
-    },
-    ["Night Elf"] = {
-        male   = {{"Ael","Alth","Aren","Cel","Dath","Elar","Fal","Halad","Iel","Kael","Lor","Mal","Nath","Oel","Reth","Sal","Tal","Vel","Xal","Zel"},
-                  {"adan","amir","aran","avel","dath","elar","enar","ethas","idan","ilar","inar","istor","ithas","odath","oran","orin","othas","udath","unar"}},
-        female = {{"Ash","Bel","Cel","Dath","Elun","Fael","Ilth","Kal","Lun","Mael","Nael","Quel","Rael","Sal","Tal","Thal","Uel","Val","Xal","Zel"},
-                  {"ania","ara","aris","ath","dath","dris","elle","eris","iath","iel","inda","ira","ith","lia","liel","nara","nis","riel","sha","thas"}},
-    },
-    ["Orc"] = {
-        male   = {{"Bak","Drak","Grak","Grom","Gor","Gruk","Karg","Krak","Lok","Mak","Mor","Nak","Orgr","Rak","Rok","Thrak","Trok","Urak","Vrak","Zug"},
-                  {"al","am","ar","ash","az","dan","en","gal","gar","gath","grak","grim","gun","ish","kar","mak","mar","nosh","rok","tar","ush"}},
-        female = {{"Azg","Drak","Gasha","Gruk","Kasha","Loka","Masha","Naka","Orka","Raka","Roka","Shaka","Thaka","Traka","Urka","Vaka","Waka","Yaka","Zaka","Zuga"},
-                  {"a","asha","da","ga","isha","ka","la","ma","na","ra","sha","ta","thra","tuka","ya","za"}},
-    },
-    ["Dwarf"] = {
-        male   = {{"Ald","Bald","Bor","Dar","Dun","Eld","Fal","Gald","Gimb","Gor","Grim","Gund","Hal","Keld","Morg","Orn","Thor","Thur","Ulf","Vol"},
-                  {"ak","al","an","bar","bek","dar","din","ek","en","fur","gal","grim","in","ir","kin","lin","mir","nar","ok","rin","ur"}},
-        female = {{"Ald","Beld","Bryn","Deld","Edl","Fald","Geld","Gild","Gyld","Held","Hyld","Ild","Keld","Meld","Nyld","Old","Ryld","Syld","Thyld","Wyld"},
-                  {"a","ais","da","dis","dra","dris","dyn","ia","ina","ira","ith","na","nda","nis","ra","rin","rith","ryn","tha","yn"}},
-    },
-    ["Gnome"] = {
-        male   = {{"Bil","Bim","Daz","Fiz","Giz","Kaz","Mek","Nib","Pix","Poz","Qix","Rix","Siz","Taz","Tik","Viz","Whiz","Wiz","Zap","Zip"},
-                  {"blix","ble","borg","brix","daz","fiz","gix","gle","grik","lix","mek","nix","pix","plex","rix","snik","taz","tik","trix","zap","zig"}},
-        female = {{"Bel","Bix","Daz","Fiz","Gix","Kaz","Mex","Nix","Pix","Qix","Rix","Siz","Taz","Tix","Vix","Wix","Xix","Yix","Zix","Zap"},
-                  {"a","ble","da","dra","fiz","gix","ia","ina","ira","ith","la","lix","na","nia","nix","ra","rix","sha","tix","za"}},
-    },
-    ["Troll"] = {
-        male   = {{"Akil","Bwon","Dal","Gan","Hak","Jin","Kaz","Khal","Mal","Rak","Ras","Sen","Tal","Vol","Wal","Zal","Zan","Zar","Zep","Zul"},
-                  {"'a","'amon","'ar","'ari","'jin","'jin","'kah","'kan","'kar","'kas","'rak","'raki","'rik","'ro","'rok","'thas","'tiki","'zar","'zin","'zum"}},
-        female = {{"Akil","Bwon","Dal","Gan","Hak","Jin","Kaz","Khal","Mal","Rak","Ras","Sen","Tal","Vol","Wal","Zal","Zan","Zar","Zep","Zul"},
-                  {"'a","'aja","'ali","'ama","'ani","'ara","'ari","'asha","'ini","'ira","'isa","'ita","'iya","'ola","'ona","'ora","'sha","'tika","'ya","'za"}},
-    },
-    ["Blood Elf"] = {
-        male   = {{"Ael","Anar","Bel","Dath","Elar","Fal","Ial","Kael","Lor","Mal","Nath","Quel","Rael","Sal","Selth","Tal","Thal","Vel","Xal","Zel"},
-                  {"amir","anas","aran","aris","athas","dath","elar","enar","ethas","idan","ilar","iras","istor","ithas","odath","oran","orin","othas","umar","unar"}},
-        female = {{"Aela","Bel","Cael","Dath","Elara","Fael","Iala","Kael","Lael","Mael","Nael","Quel","Rael","Sal","Sel","Tal","Thal","Vel","Xal","Zel"},
-                  {"ania","ara","aris","ath","dath","dris","elle","eris","iath","iel","inda","ira","ith","lia","liel","nara","nis","riel","sha","thas"}},
-    },
-    ["Undead"] = {
-        male   = {{"Ath","Bane","Cor","Crypt","Dark","Dead","Dread","Grim","Mal","Mor","Nec","Rot","Shade","Skel","Soul","Spite","Tomb","Vile","Wrath","Wraith"},
-                  {"bone","blight","crypt","curse","death","decay","dread","fang","grim","grave","hate","maw","plague","rot","shade","skull","spite","tomb","vex","woe"}},
-        female = {{"Ash","Bane","Cor","Crypt","Dark","Dead","Dread","Grim","Mal","Mor","Mor","Rot","Shade","Skel","Soul","Spite","Tomb","Vile","Wrath","Wraith"},
-                  {"a","ash","bane","bone","da","dra","ia","ina","ira","ith","la","na","nia","ra","rith","sha","thas","vex","ya","za"}},
-    },
-    ["Draenei"] = {
-        male   = {{"Akh","Azz","Dar","Dur","Esh","Ikh","Khar","Lor","Mar","Mor","Naz","Ner","Oth","Resh","Sha","Thar","Ther","Ukh","Vash","Zar"},
-                  {"adar","adis","akhar","amosh","anak","anar","anosh","aras","aris","athas","athor","avash","edas","edis","enas","enis","ethas","ithar","ithos","udas"}},
-        female = {{"Akh","Azz","Dar","Dur","Esh","Ikh","Khar","Lor","Mar","Mor","Naz","Ner","Oth","Resh","Sha","Thar","Ther","Ukh","Vash","Zar"},
-                  {"a","adis","aeis","aia","aira","akia","alia","anis","aras","aria","asha","asis","atha","eis","ena","enia","ika","ilia","ira","isha"}},
-    },
-    ["Tauren"] = {
-        male   = {{"Brug","Drak","Grak","Gor","Gruk","Hamuul","Karg","Krag","Lok","Mag","Mak","Mor","Mur","Nak","Rok","Rug","Tor","Torg","Unk","Zan"},
-                  {"amani","anar","athar","atuk","duruk","gadar","ganar","gar","grak","inar","itar","kadar","kanar","nadar","nanar","rakar","ranar","tadar","tanar","turak"}},
-        female = {{"Ayame","Azak","Brana","Drana","Grana","Hana","Jana","Kana","Lana","Mana","Nana","Rana","Rona","Sana","Tana","Tona","Uana","Vana","Wana","Yana"},
-                  {"a","ada","ana","anda","ani","anka","ara","ari","asha","ata","aya","ina","ira","isha","ita","iya","ona","ora","sha","ya"}},
-    },
-    ["Worgen"] = {
-        male   = {{"Ald","Arn","Balt","Bram","Cald","Drak","Eld","Falk","Grim","Hark","Keld","Mork","Nark","Ork","Ralk","Sark","Tark","Ulk","Vork","Wark"},
-                  {"en","ar","ath","borne","cliffe","croft","dale","fell","ford","grimm","hurst","moor","more","ness","shaw","shire","thorpe","ton","vale","wood"}},
-        female = {{"Ald","Ash","Bram","Cath","Drak","Eld","Falk","Grim","Hark","Keld","Mork","Nark","Ork","Ralk","Sark","Tark","Ulk","Vork","Wark","Wren"},
-                  {"a","ah","ath","borne","dale","en","fell","ford","grimm","hurst","ia","ina","ira","ith","la","moor","na","ness","ra","sha"}},
-    },
-    ["Goblin"] = {
-        male   = {{"Bix","Blaz","Daz","Fiz","Giz","Kaz","Krix","Mek","Nix","Pix","Rix","Slix","Snix","Stix","Taz","Trik","Vix","Wix","Zap","Zip"},
-                  {"blix","ble","borg","brix","daz","fiz","gix","gle","grik","lix","mek","nix","pix","plex","rix","snik","taz","trik","trix","zap"}},
-        female = {{"Bix","Blaz","Daz","Fiz","Giz","Kaz","Krix","Mek","Nix","Pix","Rix","Slix","Snix","Stix","Taz","Trik","Vix","Wix","Zap","Zip"},
-                  {"a","ble","da","dra","fiz","gix","ia","ina","ira","ith","la","lix","na","nia","nix","ra","rix","sha","tix","za"}},
-    },
-    ["Pandaren"] = {
-        male   = {{"Chen","Fei","Han","Ji","Kun","Lei","Li","Liang","Lin","Liu","Long","Mei","Ming","Peng","Quan","Shen","Wei","Xiao","Yan","Yu"},
-                  {"bao","chen","da","feng","han","hua","ji","jian","jun","kun","lei","li","lian","long","ming","peng","qing","shan","wei","xuan"}},
-        female = {{"Bao","Chen","Fei","Han","Ji","Kun","Lei","Li","Liang","Lin","Liu","Mei","Ming","Peng","Quan","Shen","Wei","Xiao","Yan","Yu"},
-                  {"a","bao","chen","da","fen","hua","ia","ina","ira","ith","juan","la","lan","li","lian","mei","ming","na","ra","sha"}},
-    },
-    ["Void Elf"] = {
-        male   = {{"Aethar","Crael","Dar","Dusk","Ethar","Fael","Gael","Hal","Iael","Jael","Kael","Lael","Mael","Nael","Oael","Pael","Rael","Sael","Tael","Vel"},
-                  {"amir","anas","aran","aris","athas","dath","elar","enar","ethas","idan","ilar","iras","istor","ithas","odath","oran","orin","othas","umar","unar"}},
-        female = {{"Aela","Bel","Cael","Dusk","Elara","Fael","Iala","Kael","Lael","Mael","Nael","Quel","Rael","Sal","Sel","Tal","Thal","Vel","Xal","Zel"},
-                  {"ania","ara","aris","ath","dath","dris","elle","eris","iath","iel","inda","ira","ith","lia","liel","nara","nis","riel","sha","thas"}},
-    },
-    ["Dracthyr"] = {
-        male   = {{"Arath","Drak","Embr","Flam","Frost","Gale","Imm","Keth","Lith","Malath","Nath","Rath","Scal","Sear","Smok","Storm","Thorn","Venth","Volc","Wyth"},
-                  {"adon","adrak","akar","akath","aketh","alath","anath","arath","arkath","arnak","arrath","arshak","arthas","arwing","athos","aveth","axath","azrak","iketh","unwing"}},
-        female = {{"Arath","Drak","Embr","Flam","Frost","Gale","Imm","Keth","Lith","Malath","Nath","Rath","Scal","Sear","Smok","Storm","Thorn","Venth","Volc","Wyth"},
-                  {"a","adra","aela","aera","aia","aira","alia","anis","ara","aria","asha","ath","eia","ela","ena","enia","iera","ilia","ira","isha"}},
-    },
-    ["Earthen"] = {
-        male   = {{"Ald","Bald","Bor","Dar","Dun","Eld","Fal","Gald","Grav","Gor","Grim","Gund","Hal","Iron","Keld","Morg","Ore","Stone","Thor","Vol"},
-                  {"ak","al","an","bar","bek","dar","din","ek","en","fur","gal","grim","in","ir","kin","lin","mir","nar","ok","rin"}},
-        female = {{"Ald","Beld","Bryn","Deld","Edl","Fald","Geld","Gild","Gyld","Held","Hyld","Ild","Keld","Meld","Nyld","Old","Ryld","Syld","Thyld","Wyld"},
-                  {"a","ais","da","dis","dra","dris","dyn","ia","ina","ira","ith","na","nda","nis","ra","rin","rith","ryn","tha","yn"}},
-    },
-    ["Haranir"] = {
-        male   = {{"Ahar","Bhar","Char","Dhar","Ehar","Fhar","Ghar","Hhar","Ihar","Jhar","Khar","Lhar","Mhar","Nhar","Ohar","Phar","Rhar","Shar","Thar","Vhar"},
-                  {"anis","aras","aris","asha","asis","atha","edas","edis","enas","enis","ethas","ithar","ithos","udas","udar","unas","unar","uras","uris","usha"}},
-        female = {{"Ahar","Bhar","Char","Dhar","Ehar","Fhar","Ghar","Hhar","Ihar","Jhar","Khar","Lhar","Mhar","Nhar","Ohar","Phar","Rhar","Shar","Thar","Vhar"},
-                  {"a","adis","aeis","aia","aira","akia","alia","anis","aras","aria","asha","asis","atha","eis","ena","enia","ika","ilia","ira","isha"}},
-    },
-}
+    panel.header = addon.MakeHeader(panel, "Leveling Wheel");
+    panel.header:SetPoint(addon.TOPLEFT, panel, addon.TOPLEFT, addon.PAD, -addon.PAD);
+    panel.desc = addon.MakeLabel(panel, "Spin a class -> pick a character -> spin an expansion.", panel.header, addon.BOTTOMLEFT, 4, -8);
+    panel.autoPickLbl = panel:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+    panel.autoPickLbl:SetPoint(addon.TOPLEFT, panel.desc, addon.BOTTOMLEFT, 0, -8);
+    panel.autoPickLbl:SetText("Auto-pick a character after class spin:");
+    panel.autoPick = false;
+    panel.autoPickBtn = addon.MakeBtn(panel, "Off", 60, 24);
+    panel.autoPickBtn:SetPoint(addon.LEFT, panel.autoPickLbl, addon.RIGHT, 8, 0);
+    panel.classBox, panel.classLabel = addon.MakeResult(panel, nil, 52, "CLASS");
+    panel.classBox:SetPoint(addon.TOPLEFT, panel.autoPickLbl, addon.BOTTOMLEFT, 0, -10);
+    panel.classLabel:SetText("Class");
+    panel.spinClassBtn = addon.MakeBtn(panel, "Spin Class", nil, 30);
+    panel.spinClassBtn:SetPoint(addon.TOP, panel.classBox, addon.BOTTOM, 0, -10);
+    panel.spinClassBtn:SetPoint(addon.LEFT, panel, addon.LEFT, addon.PAD, 0);
+    panel.spinClassBtn:SetPoint(addon.RIGHT, panel, addon.RIGHT, -addon.PAD, 0);
+    panel.charHdr = addon.MakeHeader(panel, "Characters of that class  (click to select)");
+    panel.charHdr:SetPoint(addon.TOPLEFT, panel.spinClassBtn, addon.BOTTOMLEFT, 0, -10);
+    panel.listBG, panel.listContent, panel.listReset = addon.MakeScrollBox(panel, nil, 110);
+    panel.listBG:SetPoint(addon.TOPLEFT, panel.charHdr, addon.BOTTOMLEFT, 0, 0);
+    panel.noneLabel = panel.listContent:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+    panel.noneLabel:SetPoint(addon.TOPLEFT, panel.listContent, addon.TOPLEFT, 8, -8);
+    panel.noneLabel:SetTextColor(0.65, 0.30, 0.30);
+    panel.noneLabel:Hide();
 
--- Races that share name tables with another
-local NAME_ALIASES = {
-    ["Gnome"]               = "Gnome",
-    ["Dark Iron Dwarf"]     = "Dwarf",
-    ["Lightforged Draenei"] = "Draenei",
-    ["Kul Tiran"]           = "Human",
-    ["Mechagnome"]          = "Gnome",
-    ["Nightborne"]          = "Blood Elf",
-    ["Highmountain Tauren"] = "Tauren",
-    ["Mag'har Orc"]         = "Orc",
-    ["Zandalari Troll"]     = "Troll",
-    ["Vulpera"]             = "Goblin",
-}
+    panel.characterRowPool = CreateFramePool(addon.BUTTON, panel.listContent);
 
-local function GenerateName(race, gender)
-    local key = NAME_ALIASES[race] or race
-    local data = NAME_DATA[key]
-    if not data then
-        -- fallback generic fantasy
-        local pre = {"Ael","Bel","Cal","Dal","El","Fal","Gal","Hal","Ial","Kal"}
-        local suf = {"an","ar","ath","en","ion","ith","or","un","us","yn"}
-        return pre[math.random(#pre)] .. suf[math.random(#suf)]
-    end
-    local g = (gender == "Female") and "female" or "male"
-    local prefixes = data[g][1]
-    local suffixes = data[g][2]
-    return prefixes[math.random(#prefixes)] .. suffixes[math.random(#suffixes)]
+    panel.expBox, panel.expLabel = addon.MakeResult(panel, nil, 52, "EXPANSION");
+    panel.expBox:SetPoint(addon.TOPLEFT, panel.listBG, addon.BOTTOMLEFT, 0, -10);
+    panel.expLabel:SetText("Expansion")
+    panel.spinExpBtn = addon.MakeBtn(panel, "Spin Expansion", nil, 30);
+    panel.spinExpBtn:SetPoint(addon.TOP, panel.expBox, addon.BOTTOM, 0, -10);
+    panel.spinExpBtn:SetPoint(addon.LEFT, panel, addon.LEFT, addon.PAD, 0);
+    panel.spinExpBtn:SetPoint(addon.RIGHT, panel, addon.CENTER, -3, 0);
+    panel.spinExpBtn:SetEnabled(false)
+    panel.spinAllBtn = addon.MakeBtn(panel, "Spin All Steps", nil, 30);
+    panel.spinAllBtn:SetPoint(addon.TOP, panel.expBox, addon.BOTTOM, 0, -10);
+    panel.spinAllBtn:SetPoint(addon.LEFT, panel, addon.CENTER, 3, 0);
+    panel.spinAllBtn:SetPoint(addon.RIGHT, panel, addon.RIGHT, -addon.PAD, 0);
+    panel.noteLbl = panel:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+    panel.noteLbl:SetPoint(addon.TOPLEFT, panel.spinExpBtn, addon.BOTTOMLEFT, 0, -10);
+    panel.noteLbl:SetText("Roster fills automatically as you log into each character.");
+
+    addon.ApplyColor(panel.autoPickLbl, "SetTextColor", CT.dim_text);
+    addon.ApplyColor(panel.noteLbl, "SetTextColor", CT.dim_text);
+
+    panel.pickedClass=nil;
+    panel.selectedChar=nil;
+
+    panel.autoPickBtn:SetScript(addon.OnClick, function() panel:AutoPick(); end);
+    panel.spinClassBtn:SetScript(addon.OnClick, function() panel:SpinClassBtnClick(); end);
+    panel.spinExpBtn:SetScript(addon.OnClick, function() panel:SpinExpBtnClick(); end);
+    panel.spinAllBtn:SetScript(addon.OnClick, function() panel:SpinAllBtnClick(); end);
+
+    return panel;
 end
-
-local function GenerateNameList(race, gender, count)
-    local names = {}
-    local seen  = {}
-    local attempts = 0
-    while #names < count and attempts < count * 10 do
-        local n = GenerateName(race, gender)
-        if not seen[n] then
-            seen[n] = true
-            table.insert(names, n)
-        end
-        attempts = attempts + 1
-    end
-    return names
-end
-
-------------------------------------------------------------------------
--- NAME GENERATOR PANEL
-------------------------------------------------------------------------
-
+addon.BuildLevelingPanel = BuildLevelingPanel;

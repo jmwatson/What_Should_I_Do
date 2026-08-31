@@ -1,196 +1,204 @@
--- Panels/Names.lua
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
+local DB = addon.DB;
+local CT = addon.Runtime.COLOR_TABLE;
 
-function BuildNamePanel(contentArea)
-    local panel = MakePanel(contentArea)
-    local hdr = MakeHeader(panel, "Name Generator")
-    hdr:SetPoint("TOPLEFT", panel, "TOPLEFT", WSID_PAD, -WSID_PAD)
+local function SetupRow(row)
+    row.bg = row:CreateTexture(nil, addon.BACKGROUND);
+    row.bg:SetAllPoints();
+    row.nl = row:CreateFontString(nil, addon.OVERLAY);
+    row.nl:SetFont(addon.GAME_FONT, 13, addon.EMPTY_STRING);
+    row.nl:SetPoint(addon.LEFT, row, addon.LEFT, 12, 0);
+    row.nl:SetJustifyH(addon.LEFT);
+    row.copyHint = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+    row.copyHint:SetPoint(addon.RIGHT, row, addon.RIGHT, -10, 0);
+    addon.ApplyColor(row.copyHint, "SetTextColor", CT.dim_text);
+    row.copyHint:SetText("click to copy");
+    row.copyHint:Hide();
 
-    local desc = MakeDimLabel(panel, "Pick a race and gender to generate a list of names.", hdr, "BOTTOMLEFT", 4, -8)
-
-    -- Race dropdown (we'll use a simple scrollable button list)
-    local raceLabel = panel:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    raceLabel:SetPoint("TOPLEFT", desc, "BOTTOMLEFT", 0, -10)
-    raceLabel:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-    raceLabel:SetText("Race:")
-
-    -- Race selector display box
-    local raceBox = CreateFrame("Button", nil, panel, "BackdropTemplate")
-    raceBox:SetSize(200, 26)
-    raceBox:SetPoint("LEFT", raceLabel, "RIGHT", 8, 0)
-    BgBorder(raceBox, C.result_bg[1],C.result_bg[2],C.result_bg[3], C.result_bdr[1],C.result_bdr[2],C.result_bdr[3])
-    local raceBoxLbl = raceBox:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    raceBoxLbl:SetPoint("LEFT", raceBox, "LEFT", 8, 0)
-    raceBoxLbl:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-    raceBoxLbl:SetText("Select Race...")
-
-    -- Gender toggle
-    local genderLbl = panel:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-    genderLbl:SetPoint("LEFT", raceBox, "RIGHT", 16, 0)
-    genderLbl:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-    genderLbl:SetText("Gender:")
-
-    local selectedGender = "Male"
-    local genderBtns = {}
-    for i, g in ipairs({"Male","Female"}) do
-        local gb = MakeBtn(panel, g, 72, 26)
-        gb:SetPoint("LEFT", genderLbl, "RIGHT", 6+(i-1)*76, 0)
-        local gv = g
-        gb:SetScript("OnClick", function()
-            selectedGender = gv
-            for _, b in ipairs(genderBtns) do
-                b:SetBackdropColor(C.btn_bg[1],C.btn_bg[2],C.btn_bg[3])
-                b:SetBackdropBorderColor(C.btn_bdr[1],C.btn_bdr[2],C.btn_bdr[3],1)
-                b._lbl:SetTextColor(C.btn_text[1],C.btn_text[2],C.btn_text[3])
-            end
-            gb:SetBackdropColor(C.nav_active[1],C.nav_active[2],C.nav_active[3])
-            gb:SetBackdropBorderColor(C.nav_border[1],C.nav_border[2],C.nav_border[3],1)
-            gb._lbl:SetTextColor(1,1,1)
-        end)
-        table.insert(genderBtns, gb)
-    end
-    -- Default Male active
-    genderBtns[1]:SetBackdropColor(C.nav_active[1],C.nav_active[2],C.nav_active[3])
-    genderBtns[1]:SetBackdropBorderColor(C.nav_border[1],C.nav_border[2],C.nav_border[3],1)
-    genderBtns[1]._lbl:SetTextColor(1,1,1)
-
-    -- Race dropdown popup
-    local raceList = CreateFrame("Frame", nil, panel, "BackdropTemplate")
-    raceList:SetSize(200, 300)
-    raceList:SetPoint("TOPLEFT", raceBox, "BOTTOMLEFT", 0, -2)
-    raceList:SetFrameStrata("TOOLTIP")
-    BgBorder(raceList, C.bg[1],C.bg[2],C.bg[3], C.win_border[1],C.win_border[2],C.win_border[3])
-    raceList:Hide()
-
-    local allRaces = {}
-    for _, r in ipairs(WSID_ALL_RACES) do table.insert(allRaces, r.race) end
-    table.sort(allRaces)
-
-    local selectedRace = nil
-    local raceRowFrames = {}
-
-    local raceScroll, raceScrollContent, _ = MakeScrollBox(raceList, 198, 298)
-    raceScroll:SetPoint("TOPLEFT", raceList, "TOPLEFT", 1, -1)
-
-    for i, race in ipairs(allRaces) do
-        local row = CreateFrame("Button", nil, raceScrollContent)
-        row:SetSize(196, 22)
-        row:SetPoint("TOPLEFT", raceScrollContent, "TOPLEFT", 0, -(i-1)*22)
-        local rbg = row:CreateTexture(nil,"BACKGROUND") ; rbg:SetAllPoints()
-        rbg:SetColorTexture(i%2==0 and C.row_even[1] or C.row_odd[1],
-                            i%2==0 and C.row_even[2] or C.row_odd[2],
-                            i%2==0 and C.row_even[3] or C.row_odd[3], 1)
-        local rlbl = row:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-        rlbl:SetPoint("LEFT", row, "LEFT", 8, 0) ; rlbl:SetJustifyH("LEFT")
-        rlbl:SetTextColor(C.bright_text[1],C.bright_text[2],C.bright_text[3])
-        rlbl:SetText(race)
-        local rv = race
-        row:SetScript("OnClick", function()
-            selectedRace = rv
-            raceBoxLbl:SetText(rv)
-            raceBoxLbl:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-            raceList:Hide()
-            for _, r in ipairs(raceRowFrames) do r._bg:SetColorTexture(r._ec and C.row_even[1] or C.row_odd[1],r._ec and C.row_even[2] or C.row_odd[2],r._ec and C.row_even[3] or C.row_odd[3],1) end
-            rbg:SetColorTexture(C.row_select[1],C.row_select[2],C.row_select[3],1)
-        end)
-        row:SetScript("OnEnter", function() if selectedRace~=rv then rbg:SetColorTexture(C.row_hover[1],C.row_hover[2],C.row_hover[3],1) end end)
-        row:SetScript("OnLeave", function() if selectedRace~=rv then rbg:SetColorTexture(i%2==0 and C.row_even[1] or C.row_odd[1],i%2==0 and C.row_even[2] or C.row_odd[2],i%2==0 and C.row_even[3] or C.row_odd[3],1) end end)
-        row._bg = rbg ; row._ec = (i%2==0)
-        table.insert(raceRowFrames, row)
-    end
-    raceScrollContent:SetHeight(#allRaces * 22 + 2)
-
-    raceBox:SetScript("OnClick", function()
-        if raceList:IsShown() then raceList:Hide() else raceList:Show() end
-    end)
-
-    -- Generate button
-    local generateBtn = MakeBtn(panel, "Generate Names", nil, 30)
-    generateBtn:SetPoint("TOP",   raceLabel, "BOTTOM",  0, -14)
-    generateBtn:SetPoint("LEFT",  panel, "LEFT",   WSID_PAD, 0)
-    generateBtn:SetPoint("RIGHT", panel, "RIGHT",  -WSID_PAD, 0)
-
-    -- Name list scroll
-    local nameHdr = MakeHeader(panel, "Generated Names  (click to copy to chat)")
-    nameHdr:SetPoint("TOP",  generateBtn, "BOTTOM", 0, -10)
-    nameHdr:SetPoint("LEFT", panel, "LEFT", WSID_PAD, 0)
-
-    local nameBG, nameContent, nameReset = MakeScrollBox(panel, nil, 200)
-    nameBG:SetPoint("TOPLEFT", nameHdr, "BOTTOMLEFT", 0, 0)
-
-    local nameRows = {}
-
-    local function RenderNames(names)
-        for _, r in ipairs(nameRows) do r:Hide() end
-        nameRows = {}
-        for i, name in ipairs(names) do
-            local even = (i%2==0)
-            local row = CreateFrame("Button", nil, nameContent)
-            row:SetHeight(26)
-            row:SetPoint("TOP",   nameContent, "TOP",   0, -(i-1)*26)
-            row:SetPoint("LEFT",  nameContent, "LEFT",  0, 0)
-            row:SetPoint("RIGHT", nameContent, "RIGHT", 0, 0)
-            local rb = row:CreateTexture(nil,"BACKGROUND") ; rb:SetAllPoints()
-            rb:SetColorTexture(even and C.row_even[1] or C.row_odd[1],
-                               even and C.row_even[2] or C.row_odd[2],
-                               even and C.row_even[3] or C.row_odd[3], 1)
-            local nl = row:CreateFontString(nil,"OVERLAY")
-            nl:SetFont("Fonts\\FRIZQT__.TTF", 13, "")
-            nl:SetPoint("LEFT", row, "LEFT", 12, 0) ; nl:SetJustifyH("LEFT")
-            nl:SetTextColor(C.spin_text[1],C.spin_text[2],C.spin_text[3])
-            nl:SetText(name)
-
-            local copyHint = row:CreateFontString(nil,"OVERLAY","GameFontNormalSmall")
-            copyHint:SetPoint("RIGHT", row, "RIGHT", -10, 0)
-            copyHint:SetTextColor(C.dim_text[1],C.dim_text[2],C.dim_text[3])
-            copyHint:SetText("click to copy")
-            copyHint:Hide()
-
-            local n = name
-            row:SetScript("OnClick", function()
-                -- Copy to default chat editbox
-                ChatFrame_OpenChat(n)
-            end)
-            row:SetScript("OnEnter", function()
-                rb:SetColorTexture(C.row_hover[1],C.row_hover[2],C.row_hover[3],1)
-                copyHint:Show()
-            end)
-            row:SetScript("OnLeave", function()
-                rb:SetColorTexture(even and C.row_even[1] or C.row_odd[1],
-                                   even and C.row_even[2] or C.row_odd[2],
-                                   even and C.row_even[3] or C.row_odd[3], 1)
-                copyHint:Hide()
-            end)
-            table.insert(nameRows, row)
-        end
-        nameContent:SetHeight(math.max(26, #names*26+2))
-        nameReset()
-    end
-
-    generateBtn:SetScript("OnClick", function()
-        if not selectedRace then
-            UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r Select a race first.", 1,0.8,0.2)
-            return
-        end
-        raceList:Hide()
-        local names = GenerateNameList(selectedRace, selectedGender, 10)
-        RenderNames(names)
-    end)
-
-    -- Also generate when race is selected from dropdown
-    -- (handled inline above; user can click Generate)
-
-    return panel
+    row:SetScript(addon.OnClick, function()
+        ChatFrame_OpenChat(row._name);
+    end);
+    row:SetScript(addon.OnEnter, function()
+        addon.ApplyColor(row.bg, "SetColorTexture", CT.row_hover);
+        row.copyHint:Show();
+    end);
+    row:SetScript(addon.OnLeave, function()
+        addon.ApplyColor(row.bg, "SetColorTexture", row._even and CT.row_even or CT.row_odd);
+        row.copyHint:Hide();
+    end);
 end
 
-------------------------------------------------------------------------
--- PROFESSION PICKER PANEL
-------------------------------------------------------------------------
+local NamesPanelMixin = {};
 
-local WSID_PROFESSIONS = {
-    "Alchemy","Blacksmithing","Enchanting","Engineering","Herbalism",
-    "Inscription","Jewelcrafting","Leatherworking","Mining","Skinning","Tailoring",
-    "Fishing","Cooking",
-}
+function NamesPanelMixin:MakeGenderBtn(gender)
+    local offset = gender == "Male" and 0 or 1;
+    local btn = addon.MakeBtn(self, gender, 72, 26);
+    btn:SetPoint(addon.LEFT, self.genderLbl, addon.RIGHT, 6 + offset * 76, 0);
+    btn:SetScript(addon.OnClick, function()
+        self.selectedGender = gender;
+        for _, b in ipairs(self.genderBtns) do
+            addon.ApplyColor(b, "SetBackdropColor", CT.btn_bg);
+            addon.ApplyColor(b, "SetBackdropBorderColor", CT.btn_bdr);
+            addon.ApplyColor(b._lbl, "SetTextColor", CT.btn_text);
+        end
+        addon.ApplyColor(btn, "SetBackdropColor", CT.nav_active);
+        addon.ApplyColor(btn, "SetBackdropBorderColor", CT.nav_border);
+        addon.ApplyColor(btn._lbl, "SetTextColor", addon.BLACK);
+    end);
 
+    return btn;
+end
 
+function NamesPanelMixin:RenderNames(names)
+    self.nameRowPool:ReleaseAll();
+
+    for i, name in ipairs(names) do
+        local row = addon.AcquirePooledRow(self.nameRowPool, SetupRow);
+
+        row._name = name;
+        row._even = (i % 2 == 0);
+        row:SetHeight(26);
+        row:SetPoint(addon.TOP,   self.nameContent, addon.TOP,   0, -(i - 1) * 26);
+        row:SetPoint(addon.LEFT,  self.nameContent, addon.LEFT,  0, 0);
+        row:SetPoint(addon.RIGHT, self.nameContent, addon.RIGHT, 0, 0);
+        addon.ApplyColor(row.bg, "SetColorTexture", row._even and CT.row_even or CT.row_odd);
+        addon.ApplyColor(row.nl, "SetTextColor", CT.spin_text);
+        row.nl:SetText(name);
+        row:Show();
+    end
+
+    self.nameContent:SetHeight(math.max(26, #names * 26 + 2));
+    self.nameReset();
+end
+
+function NamesPanelMixin:SelectRace(row)
+    self.selectedRace = row._name;
+    self.raceBoxLbl:SetText(row._name);
+    addon.ApplyColor(self.raceBoxLbl, "SetTextColor", CT.spin_text);
+    self.raceList:Hide();
+
+    for _, r in ipairs(self.raceRowFrames) do
+        addon.ApplyColor(r._bg, "SetColorTexture", r._even and CT.row_even or CT.row_odd);
+    end
+
+    addon.ApplyColor(row._bg, "SetColorTexture", CT.row_select);
+end
+
+local function BuildNamePanel(contentArea)
+    local panel = addon.MakePanel(contentArea);
+    Mixin(panel, NamesPanelMixin);
+
+    panel.header = addon.MakeHeader(panel, addon.NAMES_LABEL);
+    panel.header:SetPoint(addon.TOPLEFT, panel, addon.TOPLEFT, addon.PAD, -addon.PAD);
+    panel.desc = addon.MakeLabel(panel, "Pick a race and gender to generate a list of names.", panel.header, addon.BOTTOMLEFT, 4, -8);
+    panel.raceLbl = panel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+    panel.raceLbl:SetPoint(addon.TOPLEFT, panel.desc, addon.BOTTOMLEFT, 0, -10);
+    panel.raceLbl:SetText("Race:");
+    panel.raceBox = CreateFrame(addon.BUTTON, nil, panel, addon.BACKDROP_TEMPLATE);
+    panel.raceBox:SetSize(200, 26);
+    panel.raceBox:SetPoint(addon.LEFT, panel.raceLbl, addon.RIGHT, 8, 0);
+    panel.raceBoxLbl = panel.raceBox:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL);
+    panel.raceBoxLbl:SetPoint(addon.LEFT, panel.raceBox, addon.LEFT, 8, 0);
+    panel.raceBoxLbl:SetText("Select Race...");
+    panel.genderLbl = panel:CreateFontString(nil,addon.OVERLAY,addon.NORMAL_SMALL)
+    panel.genderLbl:SetPoint(addon.LEFT, panel.raceBox, addon.RIGHT, 16, 0);
+    panel.genderLbl:SetText("Gender:");
+    panel.selectedGender = "Male";
+    panel.genderBtns = {
+        panel:MakeGenderBtn("Male");
+        panel:MakeGenderBtn("Female");
+    };
+
+    addon.ApplyColor(panel.raceLbl, "SetTextColor", CT.dim_text);
+    addon.BgBorder(panel.raceBox, CT.result_bg, CT.result_bdr);
+    addon.ApplyColor(panel.raceBoxLbl, "SetTextColor", CT.bright_text);
+    addon.ApplyColor(panel.genderLbl, "SetTextColor", CT.dim_text);
+
+    -- Default Male active
+    addon.ApplyColor(panel.genderBtns[1], "SetBackdropColor", CT.nav_active);
+    addon.ApplyColor(panel.genderBtns[1], "SetBackdropBorderColor", CT.nav_border);
+    addon.ApplyColor(panel.genderBtns[1]._lbl, "SetTextColor", addon.BLACK);
+
+    -- Race dropdown popup
+    panel.raceList = CreateFrame(addon.FRAME, nil, panel, addon.BACKDROP_TEMPLATE);
+    panel.allRaces = addon.GetRaceNames();
+    panel.selectedRace = nil;
+    panel.raceRowFrames = {};
+    panel.raceScroll, panel.raceContent, _ = addon.MakeScrollBox(panel.raceList, 198, 298);
+
+    panel.raceList:SetSize(200, 300);
+    panel.raceList:SetPoint(addon.TOPLEFT, panel.raceBox, addon.BOTTOMLEFT, 0, -2);
+    panel.raceList:SetFrameStrata("TOOLTIP");
+    addon.BgBorder(panel.raceList, CT.bg, CT.win_border);
+    panel.raceList:Hide();
+    table.sort(panel.allRaces);
+    panel.raceScroll:SetPoint(addon.TOPLEFT, panel.raceList, addon.TOPLEFT, 1, -1);
+
+    for i, race in ipairs(panel.allRaces) do
+        local row = CreateFrame(addon.BUTTON, nil, panel.raceContent);
+        row._bg = row:CreateTexture(nil, addon.BACKGROUND);
+        row._lbl = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+        row._name = race;
+        row._even = (i % 2 == 0);
+
+        row:SetSize(196, 22);
+        row:SetPoint(addon.TOPLEFT, panel.raceContent, addon.TOPLEFT, 0, -(i - 1) * 22);
+        row._bg:SetAllPoints();
+        addon.ApplyColor(row._bg, "SetColorTexture", i % 2 == 0 and CT.row_even or CT.row_odd);
+        row._lbl:SetPoint(addon.LEFT, row, addon.LEFT, 8, 0);
+        row._lbl:SetJustifyH(addon.LEFT);
+        addon.ApplyColor(row._lbl, "SetTextColor", CT.bright_text);
+        row._lbl:SetText(row._name);
+
+        row:SetScript(addon.OnClick, function() panel:SelectRace(row); end);
+        row:SetScript(addon.OnEnter, function()
+            if panel.selectedRace ~= row._name then
+                addon.ApplyColor(row._bg, "SetColorTexture", CT.row_hover);
+            end
+        end);
+        row:SetScript(addon.OnLeave, function()
+            if panel.selectedRace ~= row._name then
+                addon.ApplyColor(row._bg, "SetColorTexture", i % 2 == 0 and CT.row_even or CT.row_odd);
+            end
+        end);
+
+        table.insert(panel.raceRowFrames, row);
+    end
+
+    panel.raceContent:SetHeight(#panel.allRaces * 22 + 2);
+
+    panel.raceBox:SetScript(addon.OnClick, function()
+        if panel.raceList:IsShown() then
+            panel.raceList:Hide();
+        else
+            panel.raceList:Show();
+        end
+    end);
+
+    -- Generate button
+    panel.generateBtn = addon.MakeBtn(panel, "Generate Names", nil, 30);
+    panel.nameHdr = addon.MakeHeader(panel, "Generated Names  (click to copy to chat)");
+    panel.nameBG, panel.nameContent, panel.nameReset = addon.MakeScrollBox(panel, nil, 200);
+    panel.nameRowPool = CreateFramePool(addon.BUTTON, panel.nameContent);
+
+    panel.generateBtn:SetPoint(addon.TOP,   panel.raceLbl, addon.BOTTOM,  0, -14);
+    panel.generateBtn:SetPoint(addon.LEFT,  panel, addon.LEFT,   addon.PAD, 0);
+    panel.generateBtn:SetPoint(addon.RIGHT, panel, addon.RIGHT,  -addon.PAD, 0);
+    panel.nameHdr:SetPoint(addon.TOP,  panel.generateBtn, addon.BOTTOM, 0, -10);
+    panel.nameHdr:SetPoint(addon.LEFT, panel, addon.LEFT, addon.PAD, 0);
+    panel.nameBG:SetPoint(addon.TOPLEFT, panel.nameHdr, addon.BOTTOMLEFT, 0, 0);
+
+    panel.generateBtn:SetScript(addon.OnClick, function()
+        if not panel.selectedRace then
+            UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r Select a race first.", 1, 0.8, 0.2);
+            return;
+        end
+
+        panel.raceList:Hide();
+        local names = addon.GenerateNameList(panel.selectedRace, panel.selectedGender, 10);
+        panel:RenderNames(names);
+    end);
+
+    return panel;
+end
+addon.BuildNamePanel = BuildNamePanel;

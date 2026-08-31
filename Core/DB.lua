@@ -1,28 +1,50 @@
--- Core/DB.lua
--- SavedVariables initialisation
--- Author: I_AM_T3X | v1.0.0
+local _, addon = ...;
 
-function InitDB()
-    if not WhatShouldIDoDB then WhatShouldIDoDB = {} end
-    if not WhatShouldIDoDB.activities then
-        WhatShouldIDoDB.activities = {}
-        for _, v in ipairs(WSID_DEFAULT_ACTIVITIES) do table.insert(WhatShouldIDoDB.activities, v) end
+-- Persistent data
+addon.DB = {};
+
+-- Mutable runtime data
+addon.Runtime = {
+    COLOR_TABLE = {},
+    MainFrame = nil,
+    SettingsFrame = nil,
+};
+
+local defaults = {
+    colorTheme = nil,
+    COLOR_TABLE = {},
+    customColors = {},
+    excludedActivities = {},
+    excludedChars = {},
+    excludedExpansions = {},
+    excludeFarming = false,
+    excludedSubActivities = {},
+    seenChars = {},
+    uiScale = 1.0,
+};
+
+-- Populates the shared DB table
+local function InitDB()
+    local DB = addon.DB;
+    WhatShouldIDoDB = WhatShouldIDoDB or {};
+
+    -- Load saved values into the DB
+    for key, value in pairs(WhatShouldIDoDB) do
+        DB[key] = value;
     end
-    if not WhatShouldIDoDB.minimap       then WhatShouldIDoDB.minimap       = {hide=false, minimapPos=45} end
-    if not WhatShouldIDoDB.subActivities then WhatShouldIDoDB.subActivities = {} end
-    -- Clean up orphaned sub-activity keys
-    if WhatShouldIDoDB.subActivities then
-        local validKeys = {}
-        for _, act in ipairs(WhatShouldIDoDB.activities) do validKeys[act] = true end
-        for key in pairs(WhatShouldIDoDB.subActivities) do
-            if not validKeys[key] then WhatShouldIDoDB.subActivities[key] = nil end
+
+    -- Load any missing defaults
+    for key, value in pairs(defaults) do
+        if DB[key] == nil then
+            DB[key] = value;
         end
     end
-    if not WhatShouldIDoDB.seenChars    then WhatShouldIDoDB.seenChars    = {} end
-    if not WhatShouldIDoDB.colorTheme   then WhatShouldIDoDB.colorTheme   = "Default" end
-    if not WhatShouldIDoDB.uiScale       then WhatShouldIDoDB.uiScale       = 1.0 end
-    if not WhatShouldIDoDB.customColors then WhatShouldIDoDB.customColors = {} end
-    if not WhatShouldIDoDB.excludedChars       then WhatShouldIDoDB.excludedChars       = {} end
-    if not WhatShouldIDoDB.excludedExpansions   then WhatShouldIDoDB.excludedExpansions   = {} end
-    if WhatShouldIDoDB.excludeFarming == nil    then WhatShouldIDoDB.excludeFarming       = false end
+
+    if DB.colorTheme == nil then
+        DB.colorTheme = addon.DEFAULT_THEME;
+    end
+
+    -- Store our saved data into persistent storage
+    WhatShouldIDoDB = DB;
 end
+addon.InitDB = InitDB;
