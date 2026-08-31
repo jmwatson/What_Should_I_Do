@@ -59,7 +59,7 @@ function CreatorPanelMixin:UpdateClass(class)
     local cc = addon.CLASS_INFO[class];
 
     if cc then
-        addon.ApplyColor(self.classLabel, "SetTextColor", {cc.r, cc.g, cc.b});
+        addon.ApplyRGB(self.classLabel, "SetTextColor", cc.colors);
     else
         addon.ApplyColor(self.classLabel, "SetTextColor", CT.spin_text);
     end
@@ -117,7 +117,7 @@ function CreatorPanelMixin:SpinRaceBtnClick()
         self.infoLabel:SetText(" ");
         addon.ApplyColor(self.classLabel, "SetTextColor", CT.dim_text);
         addon.ApplyColor(self.raceLabel, "SetTextColor", CT.bright_text);
-        addon.StartSlot(self.raceLabel, names, function(winner) self:FinalizePick(winner); end);
+        addon.StartSlot(self.raceLabel, names, function(winner) self:SetPick(winner); end);
     end
 end
 

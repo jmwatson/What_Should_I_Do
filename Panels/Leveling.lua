@@ -71,6 +71,7 @@ function LevelingPanelMixin:SelectRow(row)
     addon.ApplyColor(row.bg, "SetColorTexture", CT.row_select);
 end
 
+---@param class string
 function LevelingPanelMixin:PopulateList(class)
     self:ClearList();
     local matches = self:GetEligibleChars(class);
@@ -107,10 +108,11 @@ function LevelingPanelMixin:PopulateList(class)
         row:SetPoint(addon.LEFT,  self.listContent, addon.LEFT,  0, 0);
         row:SetPoint(addon.RIGHT, self.listContent, addon.RIGHT, 0, 0);
 
-        local cc=addon.CLASS_INFO[ch.class] or {r=0.8, g=0.8, b=0.8};
+        local cc = addon.GetClassColor(ch.class) or {r=0.8, g=0.8, b=0.8};
+        cc = addon.MulRGBL(cc, {255, 255, 255});
         addon.ApplyColor(row.bg, "SetColorTexture", even and CT.row_even or CT.row_odd);
         row.fs:SetText(string.format("|cff%02x%02x%02x%s|r  |cffaaaaaa%s|r  |cffffcc00Lv %d|r%s",
-            cc.r * 255, cc.g * 255, cc.b * 255, ch.name, ch.race or addon.EMPTY_STRING, ch.level or 0,
+            cc.r, cc.g, cc.b, ch.name, ch.race or addon.EMPTY_STRING, ch.level or 0,
             ch.current and "  |cff55cc55(you)|r" or addon.EMPTY_STRING));
         
         row._even = even;
@@ -135,7 +137,7 @@ end
 function LevelingPanelMixin:DoSpinClass(onDone)
     local pool={};
 
-    for _, clsInfo in ipairs(addon.CLASS_INFO) do
+    for _, clsInfo in pairs(addon.CLASS_INFO) do
         table.insert(pool, clsInfo.name);
     end
 
@@ -153,7 +155,7 @@ function LevelingPanelMixin:DoSpinClass(onDone)
         local cc = addon.CLASS_INFO[winner];
 
         if cc then
-            addon.ApplyColor(self.classLabel, "SetTextColor", {cc.r, cc.g, cc.b});
+            addon.ApplyRGB(self.classLabel, "SetTextColor", cc.colors);
         end
 
         self:PopulateList(winner);

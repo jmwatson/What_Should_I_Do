@@ -39,7 +39,7 @@ function NamesPanelMixin:MakeGenderBtn(gender)
         for _, b in ipairs(self.genderBtns) do
             addon.ApplyColor(b, "SetBackdropColor", CT.btn_bg);
             addon.ApplyColor(b, "SetBackdropBorderColor", CT.btn_bdr);
-            addon.ApplyColor(b, "SetTextColor", CT.btn_text);
+            addon.ApplyColor(b._lbl, "SetTextColor", CT.btn_text);
         end
         addon.ApplyColor(btn, "SetBackdropColor", CT.nav_active);
         addon.ApplyColor(btn, "SetBackdropBorderColor", CT.nav_border);
@@ -53,18 +53,18 @@ function NamesPanelMixin:RenderNames(names)
     self.nameRowPool:ReleaseAll();
 
     for i, name in ipairs(names) do
-        local even = (i % 2 == 0);
         local row = addon.AcquirePooledRow(self.nameRowPool, SetupRow);
 
         row._name = name;
-        row._even = even;
+        row._even = (i % 2 == 0);
         row:SetHeight(26);
         row:SetPoint(addon.TOP,   self.nameContent, addon.TOP,   0, -(i - 1) * 26);
         row:SetPoint(addon.LEFT,  self.nameContent, addon.LEFT,  0, 0);
         row:SetPoint(addon.RIGHT, self.nameContent, addon.RIGHT, 0, 0);
-        addon.ApplyColor(row.bg, "SetColorTexture", even and CT.row_even or CT.row_odd);
+        addon.ApplyColor(row.bg, "SetColorTexture", row._even and CT.row_even or CT.row_odd);
         addon.ApplyColor(row.nl, "SetTextColor", CT.spin_text);
         row.nl:SetText(name);
+        row:Show();
     end
 
     self.nameContent:SetHeight(math.max(26, #names * 26 + 2));
@@ -78,7 +78,7 @@ function NamesPanelMixin:SelectRace(row)
     self.raceList:Hide();
 
     for _, r in ipairs(self.raceRowFrames) do
-        addon.ApplyColor(r._bg, "SetColorTexture", r._ec and CT.row_even or CT.row_odd);
+        addon.ApplyColor(r._bg, "SetColorTexture", r._even and CT.row_even or CT.row_odd);
     end
 
     addon.ApplyColor(row._bg, "SetColorTexture", CT.row_select);
@@ -136,33 +136,32 @@ local function BuildNamePanel(contentArea)
 
     for i, race in ipairs(panel.allRaces) do
         local row = CreateFrame(addon.BUTTON, nil, panel.raceContent);
-        local rbg = row:CreateTexture(nil, addon.BACKGROUND);
-        local rlbl = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
-        local rv = race;
+        row._bg = row:CreateTexture(nil, addon.BACKGROUND);
+        row._lbl = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
+        row._name = race;
+        row._even = (i % 2 == 0);
 
         row:SetSize(196, 22);
         row:SetPoint(addon.TOPLEFT, panel.raceContent, addon.TOPLEFT, 0, -(i - 1) * 22);
-        rbg:SetAllPoints();
-        addon.ApplyColor(rbg, "SetColorTexture", i % 2 == 0 and CT.row_even or CT.row_odd);
-        rlbl:SetPoint(addon.LEFT, row, addon.LEFT, 8, 0);
-        rlbl:SetJustifyH(addon.LEFT);
-        addon.ApplyColor(rlbl, "SetTextColor", CT.bright_text);
-        rlbl:SetText(race);
+        row._bg:SetAllPoints();
+        addon.ApplyColor(row._bg, "SetColorTexture", i % 2 == 0 and CT.row_even or CT.row_odd);
+        row._lbl:SetPoint(addon.LEFT, row, addon.LEFT, 8, 0);
+        row._lbl:SetJustifyH(addon.LEFT);
+        addon.ApplyColor(row._lbl, "SetTextColor", CT.bright_text);
+        row._lbl:SetText(row._name);
 
         row:SetScript(addon.OnClick, function() panel:SelectRace(row); end);
         row:SetScript(addon.OnEnter, function()
-            if panel.selectedRace~=rv then
-                addon.ApplyColor(rbg, "SetColorTexture", CT.row_hover);
+            if panel.selectedRace ~= row._name then
+                addon.ApplyColor(row._bg, "SetColorTexture", CT.row_hover);
             end
         end);
         row:SetScript(addon.OnLeave, function()
-            if panel.selectedRace~=rv then
-                addon.ApplyColor(rbg, "SetColorTexture", i % 2 == 0 and CT.row_even or CT.row_odd);
+            if panel.selectedRace ~= row._name then
+                addon.ApplyColor(row._bg, "SetColorTexture", i % 2 == 0 and CT.row_even or CT.row_odd);
             end
         end);
 
-        row._bg = rbg;
-        row._ec = (i % 2 == 0);
         table.insert(panel.raceRowFrames, row);
     end
 
