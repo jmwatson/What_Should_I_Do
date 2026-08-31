@@ -5,7 +5,6 @@
 ## X-License: GPL-3.0
 ## Version: 1.2.1
 ## SavedVariables: WhatShouldIDoDB
-## LoadSavedVariablesFirst: 1
 
 # Core (load first — constants, theme, helpers, data must precede panels)
 Core\Constants.lua

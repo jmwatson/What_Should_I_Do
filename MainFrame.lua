@@ -1,6 +1,7 @@
 local _, addon = ...;
 local DB = addon.DB;
-local CT = DB.COLOR_TABLE;
+local CT = addon.Runtime.COLOR_TABLE;
+local RT = addon.Runtime;
 
 local WIN_W  = 660;
 local WIN_H  = 520;
@@ -15,11 +16,11 @@ local function BuildContentArea(parent)
     local settings_nav = "settings_nav";
 
     local function OnSelect(name)
-        if name == settings_nav and DB.SettingsFrame and DB.SettingsFrame:IsShown() then
-            DB.SettingsFrame:Hide();
-        elseif name == settings_nav and DB.SettingsFrame then
+        if name == settings_nav and RT.SettingsFrame and RT.SettingsFrame:IsShown() then
+            RT.SettingsFrame:Hide();
+        elseif name == settings_nav and RT.SettingsFrame then
             
-            DB.SettingsFrame:Show();
+            RT.SettingsFrame:Show();
         elseif name == settings_nav then
             return;
         end
@@ -98,7 +99,7 @@ local function BuildMainFrame()
     closeBtn:SetFrameLevel(frame:GetFrameLevel() + 1);
     closeBtn:SetScript(addon.OnClick, function()
         frame:Hide();
-        if DB.SettingsFrame then DB.SettingsFrame:Hide(); end
+        if RT.SettingsFrame then RT.SettingsFrame:Hide(); end
     end)
 
     -- Content area
@@ -120,16 +121,16 @@ local function OnAddonLoaded(self, event, arg1)
     -- Define StaticPopup dialogs at init time so they're registered before use
     StaticPopupDialogs["WSID_CONFIRM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_THEME"] or {};
     StaticPopupDialogs["WSID_CONFIRM_WhatShouldIDoDB.CUSTOM_THEME"] = StaticPopupDialogs["WSID_CONFIRM_WhatShouldIDoDB.CUSTOM_THEME"] or {};
-    DB.MainFrame = BuildMainFrame();
-    DB.SettingsFrame = addon.BuildSettingsWindow();
+    RT.MainFrame = BuildMainFrame();
+    RT.SettingsFrame = addon.BuildSettingsWindow();
     addon.RegisterMinimapButton();
     -- ESC closes the windows
     tinsert(UISpecialFrames, addon.FRAME);
     tinsert(UISpecialFrames, "WhatShouldIDoSettings");
     -- Apply saved UI scale
     local scale = DB.uiScale or 1.0;
-    DB.MainFrame:SetScale(scale);
-    DB.SettingsFrame:SetScale(scale);
+    RT.MainFrame:SetScale(scale);
+    RT.SettingsFrame:SetScale(scale);
 end
 
 local function HandleEvent(self, event, arg1)
@@ -161,20 +162,20 @@ local function WSID(msg)
         return;
     end
     if msgL=="settings" then
-        if DB.SettingsFrame and DB.SettingsFrame:IsShown() then
-            DB.SettingsFrame:Hide();
+        if RT.SettingsFrame and RT.SettingsFrame:IsShown() then
+            RT.SettingsFrame:Hide();
         else
-            DB.SettingsFrame:Show();
+            RT.SettingsFrame:Show();
         end
         return
     end
-    if DB.MainFrame and DB.MainFrame:IsShown() and DB.SettingsFrame then
-        DB.SettingsFrame:Hide();
-    elseif DB.MainFrame and DB.MainFrame:IsShown() then
-        DB.MainFrame:Hide();
+    if RT.MainFrame and RT.MainFrame:IsShown() and RT.SettingsFrame then
+        RT.SettingsFrame:Hide();
+    elseif RT.MainFrame and RT.MainFrame:IsShown() then
+        RT.MainFrame:Hide();
     else
         addon.BuildRoster();
-        DB.MainFrame:Show();
+        RT.MainFrame:Show();
     end
 end
 SlashCmdList.WSID = WSID;

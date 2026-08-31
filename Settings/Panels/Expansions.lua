@@ -1,6 +1,6 @@
 local _, addon = ...;
 local DB = addon.DB;
-local CT = DB.COLOR_TABLE;
+local CT = addon.Runtime.COLOR_TABLE;
 local ORDER = addon.EXPANSIONS;
 local ROW_H = 28;
 local COL_W = math.floor(addon.SET_CW / 2) - 2;

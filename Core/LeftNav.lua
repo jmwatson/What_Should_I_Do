@@ -1,6 +1,6 @@
 local _, addon = ...;
 local DB = addon.DB;
-local CT = DB.COLOR_TABLE;
+local CT = addon.Runtime.COLOR_TABLE;
 
 local function CreateLeftNav(parent, OnSelect, opts)
     opts = opts or {};

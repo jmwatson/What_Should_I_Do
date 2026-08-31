@@ -1,5 +1,6 @@
 local _, addon = ...;
 local DB = addon.DB;
+local RT = addon.Runtime;
 
 local minimapBtn;
 
@@ -103,20 +104,20 @@ local function CreateMinimapButton()
 
     btn:SetScript(addon.OnClick, function(_, mouseBtn)
         if mouseBtn == addon.LEFT_BUTTON then
-            if DB.MainFrame:IsShown() then
-                DB.MainFrame:Hide();
-                if DB.SettingsFrame then
-                    DB.SettingsFrame:Hide();
+            if RT.MainFrame:IsShown() then
+                RT.MainFrame:Hide();
+                if RT.SettingsFrame then
+                    RT.SettingsFrame:Hide();
                 end
             else
                 addon.BuildRoster();
-                DB.MainFrame:Show();
+                RT.MainFrame:Show();
             end
         elseif mouseBtn == addon.RIGHT_BUTTON then
-            if DB.SettingsFrame:IsShown() then
-                DB.SettingsFrame:Hide();
+            if RT.SettingsFrame:IsShown() then
+                RT.SettingsFrame:Hide();
             else
-                DB.SettingsFrame:Show();
+                RT.SettingsFrame:Show();
             end
         end
     end);

@@ -1,7 +1,17 @@
 local _, addon = ...;
 
+-- Persistent data
+addon.DB = {};
+
+-- Mutable runtime data
+addon.Runtime = {
+    COLOR_TABLE = {},
+    MainFrame = nil,
+    SettingsFrame = nil,
+};
+
 local defaults = {
-    colorTheme = addon.DEFAULT_THEME,
+    colorTheme = nil,
     COLOR_TABLE = {},
     customColors = {},
     excludedActivities = {},
@@ -9,25 +19,32 @@ local defaults = {
     excludedExpansions = {},
     excludeFarming = false,
     excludedSubActivities = {},
-    minimap = {
-        hide = false,
-        minimapPos = 45,
-    },
     seenChars = {},
     uiScale = 1.0,
 };
 
-WhatShouldIDoDB = WhatShouldIDoDB or {};
-
-for key, value in pairs(defaults) do
-    if WhatShouldIDoDB[key] == nil then
-        WhatShouldIDoDB[key] = value;
-    end
-end
-
-addon.DB = WhatShouldIDoDB;
-
+-- Populates the shared DB table
 local function InitDB()
-    WhatShouldIDoDB.colorTheme = WhatShouldIDoDB.colorTheme or addon.DEFAULT_THEME;
+    local DB = addon.DB;
+    WhatShouldIDoDB = WhatShouldIDoDB or {};
+
+    -- Load saved values into the DB
+    for key, value in pairs(WhatShouldIDoDB) do
+        DB[key] = value;
+    end
+
+    -- Load any missing defaults
+    for key, value in pairs(defaults) do
+        if DB[key] == nil then
+            DB[key] = value;
+        end
+    end
+
+    if DB.colorTheme == nil then
+        DB.colorTheme = addon.DEFAULT_THEME;
+    end
+
+    -- Store our saved data into persistent storage
+    WhatShouldIDoDB = DB;
 end
 addon.InitDB = InitDB;

@@ -1,6 +1,6 @@
 local _, addon = ...;
 local DB = addon.DB;
-local CT = DB.COLOR_TABLE;
+local CT = addon.Runtime.COLOR_TABLE;
 
 local SCRL_H = 280;
 local BTN_H = 26;

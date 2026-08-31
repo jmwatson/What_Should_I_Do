@@ -1,6 +1,7 @@
 local _, addon = ...;
 local DB = addon.DB;
-local CT = DB.COLOR_TABLE;
+local CT = addon.Runtime.COLOR_TABLE;
+local RT = addon.Runtime;
 
 local Options = {
     {label="50%",  val=0.50}, {label="60%",  val=0.60}, {label="70%",  val=0.70},
@@ -17,11 +18,11 @@ function UIScaleMixins:ApplyScale(val, label)
     DB.uiScale = val;
     self.boxLbl:SetText(label);
     self.dropdown:Hide();
-    if DB.MainFrame then
-        DB.MainFrame:SetScale(val);
+    if RT.MainFrame then
+        RT.MainFrame:SetScale(val);
     end
-    if DB.SettingsFrame then
-        DB.SettingsFrame:SetScale(val);
+    if RT.SettingsFrame then
+        RT.SettingsFrame:SetScale(val);
     end
 end
 
@@ -93,5 +94,7 @@ local function BuildUIScalePanel(contentArea)
 
     panel.box:SetScript(addon.OnClick, function() panel:ShowHide(); end);
     panel.resetBtn:SetScript(addon.OnClick, function() panel:ApplyScale(1.0, "100%"); end);
+
+    return panel;
 end
 addon.BuildUIScalePanel = BuildUIScalePanel;

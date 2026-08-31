@@ -1,6 +1,6 @@
 local _, addon = ...;
 local DB = addon.DB;
-local CT = DB.COLOR_TABLE;
+local CT = addon.Runtime.COLOR_TABLE;
 
 local THEME_DEFS = {
     {name=addon.DEFAULT_THEME, label=addon.DEFAULT_THEME, desc="The original purple theme."},

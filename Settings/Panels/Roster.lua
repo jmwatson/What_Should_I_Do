@@ -1,6 +1,6 @@
 local _, addon = ...;
 local DB = addon.DB;
-local CT = DB.COLOR_TABLE;
+local CT = addon.Runtime.COLOR_TABLE;
 
 local BTN_H = 26;
 
@@ -18,6 +18,7 @@ function RosterPanelMixin:Refresh()
     for i,ch in ipairs(characters) do
         local even = (i % 2 == 0);
         local row = self.rowPool:Acquire();
+        row:Show();
         local cc = addon.GetClassColor(ch.class) or {r = 0.8, g = 0.8, b = 0.8};
         local isExcluded = DB.excludedChars[ch.name] == true;
         local isCurrent = (ch.name == UnitName(addon.IDENTITY));
@@ -91,7 +92,7 @@ function RosterPanelMixin:Refresh()
         end
     end
 
-    self:SetHeight(math.max(24, #characters * 24 + 2));
+    self.content:SetHeight(math.max(24, #characters * 24 + 2));
     self.reset();
 end
 
@@ -130,7 +131,7 @@ local function BuildRosterPanel(contentArea)
     panel.clearBtn = addon.MakeBtn(panel, "Clear All Others", addon.SET_CW, BTN_H);
     panel.clearBtn:SetPoint(addon.TOPLEFT, panel.scrollBG, addon.BOTTOMLEFT, 0, -10);
 
-    panel.rowPool = CreateFramePool(addon.FRAME,  contentArea);
+    panel.rowPool = CreateFramePool(addon.FRAME,  panel.content);
 
     panel.clearBtn:SetScript(addon.OnClick, function()
         panel:ClearOthers();

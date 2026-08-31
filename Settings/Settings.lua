@@ -1,8 +1,9 @@
 local _, addon = ...;
 local DB = addon.DB;
-local CT = DB.COLOR_TABLE;
+local CT = addon.Runtime.COLOR_TABLE;
+local RT = addon.Runtime;
 
-DB.SettingsFrame = nil;
+RT.SettingsFrame = nil;
 
 local PANELS = {};
 
@@ -43,12 +44,12 @@ end
 local function ResetSize()
     DB.uiScale = 1.0;
 
-    if DB.MainFrame then
-        DB.MainFrame:SetScale(1.0);
+    if RT.MainFrame then
+        RT.MainFrame:SetScale(1.0);
     end
 
-    if DB.SettingsFrame then
-        DB.SettingsFrame:SetScale(1.0);
+    if RT.SettingsFrame then
+        RT.SettingsFrame:SetScale(1.0);
     end
 
     UIErrorsFrame:AddMessage("|cffd5a742What Should I Do?:|r UI scale reset to 100%%.", 1, 0.85, 0.2);

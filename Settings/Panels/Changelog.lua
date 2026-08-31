@@ -1,5 +1,5 @@
 local _, addon = ...;
-local CT = addon.DB.COLOR_TABLE;
+local CT = addon.Runtime.COLOR_TABLE;
 
 local function BuildChangelogPanel(contentArea)
     local panel = addon.MakePanel(contentArea);
