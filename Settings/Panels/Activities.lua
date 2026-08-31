@@ -8,10 +8,11 @@ local GAP = 10;
 
 local function AcquireCheckboxRow(pool, i, name)
     local row = pool:Acquire();
-    local even = (i % 2 == 0);
+    row._even = (i % 2 == 0);
+    row._name = name;
 
     if not row.box then
-        row.box = CreateFrame(addon.FRAME, nil, row, addon.BACKDROP_TEMPLATE);
+        row.box = CreateFrame(addon.BUTTON, nil, row, addon.BACKDROP_TEMPLATE);
         row.check = row.box:CreateTexture(nil, addon.OVERLAY);
         row.lbl = row:CreateFontString(nil, addon.OVERLAY, addon.NORMAL_SMALL);
 
@@ -30,10 +31,8 @@ local function AcquireCheckboxRow(pool, i, name)
     row:Show();
     row:SetSize(addon.SET_COL - 2, 22);
     row:SetPoint(addon.TOPLEFT, row:GetParent(), addon.TOPLEFT, 0, -(i - 1) * 22);
-    addon.ApplyColor(row, "SetBackdropColor", even and CT.row_even or CT.row_odd);
+    addon.ApplyColor(row, "SetBackdropColor", row._even and CT.row_even or CT.row_odd);
     row.lbl:SetText(name);
-    row._even = even;
-    row._name = name;
 
     return row;
 end
@@ -131,9 +130,6 @@ function ActivitiesPanelMixin:RefreshActivities()
 
         row:SetScript(addon.OnClick, function()
             self.selectedActivity = act;
-            checked = not checked;
-            DB.excludedActivities[act] = checked and nil or true;
-            PaintCheckbox(row, checked);
             self:SelectActivity(act);
         end);
         row:SetScript(addon.OnEnter, function()
@@ -145,6 +141,11 @@ function ActivitiesPanelMixin:RefreshActivities()
             if self.selectedActivity ~= act then
                 addon.ApplyColor(row, "SetBackdropColor", row._even and CT.row_even or CT.row_odd);
             end
+        end);
+        row.box:SetScript(addon.OnClick, function()
+            checked = not checked;
+            DB.excludedActivities[act] = checked and nil or true;
+            PaintCheckbox(row, checked);
         end);
     end
 
