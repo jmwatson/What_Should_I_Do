@@ -28,13 +28,26 @@ end
 function LevelingPanelMixin:GetEligibleChars(class)
     local matches = {};
 
-    for _, ch in ipairs(DB.seenChars) do
-        local excluded = DB.excludedChars and DB.excludedChars[ch.name];
+    for key, ch in pairs(DB.seenChars) do
+        local excluded = DB.excludedChars and DB.excludedChars[key];
 
         if ch.class == class and (ch.level or 0) < 90 and not excluded then
             table.insert(matches, ch);
         end
     end
+
+    -- Order by name > level > realm
+    table.sort(matches, function(a, b)
+        if a.name ~= b.name then
+            return a.name < b.name;
+        end
+
+        if a.level ~= b.level then
+            return a.level < b.level;
+        end
+
+        return (a.realm or addon.EMPTY_STRING) < (b.realm or addon.EMPTY_STRING);
+    end);
 
     return matches;
 end

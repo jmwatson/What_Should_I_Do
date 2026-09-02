@@ -1,41 +1,75 @@
 local _, addon = ...;
 local DB = addon.DB;
 
-addon.Roster = {}
+local function CharKey(name, realm)
+    return name .. "-" .. realm;
+end
+addon.CharKey = CharKey;
+
+addon.RegisterMigration(2, function(DB)
+    local oldChars = DB.seenChars;
+
+    if not oldChars or next(oldChars) == nil then
+        DB.seenChars = {};
+        return;
+    end
+
+    local currentRealm = GetNormalizedRealmName() or GetRealmName() or "UnknownRealm";
+    local playerName = UnitName(addon.IDENTITY);
+    local oldExcluded = DB.excludedChars or {};
+    local newChars = {};
+    local newExcluded = {};
+
+    for _, ch in ipairs(oldChars) do
+        local realm = (ch.name == playerName) and currentRealm or "Unknown";
+        local key = CharKey(ch.name, realm);
+
+        if not newChars[key] or (ch.level or 0) > (newChars[key].level or 0) then
+            ch.realm = realm;
+            newChars[key] = ch;
+        end
+
+        if oldExcluded[ch.name] then
+            newExcluded[key] = true;
+        end
+    end
+
+    DB.seenChars = newChars;
+    DB.excludedChars = newExcluded;
+end, "roster (name+realm keys)");
 
 local function BuildRoster()
     local name = UnitName(addon.IDENTITY);
+    local realm = GetNormalizedRealmName() or GetRealmName();
     local cls, _ = UnitClass(addon.IDENTITY);
     local level = UnitLevel(addon.IDENTITY);
     local race = UnitRace(addon.IDENTITY);
     local faction = UnitFactionGroup(addon.IDENTITY);
-    local found = false;
+    local key = CharKey(name, realm);
+    local existing = DB.seenChars[key];
     cls = addon.NormalizeClass(cls);
-    
-    for _, s in ipairs(DB.seenChars) do
-        if s.name == name then
-            s.level=level;
-            s.class=cls;
-            s.race=race;
-            s.faction=faction
-            found = true;
-            break;
-        end
-    end
-    
-    if not found then
-        table.insert(DB.seenChars, {name=name, class=cls, level=level, race=race, faction=faction});
+
+    if existing then
+        existing.level = level;
+        existing.class = cls;
+        existing.race = race;
+        existing.faction = faction;
+        existing.realm = realm;
+    else
+        DB.seenChars[key] = {
+            name = name,
+            class = cls,
+            level = level,
+            race = race,
+            faction = faction,
+            realm = realm,
+        };
     end
 end
 addon.BuildRoster = BuildRoster;
 
-local function RemoveCharFromRoster(charName)
-    for i, s in ipairs(DB.seenChars) do
-        if s.name == charName then
-            table.remove(DB.seenChars, i);
-            break;
-        end
-    end
+local function RemoveCharFromRoster(key)
+    DB.seenChars[key] = nil;
     addon.BuildRoster();
 end
 addon.RemoveCharFromRoster = RemoveCharFromRoster;

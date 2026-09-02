@@ -92,18 +92,19 @@ local function BuildExportStr()
     local excl = DB.excludedChars or {};
     local parts = {};
 
-    if not chars or #chars == 0 then
+    if not chars or next(chars) == nil then
         return nil;
     end
 
-    for _, ch in ipairs(chars) do
+    for key, ch in pairs(chars) do
         local cls  = addon.EncodeClass(ch.class) or (ch.class or "?");
         local race = addon.EncodeRace(ch.race) or (ch.race or "?");
         local fact = FACT_ENC[ch.faction] or (ch.faction or "?");
-        table.insert(parts, (ch.name or "?")..":"..cls..":"..tostring(ch.level or 0)..":"..race..":"..fact..":".. (excl[ch.name] and "1" or "0"));
+        local realm = ch.realm or "Unknown";
+        table.insert(parts, (ch.name or "?")..":"..cls..":"..tostring(ch.level or 0)..":"..race..":"..fact..":"..realm..":".. (excl[key] and "1" or "0"));
     end
 
-    return "W2:" .. table.concat(parts, "|");
+    return "W3:" .. table.concat(parts, "|");
 end
 
 local ImportExportPanelMixin = {};
@@ -130,31 +131,43 @@ function ImportExportPanelMixin:DoImport(importStr)
         importStr = decoded;
     end
 
-    local str, compressed;
+    local str, format;
 
-    if importStr:sub(1, 3) == "W2:" then
+    if importStr:sub(1, 3) == "W3:" then
         str = importStr:sub(4);
-        compressed = true;
+        format = "w3";
+    elseif importStr:sub(1, 3) == "W2:" then
+        str = importStr:sub(4);
+        format = "w2";
     elseif importStr:sub(1, 5) == "WSID:" then
         str = importStr:sub(6);
-        compressed = false;
+        format = "wsid";
     else
         self.impStatus:SetText("Invalid string format.");
         addon.ApplyColor(self.impStatus, "SetTextColor", {0.8, 0.3, 0.3});
         return;
     end
 
-    local imported, updated, excluded = 0, 0, 0;
+    local imported = 0;
+    local updated = 0;
+    local excluded = 0;
 
     if not DB.excludedChars then
         DB.excludedChars = {};
     end
 
     for entry in str:gmatch("[^|]+") do
-        local name,cls,level,race,faction,excl = entry:match("^([^:]+):([^:]+):([^:]+):([^:]+):([^:]+):?([01]?)$");
+        local name, cls, level, race, faction, realm, excl;
+        
+        if format == "w3" then
+            name, cls, level, race, faction, realm, excl = entry:match("^([^:]+):([^:]+):([^:]+):([^:]+):([^:]+):([^:]+):?([01]?)$");
+        else
+            name, cls, level, race, faction, excl = entry:match("^([^:]+):([^:]+):([^:]+):([^:]+):([^:]+):?([01]?)$");
+            realm = "Unknown";
+        end
 
         if name and name ~= addon.EMPTY_STRING then
-            if compressed then
+            if format == "w3" or format == "w2" then
                 cls = addon.DecodeClass(cls) or addon.NormalizeClass(cls);
                 race = RACE_DEC[race] or race;
                 faction = FACT_DEC[faction] or faction;
@@ -162,33 +175,28 @@ function ImportExportPanelMixin:DoImport(importStr)
                 cls = addon.NormalizeClass(cls);
             end
 
-            local exists = false;
+            local key = addon.CharKey(name, realm);
+            local existing = DB.seenChars[key];
 
-            for _, ch in ipairs(DB.seenChars) do
-                if ch.name == name then
-                    if tonumber(level) and tonumber(level) > (ch.level or 0) then
-                        ch.level = tonumber(level);
-                        updated = updated + 1;
-                    end
-
-                    exists = true;
-                    break;
-                end
+            if existing and tonumber(level) and tonumber(level) > (existing.level or 0) then
+                existing.level = tonumber(level);
+                updated = updated + 1;
             end
 
-            if not exists then
-                table.insert(DB.seenChars, {
-                    name=name,
-                    class=cls,
-                    level=tonumber(level) or 0,
-                    race=race,
-                    faction=faction,
-                });
+            if not existing then
+                DB.seenChars[key] = {
+                    name = name,
+                    class = cls,
+                    level = tonumber(level),
+                    race = race,
+                    faction = faction,
+                    realm = realm,
+                };
                 imported = imported + 1;
             end
 
             if excl == "1" then
-                DB.excludedChars[name] = true;
+                DB.excludedChars[key] = true;
                 excluded = excluded + 1;
             end
         end

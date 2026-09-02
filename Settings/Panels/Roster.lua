@@ -8,20 +8,30 @@ local RosterPanelMixin = {};
 
 function RosterPanelMixin:Refresh()
     self.rowPool:ReleaseAll();
-    local characters = DB.seenChars;
-    self.count:SetText("["..#characters.."]");
 
     if not DB.excludedChars then
         DB.excludedChars = {};
     end
 
-    for i,ch in ipairs(characters) do
+    -- This maintains a consistent order for display purposes only as pairs() isn't consistent
+    local keys = {};
+
+    for key in pairs(DB.seenChars) do
+        table.insert(keys, key);
+    end
+
+    table.sort(keys);
+    self.count:SetText("["..#keys.."]");
+    local curKey = addon.CharKey(UnitName(addon.IDENTITY), GetNormalizedRealmName() or GetRealmName());
+
+    for i, key in ipairs(keys) do
+        local ch = DB.seenChars[key];
         local even = (i % 2 == 0);
         local row = self.rowPool:Acquire();
-        row:Show();
         local cc = addon.GetClassColor(ch.class) or {r = 0.8, g = 0.8, b = 0.8};
-        local isExcluded = DB.excludedChars[ch.name] == true;
-        local isCurrent = (ch.name == UnitName(addon.IDENTITY));
+        local isExcluded = DB.excludedChars[key] == true;
+        local isCurrent = (key == curKey);
+        row:Show();
 
         if not row.bg then
             row.bg = row:CreateTexture(nil, addon.BACKGROUND);
@@ -36,11 +46,12 @@ function RosterPanelMixin:Refresh()
             row.btn._lbl:SetAllPoints();
             row.btn._lbl:SetJustifyH(addon.CENTER);
             row.btn:SetScript(addon.OnClick, function()
-                if DB.excludedChars[row._ch.name] then
-                    DB.excludedChars[row._ch.name] = nil;
+                if DB.excludedChars[row._key] then
+                    DB.excludedChars[row._key] = nil;
                 else
-                    DB.excludedChars[row._ch.name] = true;
+                    DB.excludedChars[row._key] = true;
                 end
+
                 DB.RefreshRoster();
             end);
 
@@ -56,14 +67,14 @@ function RosterPanelMixin:Refresh()
             row.xbtn._lbl:SetJustifyH(addon.CENTER);
             row.xbtn._lbl:SetText("|cffcc3333x|r");
             row.xbtn:SetScript(addon.OnClick, function()
-                addon.RemoveCharFromRoster(row._ch.name)
+                addon.RemoveCharFromRoster(row._key)
                 DB.RefreshRoster();
             end);
             row.xbtn:SetScript(addon.OnEnter, function() row.xbtn._lbl:SetText("|cffff5555x|r"); end);
             row.xbtn:SetScript(addon.OnLeave, function() row.xbtn._lbl:SetText("|cffcc3333x|r"); end);
         end
         
-        row._ch = ch;
+        row._key = key;
         row:SetSize(addon.SET_CW - 2, 24);
         row:SetPoint(addon.TOPLEFT, self.content, addon.TOPLEFT, 0, -(i - 1) * 24);
         addon.ApplyColor(row.bg, "SetColorTexture", even and CT.row_even or CT.row_odd);
@@ -75,6 +86,7 @@ function RosterPanelMixin:Refresh()
             ch.name,
             ch.race or addon.EMPTY_STRING,
             ch.class or addon.EMPTY_STRING,
+            ch.realm and (" -- "..ch.realm) or addon.EMPTY_STRING,
             ch.level or 0,
             isExcluded and "  |cff888888[excluded]|r" or addon.EMPTY_STRING));
         row.btn:ClearAllPoints();
@@ -92,21 +104,21 @@ function RosterPanelMixin:Refresh()
         end
     end
 
-    self.content:SetHeight(math.max(24, #characters * 24 + 2));
+    self.content:SetHeight(math.max(24, #keys * 24 + 2));
     self.reset();
 end
 
 function RosterPanelMixin:ClearOthers()
-    local cur = UnitName(addon.IDENTITY);
+    local curKey = addon.CharKey(UnitName(addon.IDENTITY), GetNormalizedRealmName() or GetRealmName());
     local kept = {};
 
-    for _, ch in ipairs(DB.seenChars) do
-        if ch.name == cur then
-            table.insert(kept, ch);
+    for key, ch in pairs(DB.seenChars) do
+        if key == curKey then
+            kept[key] = ch;
         end
     end
 
-    DB.seenChars=kept;
+    DB.seenChars = kept;
     addon.BuildRoster();
     self:Refresh();
     print("|cffd5a742What Should I Do?:|r Roster cleared.");
