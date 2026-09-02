@@ -36,12 +36,12 @@ local function RunMigrations(DB)
 
             -- Error happened, don't save changes to disk so migration can re-run in the future
             if not ok then
-                print("|cffff4444What Should I Do?:|r Migration '"..migrator.label.."' failed");
+                print("|cffff4444What Should I Do?:|r Migration '"..migrator.label.."' failed with error '"..tostring(err).."'");
                 return;
             end
-
-            DB.schemaVersion = version;
         end
+
+        DB.schemaVersion = version;
     end
 end
 
