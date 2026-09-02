@@ -118,3 +118,18 @@ local function Filter(tbl, filter)
     return filtered;
 end
 addon.Filter = Filter;
+
+--- Data Migration
+
+addon._MIGRATORS = {};
+
+--- Register a migration to run when DB.schemaVersion advances.
+--- Call this from any file, at file load time (top level, not inside a function)
+---@param version number
+---@param fn fun(DB: table)
+---@param label string
+local function RegisterMigration(version, fn, label)
+    addon._MIGRATORS[version] = addon._MIGRATORS[version] or {};
+    table.insert(addon._MIGRATORS[version], {fn = fn, label = label});
+end
+addon.RegisterMigration = RegisterMigration;
